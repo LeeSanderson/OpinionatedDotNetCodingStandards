@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+	<PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<IncludeBuildOutput>false</IncludeBuildOutput>
+		<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+		<!--
+			Ignore NU5104 warning "A stable release of a package should not have a prerelease dependency"
+			as this package depends on prerelease versions of analyzers, specifically StyleCop.Analyzers.
+		-->
+		<NoWarn>$(NoWarn);NU5104</NoWarn>
+
+		<NuSpecFile>..\..\packages\Opinionated.Dotnet.CodingStandards\Opinionated.Dotnet.CodingStandards.nuspec</NuSpecFile>
+	</PropertyGroup>
+</Project>

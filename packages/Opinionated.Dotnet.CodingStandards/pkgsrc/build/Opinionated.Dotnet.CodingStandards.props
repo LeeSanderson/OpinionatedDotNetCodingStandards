@@ -1,0 +1,170 @@
+<Project>
+	<PropertyGroup>
+		<!-- 
+			Set the C# language version to the latest available to use the newest language features
+			https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/configure-language-version#c-language-version-reference
+		-->
+		<LangVersion Condition="'$(LangVersion)' == ''">latest</LangVersion>
+
+		<!-- 
+			Enable implicit usings to reduce boilerplate code in .NET 6+ projects
+			https://learn.microsoft.com/en-gb/dotnet/core/project-sdk/overview#implicit-using-directives
+		-->
+		<ImplicitUsings Condition="'$(ImplicitUsings)' == ''">enable</ImplicitUsings>
+
+		<!-- 
+			Enable nullable reference type checking to help catch potential null reference exceptions at compile time
+			https://learn.microsoft.com/en-us/dotnet/csharp/nullable-references#nullable-context
+		-->
+		<Nullable Condition="'$(Nullable)' == ''">enable</Nullable>
+
+		<!-- 
+			Treat all compiler warnings as errors to enforce high code quality
+			https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#treatwarningsaserrors
+		-->
+		<TreatWarningsAsErrors Condition="'$(TreatWarningsAsErrors)' == ''">true</TreatWarningsAsErrors>
+
+		<!-- 
+			Tell MSBuild to treat all warnings as errors too
+			https://learn.microsoft.com/en-us/visualstudio/msbuild/common-msbuild-project-properties?view=visualstudio
+		-->
+		<MSBuildTreatWarningsAsErrors Condition="'$(MSBuildTreatWarningsAsErrors)' == ''">true</MSBuildTreatWarningsAsErrors>
+
+		<!-- 
+			Remove the "You are working with a preview version of the .NET Core SDK. You can define the SDK version via a global.json file in the current project"
+			warning message when using preview versions of the .NET SDK
+			https://github.com/dotnet/sdk/issues/2033#issuecomment-372380390
+		-->
+		<SuppressNETCoreSdkPreviewMessage Condition="'$(SuppressNETCoreSdkPreviewMessage)' == ''">true</SuppressNETCoreSdkPreviewMessage>
+
+
+		<!-- 
+			Tell Visual Studio to not call MSBuild when fast up-to-date check determines that no compilation is necessary
+			but some files need to be copied to the output directory (e.g., content files).
+			https://devblogs.microsoft.com/visualstudio/vs-toolbox-accelerate-your-builds-of-sdk-style-net-projects/
+		-->
+		<AccelerateBuildsInVisualStudio Condition="'$(AccelerateBuildsInVisualStudio)' == ''">true</AccelerateBuildsInVisualStudio>
+
+		<!-- 
+			Report extra analyzer information, such as execution time 
+			https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/errors-warnings#reportanalyzer
+		-->
+		<ReportAnalyzer Condition="'$(ReportAnalyzer)' == ''">true</ReportAnalyzer>
+
+		<!-- 
+			Strict mode enables a set of recommended compiler options to help write safer code
+			https://www.meziantou.net/csharp-compiler-strict-mode.htm
+		-->
+		<Features Condition="'$(Features)' == ''">strict</Features>
+
+		<!-- 
+			Causes the compiler to produce an assembly whose byte-for-byte output is identical across compilations for identical inputs
+			https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/code-generation#deterministic
+		-->
+		<Deterministic Condition="'$(Deterministic)' == ''">true</Deterministic>
+
+
+		<!-- 
+			Ensure that .NET analyzers are enabled by default (default in dotnet 5 and later)
+			https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#enablenetanalyzers
+		-->
+		<EnableNETAnalyzers Condition="'$(EnableNETAnalyzers)' == ''">true</EnableNETAnalyzers>
+
+		<!-- 
+			Default analysis level to latest (the lastest code analyzers that have been released will be used)
+			and analysis mode to all (most "CA" code quality rules will be enabled as build warnings)
+			https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#analysislevel
+		-->
+		<AnalysisLevel Condition="'$(AnalysisLevel)' == ''">latest-all</AnalysisLevel>
+
+		<!-- 
+			Enforce code style rules during build (treat code style violations as build warnings)
+			https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#enforcecodestyleinbuild
+		-->
+		<EnforceCodeStyleInBuild Condition="'$(EnforceCodeStyleInBuild)' == ''">true</EnforceCodeStyleInBuild>
+
+
+		<!-- 
+			Emit debugging information into the .dll/.exe itself (.pdb file is not produced) using Portable PDB format.
+			(useful for creating debuggable nuget packages that don't need a separate symbol package)
+			https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/compiler-options/code-generation#debugtype
+		-->
+		<DebugType Condition="'$(DebugType)' == ''">embedded</DebugType>
+
+		<!-- 
+			Supress build warnings when the .NET SDK version and the Microsoft.CodeAnalysis.NetAnalyzers version mismatch 
+			https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-10#latest-updates
+		-->
+		<_SkipUpgradeNetAnalyzersNuGetWarning>true</_SkipUpgradeNetAnalyzersNuGetWarning>
+
+		<!-- 
+			Use static graph MSBuild evaluation instead of the standard evaluation. Static graph evaluation is an experimental feature that's significantly 
+			faster for large repos and solutions. 
+			https://learn.microsoft.com/en-us/nuget/reference/msbuild-targets#restore-properties
+		-->
+		<RestoreUseStaticGraphEvaluation Condition="'$(RestoreUseStaticGraphEvaluation)' == ''">true</RestoreUseStaticGraphEvaluation>
+
+		<!-- 
+			Generates XML documentation.
+			https://learn.microsoft.com/en-us/dotnet/core/project-sdk/msbuild-props#generatedocumentationfile
+
+			Must be set to true for IDE0005 (Remove unnecessary usings/imports) to work
+			https://github.com/dotnet/roslyn/issues/41640#issuecomment-985780130
+		-->
+		<GenerateDocumentationFile Condition="'$(GenerateDocumentationFile)' == ''">true</GenerateDocumentationFile>
+
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- 
+			Identify when running on CI environments to allow enabling of specific settings.
+			This should work with Azure DevOps, GitHub Actions, GitLab CI, Travis CI, CircleCI, TeamCity, and others.
+		-->
+		<ContinuousIntegrationBuild Condition="'$(TF_BUILD)' == 'true'">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(GITLAB_CI)' == 'true'">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(CI)' == 'true'">true</ContinuousIntegrationBuild>
+		<ContinuousIntegrationBuild Condition="'$(TEAMCITY_VERSION)' != ''">true</ContinuousIntegrationBuild>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!-- 
+			NuGet security vulnerability audit specific settings 
+			https://learn.microsoft.com/en-us/nuget/concepts/auditing-packages
+		-->
+
+		<!-- Enable audits-->
+		<NuGetAudit Condition="'$(NuGetAudit)' == ''">true</NuGetAudit>
+
+		<!-- Audit direct and transitive packages -->
+		<NuGetAuditMode Condition="'$(NuGetAuditMode)' == ''">all</NuGetAuditMode>
+
+		<!-- Report low, moderate, high and critical advisories -->
+		<NuGetAuditLevel Condition="'$(NuGetAuditLevel)' == ''">low</NuGetAuditLevel>
+
+
+		<!-- Custom property to control whether NuGet audit warnings should be considerd errors (see below) -->
+		<NuGetAuditTreatWarningsAsErrors Condition="'$(NuGetAuditTreatWarningsAsErrors)' == ''">true</NuGetAuditTreatWarningsAsErrors>
+
+		<!-- Fails the build when a vulnerability is detected if NuGetAuditTreatWarningsAsErrors is true (which is the default) -->
+		<WarningsAsErrors Condition="$(NuGetAuditTreatWarningsAsErrors) == 'true'">
+			(WarningsAsErrors);NU1900;NU1901;NU1902;NU1903;NU1904
+		</WarningsAsErrors>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<!--
+			Source link settings
+		-->
+
+		<!-- 
+			Embed project source files that are not tracked by the source control or imported from a source package to the generated PDB.
+			(set by default in .NET SDK 8+, only relevant for nuget packages)
+			https://github.com/dotnet/sourcelink/blob/main/docs/README.md#embeduntrackedsources
+		-->
+		<EmbedUntrackedSources Condition="'$(EmbedUntrackedSources)' == ''">true</EmbedUntrackedSources>
+
+		<!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	</PropertyGroup>
+</Project>

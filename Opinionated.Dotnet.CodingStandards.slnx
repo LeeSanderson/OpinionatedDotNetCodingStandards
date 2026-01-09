@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/package/">
+    <File Path="package/Opinionated.Dotnet.CodingStandards/Opinionated.Dotnet.CodingStandards.nuspec" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src/Opinionated.Dotnet.CodingStandards/Opinionated.Dotnet.CodingStandards.csproj" Id="8c105056-c89e-4883-9aa6-6acab5d1356e" />
+  </Folder>
+</Solution>

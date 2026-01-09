@@ -1,0 +1,4 @@
+<Project>
+	<!-- Dogfood the coding standards in all projects in this solution -->
+	<Import Project="packages\Opinionated.Dotnet.CodingStandards\pkgsrc\build\Opinionated.Dotnet.CodingStandards.props"/>
+</Project>
