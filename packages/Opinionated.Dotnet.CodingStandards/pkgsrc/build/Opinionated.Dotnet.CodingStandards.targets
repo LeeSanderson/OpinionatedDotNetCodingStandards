@@ -1,5 +1,25 @@
 <Project>
-	<PropertyGroup>
-		<!-- TODO -->
-	</PropertyGroup>
+	<!-- Register the EditorConfig files to the project -->
+	<!-- Remember that a particular .NET analysis rule can only be configured once across all imported global EditorConfig files -->
+	<ItemGroup>
+		<!-- Basic EditorConfig settings such as encoding, indentation, etc. -->
+		<EditorConfigFiles Include="$(MSBuildThisFileDirectory)\..\config\FileDefaults.editorconfig" />
+
+		<!-- C# code style -->
+		<EditorConfigFiles Include="$(MSBuildThisFileDirectory)\..\config\CodeStyle.editorconfig" />
+
+		<!-- Analyzer specific configuration, enforcing C# code style, quality, performance and security -->
+		<EditorConfigFiles Include="$(MSBuildThisFileDirectory)\..\config\analyzers\*.editorconfig" />
+
+		<!-- Configure ReSharper analyzers that overlaps with built-in .NET analyzers (only appears in Rider and VisualStudio IDEs) -->
+		<EditorConfigFiles Include="$(MSBuildThisFileDirectory)\..\config\ReSharper.editorconfig" />
+
+		<!-- General, opinionated preferences -->
+		<EditorConfigFiles Include="$(MSBuildThisFileDirectory)\..\config\Opinionated.editorconfig" />
+
+		<!-- .NET analyzers configuration only for test projects -->
+		<EditorConfigFiles 
+			Include="$(MSBuildThisFileDirectory)\..\config\TestProject.editorconfig" 
+			Condition="'$(IsTestProject)' == 'true'" />
+	</ItemGroup>
 </Project>
