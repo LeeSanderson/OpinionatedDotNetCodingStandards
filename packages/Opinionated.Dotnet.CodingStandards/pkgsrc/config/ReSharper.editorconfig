@@ -1,2 +1,17 @@
 is_global = true
 global_level = 0
+
+# Disable some ReSharper / Rider inspections already covered by .NET analyzers
+
+# Already covered by IDE0130 in analyzers/Analyzer.Microsoft.CodeAnalysis.CSharp.CodeStyle.editorconfig
+resharper_check_namespace_highlighting = none
+
+# Already covered by FileDefaults.editorconfig "insert_final_newline"
+csharp_insert_final_newline = false
+
+# Fix to address https://youtrack.jetbrains.com/issue/RSRP-486359
+# where csharp_new_line_before_members_in_object_initializers would still inline object initializers
+resharper_wrap_object_and_collection_initializer_style = chop_always
+
+# Already covered by IDE0003 in Opinionated.editorconfig
+resharper_arrange_this_qualifier_highlighting=none
