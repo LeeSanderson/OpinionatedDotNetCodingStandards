@@ -1,12 +1,14 @@
 <Project>
-    <!-- 
+  <!-- 
 	    Dogfood the coding standards in all projects in this solution by copying the packages
 		defined in Opinionated.Dotnet.CodingStandards.nuspec 
+		
+		Keep this file in sync with the .nuspec file!
 	-->
-    <ItemGroup>
-        <PackageReference Include="Meziantou.Analyzer" version="2.0.254" />
-        <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="4.14.0" />
-        <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.100" />
-        <PackageReference Include="StyleCop.Analyzers" version="1.2.0-beta.556" />
-	</ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Meziantou.Analyzer" version="2.0.275" />
+    <PackageReference Include="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="4.14.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.101"/>
+    <PackageReference Include="StyleCop.Analyzers" version="1.2.0-beta.556" />
+  </ItemGroup>
 </Project>
