@@ -33,6 +33,8 @@
 			(if not set elsewhere in the project file or Directory.Build.props/targets files).
 		-->
         <BanNonUtcDateApis Condition="'$(BanNonUtcDateApis)' == ''">true</BanNonUtcDateApis>
+        <BanInvariantCultureStringComparisonApis 
+	        Condition="'$(BanInvariantCultureStringComparisonApis)' == ''">true</BanInvariantCultureStringComparisonApis>
     </PropertyGroup>
 	<ItemGroup>
 		<!--
@@ -41,5 +43,8 @@
         <AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.NonUtcDates.txt"
                          Condition="$(BanNonUtcDateApis) == 'true'"
                          Visible="false" />
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.InvariantCultureStringComparison.txt"
+		                 Condition="$(BanInvariantCultureStringComparisonApis) == 'true'"
+		                 Visible="false" />
     </ItemGroup>
 </Project>
