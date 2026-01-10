@@ -22,4 +22,24 @@
 			Include="$(MSBuildThisFileDirectory)\..\config\TestProject.editorconfig" 
 			Condition="'$(IsTestProject)' == 'true'" />
 	</ItemGroup>
+
+
+    <PropertyGroup>
+        <!-- 
+		    Configuration for Microsoft.CodeAnalysis.BannedApiAnalyzers Analyzer
+			https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md
+			
+			Flags to ban specific APIs that are considered harmful or non-recommended are set here 
+			(if not set elsewhere in the project file or Directory.Build.props/targets files).
+		-->
+        <BanNonUtcDateApis Condition="'$(BanNonUtcDateApis)' == ''">true</BanNonUtcDateApis>
+    </PropertyGroup>
+	<ItemGroup>
+		<!--
+		    Include the banned API configuration file for Microsoft.CodeAnalysis.BannedApiAnalyzers if flag is set
+		-->
+        <AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.NonUtcDates.txt"
+                         Condition="$(BanNonUtcDateApis) == 'true'"
+                         Visible="false" />
+    </ItemGroup>
 </Project>
