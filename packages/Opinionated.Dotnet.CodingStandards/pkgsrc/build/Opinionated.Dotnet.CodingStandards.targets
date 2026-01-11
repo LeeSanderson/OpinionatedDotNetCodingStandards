@@ -35,6 +35,8 @@
         <BanNonUtcDateApis Condition="'$(BanNonUtcDateApis)' == ''">true</BanNonUtcDateApis>
         <BanInvariantCultureStringComparisonApis 
 	        Condition="'$(BanInvariantCultureStringComparisonApis)' == ''">true</BanInvariantCultureStringComparisonApis>
+        <BanEnumTryParseWithoutIgnoreCaseApis
+	        Condition="'$(BanEnumTryParseWithoutIgnoreCaseApis)' == ''">true</BanEnumTryParseWithoutIgnoreCaseApis>
     </PropertyGroup>
 	<ItemGroup>
 		<!--
@@ -45,6 +47,9 @@
                          Visible="false" />
 		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.InvariantCultureStringComparison.txt"
 		                 Condition="$(BanInvariantCultureStringComparisonApis) == 'true'"
+		                 Visible="false" />
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.EnumTryParseWithoutIgnoreCase.txt"
+		                 Condition="$(BanEnumTryParseWithoutIgnoreCaseApis) == 'true'"
 		                 Visible="false" />
     </ItemGroup>
 
