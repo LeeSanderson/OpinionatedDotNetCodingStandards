@@ -167,21 +167,4 @@
 		<!-- Publish the repository URL in the built .nupkg (in the NuSpec <Repository> element) -->
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 	</PropertyGroup>
-
-	<PropertyGroup>
-		<!-- Mark project as a test project if it's name ends with "Tests"-->
-		<IsTestProject Condition="('$(IsTestProject)' == '') AND ($(MSBuildProjectName.EndsWith('Tests')))">true</IsTestProject>
-	</PropertyGroup>
-
-	<ItemGroup>
-		<!--
-			Add an InternalsVisibleTo attribute to non-test projects to allow test projects to access internal members of 
-			the main project - assuming the test project is named {ProjectName}.Tests
-		-->
-		<AssemblyAttribute 
-			Include="System.Runtime.CompilerServices.InternalsVisibleTo"
-			Condition="'$(IsTestProject)' != 'true'">
-			<_Parameter1>$(MSBuildProjectName).Tests</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
 </Project>
