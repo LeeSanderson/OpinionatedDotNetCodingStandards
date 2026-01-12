@@ -8,7 +8,7 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
 {
     [Fact]
-    public async Task IgnoreNameCanBeSimplifiedAsOnlyErrorsInIDE()
+    public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIDE()
     {
         using var project = new ProjectBuilder(fixture, testOutputHelper);
         await project.AddCsprojFile();
