@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.Helpers;
 
@@ -33,7 +33,7 @@ internal sealed class BuildOutputFile
 
         public override string ToString()
         {
-            return $"{this.Level}:{this.RuleId} {this.Message}";
+            return $"{Level}:{RuleId} {Message}";
         }
     }
 
@@ -44,7 +44,7 @@ internal sealed class BuildOutputFile
 
         public override string ToString()
         {
-            return this.Text ?? "";
+            return Text ?? "";
         }
     }
 }

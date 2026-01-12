@@ -1,4 +1,4 @@
-﻿namespace Opinionated.DotNet.CodingStandards.Tests;
+namespace Opinionated.DotNet.CodingStandards.Tests;
 
 public class UnitTest1
 {
