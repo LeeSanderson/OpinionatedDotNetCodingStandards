@@ -50,4 +50,17 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
 
         buildOutput.HasError("RS0030").ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task BanRoundWithoutMidpointRoundingArgument()
+    {
+        using var project = new ProjectBuilder(fixture, testOutputHelper);
+        await project.AddCsprojFile();
+
+        // Replace with Math.Round(0.4, MidpointRounding.ToZero)
+        await project.AddFile("sample.cs", "_ = Math.Round(0.4);");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeTrue();
+    }
 }

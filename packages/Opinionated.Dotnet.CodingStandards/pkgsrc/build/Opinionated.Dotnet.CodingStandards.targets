@@ -37,6 +37,8 @@
 	        Condition="'$(BanInvariantCultureStringComparisonApis)' == ''">true</BanInvariantCultureStringComparisonApis>
         <BanEnumTryParseWithoutIgnoreCaseApis
 	        Condition="'$(BanEnumTryParseWithoutIgnoreCaseApis)' == ''">true</BanEnumTryParseWithoutIgnoreCaseApis>
+		<BanRoundWithoutMidpointRoundingApis 
+			Condition="'$(BanRoundWithoutMidpointRoundingApis)' == ''">true</BanRoundWithoutMidpointRoundingApis>
     </PropertyGroup>
 	<ItemGroup>
 		<!--
@@ -50,6 +52,9 @@
 		                 Visible="false" />
 		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.EnumTryParseWithoutIgnoreCase.txt"
 		                 Condition="$(BanEnumTryParseWithoutIgnoreCaseApis) == 'true'"
+		                 Visible="false" />
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.RoundWithoutMidpointRounding.txt"
+		                 Condition="$(BanRoundWithoutMidpointRoundingApis) == 'true'"
 		                 Visible="false" />
     </ItemGroup>
 
