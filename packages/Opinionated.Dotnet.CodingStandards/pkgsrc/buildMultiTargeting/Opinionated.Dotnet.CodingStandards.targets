@@ -1,0 +1,3 @@
+<Project>
+	<Import Project="$(MSBuildThisFileDirectory)\..\build\Opinionated.Dotnet.CodingStandards.targets" />
+</Project>
