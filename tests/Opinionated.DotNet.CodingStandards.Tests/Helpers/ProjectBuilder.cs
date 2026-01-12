@@ -45,34 +45,13 @@ internal sealed class ProjectBuilder : IDisposable
         // File.Copy(Path.Combine(PathHelpers.GetRootDirectory(), "global.json"), this._directory.GetPath("global.json"));
     }
 
-    public async ValueTask AddFile(string relativePath, string content)
-    {
+    public async ValueTask AddFile(string relativePath, string content) =>
         await File.WriteAllTextAsync(this._directory.GetPath(relativePath), content);
-    }
 
     public ValueTask AddCsprojFile(Dictionary<string, string>? properties = null, Dictionary<string, string>? packageReferences = null)
     {
-        var propertyElement = new XElement("PropertyGroup");
-        if (properties != null)
-        {
-            foreach (var prop in properties)
-            {
-                propertyElement.Add(new XElement(prop.Key, prop.Value));
-            }
-        }
-
-        var referencesElement = new XElement("ItemGroup");
-        if (packageReferences != null)
-        {
-            foreach (var reference in packageReferences)
-            {
-                var packageReference = new XElement("PackageReference");
-                packageReference.SetAttributeValue("Include", reference.Key);
-                packageReference.SetAttributeValue("Version", reference.Value);
-
-                referencesElement.Add(packageReference);
-            }
-        }
+        var propertyElement = BuildPropertyElement(properties);
+        var referencesElement = BuildReferencesElement(packageReferences);
 
         var content = $"""
                        <Project Sdk="Microsoft.NET.Sdk">
@@ -93,6 +72,38 @@ internal sealed class ProjectBuilder : IDisposable
                        """;
 
         return AddFile(this._directory.GetPath("test.csproj"), content);
+    }
+
+    private static XElement BuildReferencesElement(Dictionary<string, string>? packageReferences)
+    {
+        var referencesElement = new XElement("ItemGroup");
+        if (packageReferences != null)
+        {
+            foreach (var reference in packageReferences)
+            {
+                var packageReference = new XElement("PackageReference");
+                packageReference.SetAttributeValue("Include", reference.Key);
+                packageReference.SetAttributeValue("Version", reference.Value);
+
+                referencesElement.Add(packageReference);
+            }
+        }
+
+        return referencesElement;
+    }
+
+    private static XElement BuildPropertyElement(Dictionary<string, string>? properties)
+    {
+        var propertyElement = new XElement("PropertyGroup");
+        if (properties != null)
+        {
+            foreach (var prop in properties)
+            {
+                propertyElement.Add(new XElement(prop.Key, prop.Value));
+            }
+        }
+
+        return propertyElement;
     }
 
     public void Dispose()
@@ -118,6 +129,11 @@ internal sealed class ProjectBuilder : IDisposable
 
         this._testOutputHelper.WriteLine("Process exit code: " + result.ExitCode);
 
+        return await this.ReadBuildOutputFile();
+    }
+
+    private async Task<BuildOutputFile> ReadBuildOutputFile()
+    {
         var bytes = await File.ReadAllBytesAsync(this._directory.GetPath(BuildOutputFileName));
         var buildOutputFile = JsonSerializer.Deserialize<BuildOutputFile>(bytes) ?? throw new InvalidOperationException("The sarif file is invalid");
 

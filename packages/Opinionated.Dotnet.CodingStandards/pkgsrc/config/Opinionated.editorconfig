@@ -15,6 +15,9 @@ dotnet_diagnostic.IDE0001.severity = warning
 dotnet_diagnostic.IDE0002.severity = suggestion
 
 # IDE0003: Remove this or Me qualification
+# Although this is enabled as a warning, for performance reasons this is disabled in the build
+# See: https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/overview?tabs=net-10#enable-on-build
+# And: https://github.com/dotnet/roslyn/blob/9f87b444da9c48a4d492b19f8337339056bf2b95/src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs#L95
 dotnet_diagnostic.IDE0003.severity = warning
 
 # IDE0038: Use pattern matching to avoid is check followed by a cast (without variable)

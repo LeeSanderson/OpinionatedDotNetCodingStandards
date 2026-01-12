@@ -13,8 +13,5 @@ csharp_insert_final_newline = false
 # where csharp_new_line_before_members_in_object_initializers would still inline object initializers
 resharper_wrap_object_and_collection_initializer_style = chop_always
 
-# Already covered by IDE0003 in Opinionated.editorconfig
-resharper_arrange_this_qualifier_highlighting=none
-
 # Downgrade from suggestion to hint - common from injected dependencies
-resharper_class_never_instantiated_global_highlighting=himt
+resharper_class_never_instantiated_global_highlighting=hint

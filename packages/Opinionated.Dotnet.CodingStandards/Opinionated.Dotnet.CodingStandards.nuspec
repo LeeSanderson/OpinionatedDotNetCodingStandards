@@ -13,7 +13,7 @@
 		<icon>icon.png</icon>
 		<repository type="git" url="$RepositoryUrl$" commit="$RepositoryCommit$" branch="$RepositoryBranch$" />
 		<dependencies>
-			<dependency id="Meziantou.Analyzer" version="2.0.275" />
+			<dependency id="Meziantou.Analyzer" version="2.0.276" />
 			<dependency id="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="4.14.0" />
 			<dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.101" />
 			<dependency id="StyleCop.Analyzers" version="1.2.0-beta.556" />

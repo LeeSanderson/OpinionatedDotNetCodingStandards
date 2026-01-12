@@ -2,7 +2,7 @@
 
 public class UnitTest1
 {
-    private const int I = 1;
+    private readonly int _i = 1;
 
     [Fact]
     public void Test1()
@@ -18,6 +18,6 @@ public class UnitTest1
         // Don't use Enum.TryParse without ignoreCase parameter
         Assert.True(Enum.TryParse<StringComparison>("StringComparison.Ordinal", true, out _));
 
-        Assert.Equal(1, I);
+        Assert.Equal(1, this._i);
     }
 }
