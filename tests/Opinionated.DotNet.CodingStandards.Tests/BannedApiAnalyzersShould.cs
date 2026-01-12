@@ -63,4 +63,17 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
 
         buildOutput.HasError("RS0030").ShouldBeTrue();
     }
+
+    [Fact]
+    public async Task BanUseOfCultureInfoConstructor()
+    {
+        using var project = new ProjectBuilder(fixture, testOutputHelper);
+        await project.AddCsprojFile();
+
+        // Replace with CultureInfo.GetCultureInfo("en-UK")
+        await project.AddFile("sample.cs", "_ = new System.Globalization.CultureInfo(\"en-UK\");");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeTrue();
+    }
 }
