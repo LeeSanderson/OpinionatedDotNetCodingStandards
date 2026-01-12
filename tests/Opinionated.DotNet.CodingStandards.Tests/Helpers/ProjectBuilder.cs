@@ -12,14 +12,14 @@ internal sealed class ProjectBuilder : IDisposable
     private readonly TemporaryDirectory _directory;
     private readonly ITestOutputHelper _testOutputHelper;
 
-    public string RootFolder => this._directory.FullPath;
+    public string RootFolder => _directory.FullPath;
 
     public ProjectBuilder(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     {
-        this._testOutputHelper = testOutputHelper;
+        _testOutputHelper = testOutputHelper;
 
-        this._directory = TemporaryDirectory.Create();
-        this._directory.CreateTextFile(
+        _directory = TemporaryDirectory.Create();
+        _directory.CreateTextFile(
             "NuGet.config",
             $"""
                         <configuration>
@@ -46,7 +46,7 @@ internal sealed class ProjectBuilder : IDisposable
     }
 
     public async ValueTask AddFile(string relativePath, string content) =>
-        await File.WriteAllTextAsync(this._directory.GetPath(relativePath), content);
+        await File.WriteAllTextAsync(_directory.GetPath(relativePath), content);
 
     public ValueTask AddCsprojFile(Dictionary<string, string>? properties = null, Dictionary<string, string>? packageReferences = null)
     {
@@ -71,7 +71,7 @@ internal sealed class ProjectBuilder : IDisposable
                        </Project>
                        """;
 
-        return AddFile(this._directory.GetPath("test.csproj"), content);
+        return AddFile(_directory.GetPath("test.csproj"), content);
     }
 
     private static XElement BuildReferencesElement(Dictionary<string, string>? packageReferences)
@@ -119,27 +119,27 @@ internal sealed class ProjectBuilder : IDisposable
     private async Task<BuildOutputFile> ExecuteDotnetCommandAndGetOutput(string command, string[]? buildArguments = null)
     {
         var result = await Cli.Wrap("dotnet")
-            .WithWorkingDirectory(this._directory.FullPath)
+            .WithWorkingDirectory(_directory.FullPath)
             .WithArguments([command, .. (buildArguments ?? [])])
             .WithEnvironmentVariables(env => env.Set("CI", null).Set("GITHUB_ACTIONS", null))
-            .WithStandardOutputPipe(PipeTarget.ToDelegate(this._testOutputHelper.WriteLine))
-            .WithStandardErrorPipe(PipeTarget.ToDelegate(this._testOutputHelper.WriteLine))
+            .WithStandardOutputPipe(PipeTarget.ToDelegate(_testOutputHelper.WriteLine))
+            .WithStandardErrorPipe(PipeTarget.ToDelegate(_testOutputHelper.WriteLine))
             .WithValidation(CommandResultValidation.None)
             .ExecuteAsync();
 
-        this._testOutputHelper.WriteLine("Process exit code: " + result.ExitCode);
+        _testOutputHelper.WriteLine("Process exit code: " + result.ExitCode);
 
-        return await this.ReadBuildOutputFile();
+        return await ReadBuildOutputFile();
     }
 
     private async Task<BuildOutputFile> ReadBuildOutputFile()
     {
-        var bytes = await File.ReadAllBytesAsync(this._directory.GetPath(BuildOutputFileName));
+        var bytes = await File.ReadAllBytesAsync(_directory.GetPath(BuildOutputFileName));
         var buildOutputFile = JsonSerializer.Deserialize<BuildOutputFile>(bytes) ?? throw new InvalidOperationException("The sarif file is invalid");
 
-        // this.AppendAdditionalResult(buildOutputFile);
+        // AppendAdditionalResult(buildOutputFile);
 
-        this._testOutputHelper.WriteLine("Sarif result:\n" + string.Join("\n", buildOutputFile.AllResults().Select(r => r.ToString())));
+        _testOutputHelper.WriteLine("Sarif result:\n" + string.Join("\n", buildOutputFile.AllResults().Select(r => r.ToString())));
         return buildOutputFile;
     }
 }
