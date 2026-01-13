@@ -21,7 +21,7 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     [Fact]
     public async Task NotBanNonUtcDatesWhenPropertyDisabled()
     {
-        using var project = await CreateProjectBuilder(properties: new Dictionary<string, string> { { "BanNonUtcDateApis", "false" } });
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanNonUtcDateApis", Value: "false")]);
         await project.AddFile("sample.cs", "_ = System.DateTime.Now;");
         var buildOutput = await project.BuildAndGetOutput();
 
@@ -87,7 +87,7 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     [Fact]
     public async Task BanUseOfNewtonSoftJson()
     {
-        using var project = await CreateProjectBuilder(packageReferences: new Dictionary<string, string> { { "Newtonsoft.Json", "13.0.4" } });
+        using var project = await CreateProjectBuilder(packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
 
         // Replace with System.Text.Json.JsonSerializer.Serialize("test");
         await project.AddFile("sample.cs", """_ = Newtonsoft.Json.JsonConvert.SerializeObject("test");""");

@@ -48,7 +48,9 @@ internal sealed class ProjectBuilder : IDisposable
     public async ValueTask AddFile(string relativePath, string content) =>
         await File.WriteAllTextAsync(_directory.GetPath(relativePath), content);
 
-    public ValueTask AddCsprojFile(Dictionary<string, string>? properties = null, Dictionary<string, string>? packageReferences = null)
+    public ValueTask AddCsprojFile(
+        (string Name, string Value)[]? properties = null,
+        (string Name, string Version)[]? packageReferences = null)
     {
         var propertyElement = BuildPropertyElement(properties);
         var referencesElement = BuildReferencesElement(packageReferences);
@@ -74,7 +76,7 @@ internal sealed class ProjectBuilder : IDisposable
         return AddFile(_directory.GetPath("test.csproj"), content);
     }
 
-    private static XElement BuildReferencesElement(Dictionary<string, string>? packageReferences)
+    private static XElement BuildReferencesElement((string Name, string Version)[]? packageReferences)
     {
         var referencesElement = new XElement("ItemGroup");
         if (packageReferences != null)
@@ -82,8 +84,8 @@ internal sealed class ProjectBuilder : IDisposable
             foreach (var reference in packageReferences)
             {
                 var packageReference = new XElement("PackageReference");
-                packageReference.SetAttributeValue("Include", reference.Key);
-                packageReference.SetAttributeValue("Version", reference.Value);
+                packageReference.SetAttributeValue("Include", reference.Name);
+                packageReference.SetAttributeValue("Version", reference.Version);
 
                 referencesElement.Add(packageReference);
             }
@@ -92,14 +94,14 @@ internal sealed class ProjectBuilder : IDisposable
         return referencesElement;
     }
 
-    private static XElement BuildPropertyElement(Dictionary<string, string>? properties)
+    private static XElement BuildPropertyElement((string Name, string Value)[]? properties)
     {
         var propertyElement = new XElement("PropertyGroup");
         if (properties != null)
         {
             foreach (var prop in properties)
             {
-                propertyElement.Add(new XElement(prop.Key, prop.Value));
+                propertyElement.Add(new XElement(prop.Name, prop.Value));
             }
         }
 
