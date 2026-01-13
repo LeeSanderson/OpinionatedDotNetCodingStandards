@@ -6,6 +6,7 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 
 [Collection(nameof(PackageCollection))]
 public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
+    : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
     public async Task BanNonUtcDates()
@@ -93,14 +94,5 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("RS0030").ShouldBeTrue();
-    }
-
-    private async Task<ProjectBuilder> CreateProjectBuilder(
-        Dictionary<string, string>? properties = null,
-        Dictionary<string, string>? packageReferences = null)
-    {
-        var project = new ProjectBuilder(fixture, testOutputHelper);
-        await project.AddCsprojFile(properties, packageReferences);
-        return project;
     }
 }

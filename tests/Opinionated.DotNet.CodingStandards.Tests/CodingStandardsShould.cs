@@ -6,12 +6,12 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 
 [Collection(nameof(PackageCollection))]
 public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
+    : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
     public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIDE()
     {
-        using var project = new ProjectBuilder(fixture, testOutputHelper);
-        await project.AddCsprojFile();
+        using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
