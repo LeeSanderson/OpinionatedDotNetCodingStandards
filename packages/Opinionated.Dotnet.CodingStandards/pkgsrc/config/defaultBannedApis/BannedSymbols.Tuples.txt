@@ -1,0 +1,8 @@
+T:System.Tuple`1;Use System.ValueTuple`1
+T:System.Tuple`2;Use System.ValueTuple`2
+T:System.Tuple`3;Use System.ValueTuple`3
+T:System.Tuple`4;Use System.ValueTuple`4
+T:System.Tuple`5;Use System.ValueTuple`5
+T:System.Tuple`6;Use System.ValueTuple`6
+T:System.Tuple`7;Use System.ValueTuple`7
+T:System.Tuple`8;Use System.ValueTuple`8

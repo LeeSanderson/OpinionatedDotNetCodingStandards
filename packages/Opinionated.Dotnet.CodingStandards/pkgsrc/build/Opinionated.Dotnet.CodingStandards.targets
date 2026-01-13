@@ -41,6 +41,8 @@
 			Condition="'$(BanRoundWithoutMidpointRoundingApis)' == ''">true</BanRoundWithoutMidpointRoundingApis>
 		<BanUseOfCultureInfoConstructorApis 
 			Condition="'$(BanUseOfCultureInfoConstructorApis)' == ''">true</BanUseOfCultureInfoConstructorApis>
+		<BanUseOfTupleInFavourOfValueTupleApis 
+			Condition="'$(BanUseOfTupleInFavourOfValueTupleApis)' == ''">true</BanUseOfTupleInFavourOfValueTupleApis>
     </PropertyGroup>
 	<ItemGroup>
 		<!--
@@ -61,6 +63,9 @@
 		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.CreateCultureInfo.txt"
 		                 Condition="$(BanUseOfCultureInfoConstructorApis) == 'true'"
 		                 Visible="false" />
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.Tuples.txt"
+		                 Condition="$(BanUseOfTupleInFavourOfValueTupleApis) == 'true'"
+		                 Visible="false" />						 
     </ItemGroup>
 
 
