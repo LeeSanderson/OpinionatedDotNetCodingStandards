@@ -43,6 +43,8 @@
 			Condition="'$(BanUseOfCultureInfoConstructorApis)' == ''">true</BanUseOfCultureInfoConstructorApis>
 		<BanUseOfTupleInFavourOfValueTupleApis 
 			Condition="'$(BanUseOfTupleInFavourOfValueTupleApis)' == ''">true</BanUseOfTupleInFavourOfValueTupleApis>
+		<BanUseOfNewtonsoftJsonApis 
+			Condition="'$(BanUseOfNewtonsoftJsonApis)' == ''">true</BanUseOfNewtonsoftJsonApis>
     </PropertyGroup>
 	<ItemGroup>
 		<!--
@@ -65,6 +67,9 @@
 		                 Visible="false" />
 		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.Tuples.txt"
 		                 Condition="$(BanUseOfTupleInFavourOfValueTupleApis) == 'true'"
+		                 Visible="false" />						 
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\..\config\defaultBannedApis\BannedSymbols.NewtonsoftJson.txt"
+		                 Condition="$(BanUseOfNewtonsoftJsonApis) == 'true'"
 		                 Visible="false" />						 
     </ItemGroup>
 
