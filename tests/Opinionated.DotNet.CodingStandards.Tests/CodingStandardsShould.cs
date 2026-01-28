@@ -17,7 +17,7 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
             "Program.cs",
             """
             namespace test;
-            public class Program
+            public static class Program
             {
                 private readonly int _i = 1;
                 public int Get() => this._i;
@@ -71,5 +71,27 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
 
         // Convert to file-scoped namespace should now be a warning instead of an error
         buildOutput.HasWarning("IDE0161").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task RequireVarInsteadOfExplicitType()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main() 
+                {
+                    int i = 1;
+                    return i;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("IDE0007").ShouldBeTrue();
     }
 }
