@@ -1,6 +1,6 @@
 # Azure DevOps CI Pipeline for Opinionated.DotNet.CodingStandards
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 
 pr:
   autoCancel: true

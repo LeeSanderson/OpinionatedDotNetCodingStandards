@@ -11,7 +11,7 @@ public sealed class PackageFixture : IAsyncLifetime
 {
     private readonly TemporaryDirectory _packageDirectory = TemporaryDirectory.Create();
 
-    public string PackageDirectory => this._packageDirectory.FullPath;
+    public string PackageDirectory => _packageDirectory.FullPath;
 
     public async Task InitializeAsync()
     {
@@ -22,7 +22,7 @@ public sealed class PackageFixture : IAsyncLifetime
                 "Opinionated.DotNet.CodingStandards",
                 "Opinionated.DotNet.CodingStandards.csproj");
 
-        string[] args = ["pack", projectPath, "-p:NuspecProperties=version=999.9.9", "--output", this._packageDirectory.FullPath];
+        string[] args = ["pack", projectPath, "-p:NuspecProperties=version=999.9.9", "--output", _packageDirectory.FullPath];
         var output = new StringBuilder();
         var result = await Cli.Wrap("dotnet")
             .WithArguments(args)
@@ -39,7 +39,7 @@ public sealed class PackageFixture : IAsyncLifetime
 
     public Task DisposeAsync()
     {
-        this._packageDirectory.Dispose();
+        _packageDirectory.Dispose();
         return Task.CompletedTask;
     }
 }
