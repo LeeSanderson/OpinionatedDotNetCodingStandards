@@ -18,7 +18,7 @@ trigger:
 variables:
   buildConfiguration: 'Release'
   dotnetSdkVersion: '10.x'
-  solutionFileName: 'Opinionated.DotNet.CodingStandards.slnx'
+  solutionFileName: '**/Opinionated.DotNet.CodingStandards.slnx'
   DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
   DOTNET_CLI_TELEMETRY_OPTOUT: true
 
