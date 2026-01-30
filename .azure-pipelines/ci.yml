@@ -53,6 +53,12 @@ stages:
         echo "Package version check completed"
       displayName: 'Check for outdated packages'
 
+    - script: |
+        echo "Checking NuGet dependencies match packages versions..."
+        dotnet ./scripts/CheckNuGetDependenciesMatchProps.cs
+        echo "NuGet dependencies version check completed"
+      displayName: 'Check for outdated dependencies in NuGet package'
+
     - task: DotNetCoreCLI@2
       displayName: 'Build solution'
       inputs:
