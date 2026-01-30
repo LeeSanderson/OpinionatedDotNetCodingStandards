@@ -1,0 +1,79 @@
+# Azure DevOps CI Pipeline for Opinionated.DotNet.CodingStandards
+pool:
+  vmImage: 'ubuntu-latest'
+
+pr:
+  autoCancel: true
+  branches:
+    include:
+      - "*"
+  drafts: false
+
+trigger:
+  batch: true
+  branches:
+    include:
+      - "*"
+
+variables:
+  buildConfiguration: 'Release'
+  dotnetSdkVersion: '10.x'
+  solutionFileName: 'Opinionated.DotNet.CodingStandards.sln'
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
+stages:
+- stage: Build
+  displayName: 'Build and Test'
+  jobs:
+  - job: BuildJob
+    displayName: 'Build, Test, and Pack'
+    steps:
+    - task: UseDotNet@2
+      displayName: 'Install .NET SDK'
+      inputs:
+        version: $(dotnetSdkVersion)
+        includePreviewVersions: true
+
+    - script: |
+        echo "Installing dotnet-outdated global tool..."
+        dotnet tool install --global dotnet-outdated-tool || dotnet tool update --global dotnet-outdated-tool
+        echo "dotnet-outdated installation completed"
+      displayName: 'Install dotnet-outdated global tool'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Restore NuGet packages'
+      inputs:
+        command: 'restore'
+        projects: '$(solutionFileName)'
+
+    - script: |
+        echo "Checking for outdated packages..."
+        dotnet outdated $(solutionFileName) --fail-on-updates
+        echo "Package version check completed"
+      displayName: 'Check for outdated packages'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Build solution'
+      inputs:
+        command: 'build'
+        projects: '$(solutionFileName)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Run tests'
+      inputs:
+        command: 'test'
+        projects: '$(solutionFileName)'
+        arguments: '--configuration $(buildConfiguration) --no-build'
+        publishTestResults: true
+
+    - task: DotNetCoreCLI@2
+      displayName: 'Pack NuGet package'
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(solutionFileName)'
+        configuration: $(buildConfiguration)
+        nobuild: true
+        versioningScheme: 'off'
+        outputDir: '$(Build.ArtifactStagingDirectory)/packages'
