@@ -21,10 +21,10 @@ clean sample project against it, and the SARIF output contains no results.
 
 ## Acceptance criteria
 
-- [ ] A new `Should`-style test builds a compliant sample project against the packed package
-- [ ] The test asserts the SARIF output contains zero diagnostics (no error, warning, or note results from the package's rules)
-- [ ] The test passes against the current ruleset
-- [ ] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers
+- [x] A new `Should`-style test builds a compliant sample project against the packed package
+- [x] The test asserts the SARIF output contains zero diagnostics (no error, warning, or note results from the package's rules)
+- [x] The test passes against the current ruleset
+- [x] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers
 
 ## Blocked by
 
