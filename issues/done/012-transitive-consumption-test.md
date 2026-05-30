@@ -21,10 +21,10 @@ expected diagnostic, confirming the standards flow through the dependency graph.
 
 ## Acceptance criteria
 
-- [ ] A test constructs a transitive reference chain to the packed package
-- [ ] The test asserts a known rule still fires in the downstream project that references the package only transitively
-- [ ] The test passes, validating the `buildTransitive` wiring
-- [ ] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers (extending the builder if needed to add a transitive project)
+- [x] A test constructs a transitive reference chain to the packed package
+- [x] The test asserts a known rule still fires in the downstream project that references the package only transitively
+- [x] The test passes, validating the `buildTransitive` wiring
+- [x] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers (extended `AddFile` to create parent directories, enabling subdirectory project layouts)
 
 ## Blocked by
 

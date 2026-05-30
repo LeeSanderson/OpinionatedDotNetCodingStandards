@@ -45,8 +45,12 @@ internal sealed class ProjectBuilder : IDisposable
         // File.Copy(Path.Combine(PathHelpers.GetRootDirectory(), "global.json"), this._directory.GetPath("global.json"));
     }
 
-    public async ValueTask AddFile(string relativePath, string content) =>
-        await File.WriteAllTextAsync(_directory.GetPath(relativePath), content);
+    public async ValueTask AddFile(string relativePath, string content)
+    {
+        var path = _directory.GetPath(relativePath);
+        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        await File.WriteAllTextAsync(path, content);
+    }
 
     public ValueTask AddCsprojFile(
         (string Name, string Value)[]? properties = null,
