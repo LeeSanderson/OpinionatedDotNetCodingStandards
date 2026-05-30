@@ -26,22 +26,21 @@ From "A Philosophy of Software Design":
 └─────────────────────────────────┘
 ```
 
-## Examples in this codebase
+## Examples to imitate (.NET shapes)
 
 **Deep modules to imitate:**
 
-- `RacingResultParser.Parse(string html) → Task<RaceResult>` — one entry point, hides all the `HtmlNodeFinder` selectors, runner parsing, status normalization, and length-per-second scaling.
-- `RaceCardParser.Parse(string html) → Task<RaceCard>` — same shape.
-- `IRacingDataDownloader` — four methods that hide the URL construction, HTML loading, retry handling, and node-finding for both results and racecards.
-- `UpdateResultsCommandHandler.RunAsync(UpdateResultsOptions)` — one method that hides month-splitting, existing-file detection, partial backfill, and CSV serialization.
+- A parser with a single entry point — `Parse(string input) → Task<TResult>` — that hides all the selectors, sub-parsing, and normalization behind one method.
+- An external-dependency client interface (e.g. `IClient`) whose few methods hide URL construction, transport, retry handling, and deserialization.
+- A command handler — `RunAsync(TOptions options)` — whose one public method hides input validation, branching, existing-state detection, and output serialization.
 
 **Watch for shallow drift:**
 
-- Per-field getters on a parser (`GetCourseName(html)`, `GetGoing(html)`, `GetRunners(html)`) — the interface becomes as wide as the data model; merge into a single `Parse`.
+- Per-field getters on a parser (`GetName(input)`, `GetDate(input)`, `GetItems(input)`) — the interface becomes as wide as the data model; merge into a single `Parse`.
 - Helper classes that exist only to be called by one caller and only forward to a single library call — fold them into the caller or deepen them with the surrounding logic.
 
 When designing or reviewing an interface, ask:
 
 - Can I reduce the number of methods?
-- Can I simplify the parameters? (Prefer an options record like `UpdateResultsOptions` over six positional args.)
-- Can I hide more complexity inside? (Could the caller stop knowing about `HtmlNodeFinder`, `RaceCardRunnerParser`, etc.?)
+- Can I simplify the parameters? (Prefer an options record over six positional args.)
+- Can I hide more complexity inside? (Could the caller stop knowing about the internal helpers entirely?)

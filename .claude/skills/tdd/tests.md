@@ -1,45 +1,41 @@
 # Good and Bad Tests
 
-This project's C# test suite uses **xUnit + FluentAssertions + NSubstitute + Verify** (snapshot testing). Tests are named `{Class}Should.{Behavior}` (e.g. `UpdateResultsCommandHandlerShould.BackFillDataForThe11ThWhenGetting2DaysOfDataAndTodayIs13ThAndHaveExistingDataFor12Th`). The Python side under `Data/` runs as notebooks/scripts and is mostly tested by running the full `run.ps1` pipeline.
+A well-structured .NET test suite uses **xUnit** with an assertion library, a mocking library used only at boundaries, and (optionally) snapshot testing for rich output. Tests are conventionally named `{Class}Should.{Behavior}` (e.g. `ImportCommandHandlerShould.SkipDownloadWhenOutputAlreadyExists`).
 
 ## Good Tests
 
-**Integration-style**: Drive a command handler through its public `RunAsync` entry point with mocked system boundaries (`IFileSystem`, `IClock`, `IRacingDataDownloader`), then assert on the observable side-effect — the CSV content captured by `MockFileSystemBuilder`.
+**Integration-style**: Drive a command handler through its public `RunAsync` entry point with mocked system boundaries (`IFileSystem`, a clock, an external client), then assert on the observable side-effect — the content captured by the faked file system.
 
 ```csharp
-// GOOD: drives UpdateResultsCommandHandler through its public entry point
+// GOOD: drives the handler through its public entry point
 [Fact]
-public async Task DownloadResultsWhenNoResultsExist()
+public async Task ProducesOutputWhenNoneExists()
 {
-    var result = await ExecuteHandler(minimumPeriodInDays: 1);
+    var result = await ExecuteHandler();
 
     result.Should().Be(ExitCodes.Success);
-    await Verify(_mockFileSystemBuilder.GetContent(ResultsFileForMay2022));
+    await Verify(_fakeFileSystem.GetContent(OutputPath));
 }
 ```
 
 Characteristics:
 
-- Calls the real `UpdateResultsCommandHandler.RunAsync` — no internal types mocked
-- Mocks only the system boundaries (`IClock`, `IFileSystem`, `IRacingDataDownloader`)
-- Asserts on the CSV content actually written (via `Verify` snapshot), not on which collaborators were called
-- Would survive a refactor that splits or merges private helpers like `UpdateMonthlyResultsFile`
+- Calls the real handler's `RunAsync` — no internal types mocked
+- Mocks only the system boundaries (clock, file system, external client)
+- Asserts on the content actually written (e.g. via a `Verify` snapshot), not on which collaborators were called
+- Would survive a refactor that splits or merges private helpers
 
-For pure parsers (`RacingResultParser`, `RaceCardParser`, `RunnerParser`), feed real fixture HTML (`FakeData.BathRaceResultFor1730RaceOn20220511`) and assert on the parsed `RaceResult` / `RaceCard`. The parser is a deep module — drive it through `Parse`, not its private node-finding helpers.
+For pure parsers/calculators, feed real fixture input and assert on the returned result. A parser is a deep module — drive it through `Parse`, not its private helpers.
 
-For Python feature builders (`HorseStatsBuilder.py`, `JockeyStatsBuilder.py`), prefer tests that load a small fixture `Race_Features.csv`, run the script-as-function, and assert on the resulting DataFrame shape/values:
+```csharp
+// GOOD: exercises the real parser, asserts on the parsed result
+[Fact]
+public async Task ParsesAllItems()
+{
+    var result = await new ItemParser().Parse(FixtureData.SamplePayload);
 
-```python
-# GOOD: exercises real pandas pipeline, asserts on output
-def test_horse_stats_builder_carries_forward_avg_finishing_position():
-    races = pd.read_csv("fixtures/race_features_small.csv")
-    races["Off"] = pd.to_datetime(races["Off"])
-
-    horse_stats = build_horse_stats(races)
-
-    row = horse_stats.loc[horse_stats["HorseId"] == 12345].iloc[0]
-    assert row["NumberOfPriorRaces"] == 3
-    assert row["AvgRelFinishingPosition"] == pytest.approx(0.42, abs=0.01)
+    result.Items.Should().HaveCount(8);
+}
 ```
 
 ## Bad Tests
@@ -47,42 +43,32 @@ def test_horse_stats_builder_carries_forward_avg_finishing_position():
 **Implementation-detail tests**: Coupled to internal collaborators or the way the handler is wired together.
 
 ```csharp
-// BAD: asserts on which URLs the downloader was asked for
+// BAD: asserts on how many times an internal collaborator was called
 [Fact]
-public async Task UpdateResults_CallsDownloaderForEachMonth()
+public async Task Import_CallsClientForEachPage()
 {
-    await ExecuteHandler(minimumPeriodInDays: 60);
+    await ExecuteHandler();
 
-    await _mockRacingDataDownloader.Received(2)
-        .GetResultUrls(Arg.Any<DateOnly>(), Arg.Any<DateOnly>());
+    await _fakeClient.Received(2)
+        .ListItemUrls(Arg.Any<DateOnly>(), Arg.Any<DateOnly>());
 }
 ```
 
 Red flags:
 
 - Asserts on call counts/arguments of an internal collaborator (`Received(2)`, `DidNotReceive()` on something that *isn't* a true system boundary)
-- Test name describes HOW (calls downloader twice) not WHAT (backfills missing days)
-- Test breaks if `UpdateResultsCommandHandler` switches from per-month iteration to a single range call, even though the resulting CSV is identical
+- Test name describes HOW (calls the client twice) not WHAT (imports the missing items)
+- Test breaks if the handler switches from per-page iteration to a single-range call, even though the produced output is identical
 
 ```csharp
 // BAD: bypasses the handler to verify behavior
 [Fact]
-public async Task UpdateResults_ParsesRaceResultsCorrectly()
+public async Task Import_ParsesItemsCorrectly()
 {
-    var parser = new RacingResultParser();
-    var result = await parser.Parse(FakeData.BathRaceResultFor1730RaceOn20220511);
-    result.Runners.Should().HaveCount(8);
+    var parser = new ItemParser();
+    var result = await parser.Parse(FixtureData.SamplePayload);
+    result.Items.Should().HaveCount(8);
 }
 ```
 
-This is fine **as a parser test**, but not as an "UpdateResults" test — verify the handler's behavior through the file it produces, not by independently invoking the parser.
-
-```python
-# BAD: asserts on a private intermediate variable
-def test_horse_stats_uses_groupby_first():
-    races = load_fixture()
-    grouped = races.groupby("HorseId").first()  # reaching inside the builder
-    assert len(grouped) == 5
-```
-
-The test names a private step of the implementation. Test what `build_horse_stats` returns, not how it gets there.
+This is fine **as a parser test**, but not as an "Import" test — verify the handler's behavior through the output it produces, not by independently invoking the parser.

@@ -49,15 +49,11 @@ Use the `tdd` skill to drive the change red-green-refactor.
 
 Before committing, run and fix any failures:
 
-### After C# changes
 ```powershell
 dotnet build && dotnet test
 ```
 
-### After Python utility changes
-```powershell
-python -m pytest Data/utils/ Data/algorithms/ Data/scripts/
-```
+If the solution has a `dotnet format` (or analyzer/style) gate, run it too and fix any violations before committing.
 
 ## 6. Close the issue
 

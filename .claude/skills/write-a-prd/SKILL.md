@@ -7,10 +7,11 @@ This skill will be invoked when the user wants to create a PRD. You may skip ste
 
 ## Project context
 
-PRDs in this repo describe changes to the two-stage racing-data pipeline:
+This is a .NET solution. PRDs describe changes that typically cut across:
 
-- C# extraction stage (`RacePredictor.Core`, `RaceDataDownloader`) — domain models, parsers, command handlers under `RaceDataDownloader/Commands/<Verb>/`.
-- Python ML stage (`Data/*.py`) — feature engineering and linear-regression prediction over CSVs produced by the C# stage.
+- Domain/core logic — types, services, and parsers (often in a `*.Core` or domain project).
+- Application/entry layer — command handlers, API endpoints, or hosted services that orchestrate the domain.
+- Tests — paired test projects (xUnit) that exercise the behavior.
 
 The PRD lives at `issues/prd.md`. Vertical-slice issues that break it down live alongside as `issues/NNN-*.md`.
 
@@ -18,15 +19,15 @@ The PRD lives at `issues/prd.md`. Vertical-slice issues that break it down live 
 
 1. Ask the user for a long, detailed description of the problem they want to solve and any potential ideas for solutions.
 
-2. Explore the repo to verify their assertions and understand the current state of the codebase — typically: which CLI verbs exist (`updateresults`, `downloadresults`, `todaysracecards`, `validate`, `dedupe`, `fixraceids`, `downloadracecards`), what columns the relevant CSVs already carry, and which Python script(s) would be touched.
+2. Explore the repo to verify their assertions and understand the current state of the codebase — typically: which projects exist in the solution, the public entry points (command handlers, endpoints, public service methods), the shape of the inputs/outputs they produce, and which existing types the change would touch.
 
-3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. Useful branches in this codebase: which CLI verb (new or extended)? which CSV schema changes? which Python script consumes the change? how does it ride through `run.ps1`?
+3. Interview the user relentlessly about every aspect of this plan until you reach a shared understanding. Walk down each branch of the design tree, resolving dependencies between decisions one-by-one. Useful branches in a .NET codebase: which entry point (new or extended)? which public contract (DTO/record/output schema) changes? which existing services or types are consumed? how is it wired into dependency injection / the composition root?
 
 4. Sketch out the major modules you will need to build or modify to complete the implementation. Actively look for opportunities to extract deep modules that can be tested in isolation.
 
-A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes. Existing examples: `RacingResultParser.Parse`, `IRacingDataDownloader`, `UpdateResultsCommandHandler.RunAsync`.
+A deep module (as opposed to a shallow module) is one which encapsulates a lot of functionality in a simple, testable interface which rarely changes. Good shapes to aim for: a single public method that hides substantial logic (e.g. a `Parse(string) → Result` parser, an `IClient` abstraction over an external dependency, a `RunAsync(TOptions)` command handler).
 
-Check with the user that these modules match their expectations. Check with the user which modules they want tests written for (note: the C# side has rich test coverage via xUnit + Verify; the Python side typically does not — flag this as a gap if the PRD touches `Data/`).
+Check with the user that these modules match their expectations. Check with the user which modules they want tests written for, and prioritize testing the behavior that matters most.
 
 5. Once you have a complete understanding of the problem and solution, use the template below to write the PRD. The PRD should be written as a local markdown file at `issues/prd.md`. Create the `issues/` directory if it doesn't exist. Do NOT submit a GitHub issue or call any external service.
 
@@ -47,7 +48,7 @@ A LONG, numbered list of user stories. Each user story should be in the format o
 1. As an <actor>, I want a <feature>, so that <benefit>
 
 <user-story-example>
-1. As a punter using TodaysPredictions.csv, I want jockey win-rate to influence the predicted finish position, so that I can spot value that the current model misses
+1. As an API consumer, I want each response to include a correlation id, so that I can trace a request across logs
 </user-story-example>
 
 This list of user stories should be extremely extensive and cover all aspects of the feature.
@@ -56,13 +57,13 @@ This list of user stories should be extremely extensive and cover all aspects of
 
 A list of implementation decisions that were made. This can include:
 
-- The modules that will be built/modified (e.g. a new command handler under `RaceDataDownloader/Commands/`, a change to `JockeyStatsBuilder.py`, a new column in `Race_Features.csv`)
+- The modules that will be built/modified (e.g. a new command handler, a new domain service, an added field on an output record)
 - The interfaces of those modules that will be modified
 - Technical clarifications from the developer
 - Architectural decisions (e.g. ports & adapters around a new external source)
-- Schema changes (CSV columns added/renamed; note that monthly `Results_YYYYMM.csv` files are append-only in spirit)
-- API contracts (e.g. the shape of `Predictions.json` / `TodaysPredictions.csv`)
-- Specific interactions (how `run.ps1` wires the new step in)
+- Contract/schema changes (DTOs, records, serialized output formats — note any backward-compatibility constraints on persisted or published data)
+- API contracts (e.g. the shape of a JSON response or a generated file)
+- Specific interactions (how the new step is wired into dependency injection / the composition root / the CLI)
 
 Do NOT include specific file paths or code snippets. They may end up being outdated very quickly.
 
@@ -70,10 +71,9 @@ Do NOT include specific file paths or code snippets. They may end up being outda
 
 A list of testing decisions that were made. Include:
 
-- A description of what makes a good test (only test external behavior, not implementation details — drive command handlers via `RunAsync` and assert on the CSV produced)
+- A description of what makes a good test (only test external behavior, not implementation details — drive code through its public entry point, e.g. a handler's `RunAsync`, and assert on the observable output)
 - Which modules will be tested
-- Prior art for the tests (e.g. `UpdateResultsCommandHandlerShould`, `ValidateRaceCardPredictionsCommandHandlerShould`, parser tests in `RacePredictor.Core.Tests` using `FakeData.*` fixture HTML)
-- For Python changes: whether new pure functions will be extracted to allow pytest-style testing, or whether the change is verified only via `.\run.ps1` output
+- Prior art for the tests (point at existing test classes in the solution that model the right approach — handler tests driven through the public entry point, parser/service tests fed with real fixture inputs)
 
 ## Out of Scope
 

@@ -13,13 +13,13 @@ Always wait for my approval before saving.
 
 ## Best practices for reviewing AGENTS.md:
 
-- Put commands early: Put relevant executable commands in an early section: npm test, npm run build, pytest -v. Include flags and options, not just tool names. Your agent will reference these often.
+- Put commands early: Put relevant executable commands in an early section: `dotnet build`, `dotnet test`, `dotnet format`. Include flags and options, not just tool names (e.g. `dotnet test --filter`, `dotnet build -c Release`). Your agent will reference these often.
 
 - Code examples over explanations: One real code snippet showing your style beats three paragraphs describing it. Show what good output looks like.
 
 - Set clear boundaries: Tell AI what it should never touch (e.g., secrets, vendor directories, production configs, or specific folders). “Never commit secrets” was the most common helpful constraint.
 
-- Be specific about your stack: Say “React 18 with TypeScript, Vite, and Tailwind CSS” not “React project.” Include versions and key dependencies.
+- Be specific about your stack: Say “.NET 8 with ASP.NET Core, EF Core, and xUnit” not “a .NET project.” Include the target framework and key dependencies.
 
 - Cover six core areas: Hitting these areas puts you in the top tier: commands, testing, project structure, code style, git workflow, and boundaries. 
 

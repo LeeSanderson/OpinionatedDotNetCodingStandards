@@ -11,12 +11,10 @@ A **deep module** (John Ousterhout, "A Philosophy of Software Design") has a sma
 
 ## Project shape
 
-The codebase has two halves connected by CSV files:
+This is a .NET solution. Orient yourself before diving in:
 
-- **C# pipeline** — `RacePredictor.Core` (domain types + `RacingPost/` parsers and downloader) and `RaceDataDownloader` (CLI verb handlers under `Commands/`). Tested in `RacePredictor.Core.Tests` and `RaceDataDownloader.Tests`.
-- **Python ML stage** — `Data/*.py` (notebook-derived scripts: `FeatureAnalysis`, `HorseStatsBuilder`, `JockeyStatsBuilder`, `LinearRegressionPredictor`). Read CSVs produced by the C# stage, write feature/prediction CSVs.
-
-These are usually deepened separately. Cross-stage changes are coordinated through the CSV schema (e.g. `Results_YYYYMM.csv`, `Race_Features.csv`).
+- Identify the projects in the solution (`*.sln`/`*.slnx`) and their roles — domain/core libraries, application/entry-point projects (CLI command handlers, API endpoints, hosted services), and their paired test projects.
+- Note the public contracts that connect layers (DTOs, records, serialized output formats) — these seams are where coupling and integration risk concentrate.
 
 ## Process
 
@@ -24,11 +22,11 @@ These are usually deepened separately. Cross-stage changes are coordinated throu
 
 Use the Agent tool with subagent_type=Explore to navigate the codebase naturally. Do NOT follow rigid heuristics — explore organically and note where you experience friction:
 
-- Where does understanding one concept require bouncing between many small files? (e.g. a `*ParserShould` test that pulls in five `HtmlNode*` helpers)
-- Where are modules so shallow that the interface is nearly as complex as the implementation? (e.g. a one-method extension class used in one place)
-- Where have pure functions been extracted just for testability, but the real bugs hide in how they're called? (e.g. a parser helper that's well-tested but is called wrongly inside the downloader)
-- Where do tightly-coupled modules create integration risk in the seams between them? (e.g. CSV schema mismatches between the C# writer and the Python reader)
-- Which parts of the codebase are untested, or hard to test? (Python `Data/*.py` is the obvious gap; some `Commands/` may be too.)
+- Where does understanding one concept require bouncing between many small files? (e.g. a test that pulls in five tiny helper types to set up one behavior)
+- Where are modules so shallow that the interface is nearly as complex as the implementation? (e.g. a one-method extension class used in a single place)
+- Where have pure functions been extracted just for testability, but the real bugs hide in how they're called? (e.g. a well-tested helper that is invoked incorrectly by its caller)
+- Where do tightly-coupled modules create integration risk in the seams between them? (e.g. a contract/schema mismatch between a producer and a consumer)
+- Which parts of the codebase are untested, or hard to test?
 
 The friction you encounter IS the signal.
 
@@ -36,7 +34,7 @@ The friction you encounter IS the signal.
 
 Present a numbered list of deepening opportunities. For each candidate, show:
 
-- **Cluster**: Which modules/concepts are involved (e.g. `HtmlNodeFinder + RaceCardRunnerParser + RaceCardParser`)
+- **Cluster**: Which modules/concepts are involved (e.g. `NodeFinder + ItemParser + DocumentParser`)
 - **Why they're coupled**: Shared types, call patterns, co-ownership of a concept
 - **Dependency category**: See [REFERENCE.md](REFERENCE.md) for the four categories
 - **Test impact**: What existing tests would be replaced by boundary tests
@@ -49,7 +47,7 @@ Do NOT propose interfaces yet. Ask the user: "Which of these would you like to e
 
 Before spawning sub-agents, write a user-facing explanation of the problem space for the chosen candidate:
 
-- The constraints any new interface would need to satisfy (e.g. must still expose `IAsyncEnumerable<string>` for URL streaming, must keep `IFileSystem`-injectability)
+- The constraints any new interface would need to satisfy (e.g. must still expose `IAsyncEnumerable<T>` for streaming, must keep `IFileSystem`-injectability)
 - The dependencies it would need to rely on
 - A rough illustrative code sketch to make the constraints concrete — this is not a proposal, just a way to ground the constraints
 
@@ -68,8 +66,8 @@ Prompt each sub-agent with a separate technical brief (file paths, coupling deta
 
 Each sub-agent outputs:
 
-1. Interface signature (types, methods, params) — C# `interface` declarations or Python ABCs as appropriate
-2. Usage example showing how callers use it (e.g. how `UpdateResultsCommandHandler` would consume it)
+1. Interface signature (types, methods, params) — C# `interface` or abstract class declarations
+2. Usage example showing how callers use it (e.g. how a command handler would consume it)
 3. What complexity it hides internally
 4. Dependency strategy (how deps are handled — see [REFERENCE.md](REFERENCE.md))
 5. Trade-offs

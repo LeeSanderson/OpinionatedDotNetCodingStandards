@@ -9,14 +9,14 @@ Break a PRD into independently-grabbable issues using vertical slices (tracer bu
 
 ## Project context
 
-In this codebase a "vertical slice" usually cuts across the C# stage **and** the Python stage:
+This is a .NET solution. A "vertical slice" cuts through every layer the change touches, end-to-end:
 
-- C# side: a new/changed command handler under `RaceDataDownloader/Commands/<Verb>/`, possibly new domain types in `RacePredictor.Core`, paired tests in `RaceDataDownloader.Tests` / `RacePredictor.Core.Tests` (xUnit + Verify snapshots).
-- CSV schema: any new columns in `Results_YYYYMM.csv`, `Race_Features.csv`, `Horse_Stats.csv`, etc.
-- Python side: matching changes to the relevant script under `Data/` (`FeatureAnalysis`, `HorseStatsBuilder`, `JockeyStatsBuilder`, `LinearRegressionPredictor`).
-- Pipeline glue: `run.ps1` wiring if a new verb or step is introduced.
+- Domain/core: new or changed types, services, or parsers.
+- Application/entry layer: a new/changed command handler, API endpoint, or hosted service, plus its dependency-injection wiring.
+- Public contract: any new fields on a DTO/record or change to a serialized output format.
+- Tests: paired xUnit tests in the corresponding test project that exercise the new behavior through its public entry point.
 
-A complete slice is verifiable by running `.\run.ps1` (or a focused subset of it) and seeing the new behavior produce the expected file output.
+A complete slice is verifiable by building and running the relevant entry point (or the focused tests for it) and seeing the new behavior produce the expected output.
 
 ## Process
 
@@ -28,7 +28,7 @@ If the PRD is not already in your context window, read it from the file.
 
 ### 2. Explore the codebase (optional)
 
-If you have not already explored the codebase, do so to understand the current state of the code — especially the existing verbs in `RaceDataDownloader/Commands/`, the CSV schemas they produce, and which `Data/*.py` scripts consume those CSVs.
+If you have not already explored the codebase, do so to understand the current state of the code — especially the existing public entry points, the contracts/outputs they produce, and which existing types and services the change would consume.
 
 ### 3. Draft vertical slices
 
@@ -37,9 +37,9 @@ Break the PRD into **tracer bullet** issues. Each issue is a thin vertical slice
 Slices may be 'HITL' or 'AFK'. HITL slices require human interaction, such as an architectural decision or a design review. AFK slices can be implemented and merged without human interaction. Prefer AFK over HITL where possible.
 
 <vertical-slice-rules>
-- Each slice delivers a narrow but COMPLETE path through every relevant layer (C# handler + tests, CSV schema, Python consumer if any, `run.ps1` wiring)
-- A completed slice is demoable on its own — running the affected verb or `.\run.ps1` produces a visibly different file
-- Prefer many thin slices over few thick ones (e.g. "add JockeyId to RaceCardRecord" before "use JockeyId in LinearRegressionPredictor")
+- Each slice delivers a narrow but COMPLETE path through every relevant layer (domain type + service + entry-point wiring + tests)
+- A completed slice is demoable on its own — running the affected entry point or its tests produces a visibly different, verifiable result
+- Prefer many thin slices over few thick ones (e.g. "add the new field to the output record" before "compute the new field from upstream data")
 </vertical-slice-rules>
 
 ### 4. Quiz the user
@@ -54,7 +54,7 @@ Present the proposed breakdown as a numbered list. For each slice, show:
 Ask the user:
 
 - Does the granularity feel right? (too coarse / too fine)
-- Are the dependency relationships correct? (e.g. does the Python feature change actually need the C# schema change to land first?)
+- Are the dependency relationships correct? (e.g. does the consumer change actually need the contract/schema change to land first?)
 - Should any slices be merged or split further?
 - Are the correct slices marked as HITL and AFK?
 
@@ -62,7 +62,7 @@ Iterate until the user approves the breakdown.
 
 ### 5. Create the issue files
 
-For each approved slice, write a markdown file in `issues/` using the naming pattern `issues/NNN-short-title.md` (e.g. `issues/004-add-jockey-id-to-racecard-record.md`).
+For each approved slice, write a markdown file in `issues/` using the naming pattern `issues/NNN-short-title.md` (e.g. `issues/004-add-correlation-id-to-response.md`).
 
 Number issues starting from the next available number (check what files already exist in `issues/`).
 
@@ -77,13 +77,13 @@ Do NOT use `gh issue create` or any GitHub CLI commands. Do NOT reference GitHub
 
 ## What to build
 
-A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation. Reference specific sections of the parent PRD rather than duplicating content. If the slice touches both the C# and Python halves, name the verb / script affected.
+A concise description of this vertical slice. Describe the end-to-end behavior, not layer-by-layer implementation. Reference specific sections of the parent PRD rather than duplicating content. Name the entry point / service affected.
 
 ## Acceptance criteria
 
-- [ ] Criterion 1 (e.g. `RaceDataDownloader.exe <verb> --output Data` produces a CSV with column X)
-- [ ] Criterion 2 (e.g. the matching `*.Tests` project has a new `Should` test asserting on the Verify snapshot)
-- [ ] Criterion 3 (e.g. `Data/<Script>.py` reads/writes the new column without erroring on existing fixture data)
+- [ ] Criterion 1 (e.g. invoking `<entry point>` produces output with field X)
+- [ ] Criterion 2 (e.g. the matching test project has a new `Should` test asserting on the observable output)
+- [ ] Criterion 3 (e.g. existing behavior/contract continues to work without regression)
 
 ## Blocked by
 
