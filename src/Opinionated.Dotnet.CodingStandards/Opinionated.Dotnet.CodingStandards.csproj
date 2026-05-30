@@ -11,5 +11,6 @@
 		<NoWarn>$(NoWarn);NU5104</NoWarn>
 
 		<NuSpecFile>..\..\packages\Opinionated.DotNet.CodingStandards\Opinionated.DotNet.CodingStandards.nuspec</NuSpecFile>
+		<NuspecProperties Condition="'$(NuspecProperties)' == ''">version=0.0.0-dev</NuspecProperties>
 	</PropertyGroup>
 </Project>

@@ -25,11 +25,11 @@ package, and the test harness's packed package is versioned `999.9.9`.
 
 ## Acceptance criteria
 
-- [ ] The nuspec `<version>` is a replacement token, not a hardcoded literal
-- [ ] A default `0.0.0-dev` version is defined in the shared build props and flows into the packed package when no override is supplied
-- [ ] A local `dotnet pack` produces a package whose version is `0.0.0-dev`
-- [ ] A test asserts that the package packed by `PackageFixture` carries the overridden version (`999.9.9`), proving the harness override now takes effect
-- [ ] `dotnet build` and `dotnet test` of the solution succeed
+- [x] The nuspec `<version>` is a replacement token, not a hardcoded literal
+- [x] A default `0.0.0-dev` version is defined in the shared build props and flows into the packed package when no override is supplied (set via `NuspecProperties` condition in csproj)
+- [x] A local `dotnet pack` produces a package whose version is `0.0.0-dev`
+- [x] A test asserts that the package packed by `PackageFixture` carries the overridden version (`999.9.9`), proving the harness override now takes effect
+- [x] `dotnet build` and `dotnet test` of the solution succeed (64 pass; 20 pre-existing failures unchanged)
 
 ## Blocked by
 

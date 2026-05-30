@@ -2,7 +2,7 @@
 <package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
 	<metadata>
 		<id>Opinionated.DotNet.CodingStandards</id>
-		<version>0.1.0</version>
+		<version>$version$</version>
 		<authors>Lee Sanderson</authors>
 		<owners>Lee Sanderson</owners>
 		<developmentDependency>true</developmentDependency>
