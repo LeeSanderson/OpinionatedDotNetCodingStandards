@@ -26,12 +26,12 @@ import, or reference remains in the repository.
 
 ## Acceptance criteria
 
-- [ ] `src/` and `packages/` directories and their `.csproj`/`.nuspec` files use the `Opinionated.DotNet.CodingStandards` casing
-- [ ] `Opinionated.Dotnet.CodingStandards.slnx`, `Directory.Build.props`, and `Directory.Build.targets` import paths are updated to the renamed paths
-- [ ] The nuspec path inside `scripts/CheckNugetDependenciesMatchProps.cs` resolves to the renamed `packages/` path
-- [ ] The CI step in `.azure-pipelines/ci.yml` references the dependency-check script by its real filename
-- [ ] A repository-wide search for the `Opinionated.Dotnet` (lower-case `o`) casing returns no matches outside of git history
-- [ ] `dotnet build` and `dotnet test` of the solution succeed, and the dependency-check script step passes
+- [x] `src/` and `packages/` directories and their `.csproj`/`.nuspec` files use the `Opinionated.DotNet.CodingStandards` casing
+- [x] `Opinionated.Dotnet.CodingStandards.slnx`, `Directory.Build.props`, and `Directory.Build.targets` import paths are updated to the renamed paths
+- [x] The nuspec path inside `scripts/CheckNugetDependenciesMatchProps.cs` resolves to the renamed `packages/` path
+- [x] The CI step in `.azure-pipelines/ci.yml` references the dependency-check script by its real filename
+- [x] A repository-wide search for the `Opinionated.Dotnet` (lower-case `o`) casing returns no matches outside of git history
+- [~] `dotnet build` and `dotnet test` of the solution succeed, and the dependency-check script step passes — build passes, dependency check passes, but 20 tests have pre-existing failures (introduced by package version update b7644bf before this issue; verified by running against unmodified code)
 
 ## Blocked by
 
