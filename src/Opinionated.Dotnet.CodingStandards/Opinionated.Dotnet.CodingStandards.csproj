@@ -10,6 +10,6 @@
 		-->
 		<NoWarn>$(NoWarn);NU5104</NoWarn>
 
-		<NuSpecFile>..\..\packages\Opinionated.Dotnet.CodingStandards\Opinionated.Dotnet.CodingStandards.nuspec</NuSpecFile>
+		<NuSpecFile>..\..\packages\Opinionated.DotNet.CodingStandards\Opinionated.DotNet.CodingStandards.nuspec</NuSpecFile>
 	</PropertyGroup>
 </Project>

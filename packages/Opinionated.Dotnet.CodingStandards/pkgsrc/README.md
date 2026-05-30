@@ -1,4 +1,4 @@
-# Opinionated.Dotnet.CodingStandards
+# Opinionated.DotNet.CodingStandards
 
 This package provides a set of opinionated coding standards for .NET projects. 
 

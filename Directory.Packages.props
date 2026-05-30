@@ -1,7 +1,7 @@
 <Project>
   <!-- 
 	    Dogfood the coding standards in all projects in this solution by copying the packages
-		defined in Opinionated.Dotnet.CodingStandards.nuspec 
+		defined in Opinionated.DotNet.CodingStandards.nuspec
 		
 		Keep this file in sync with the .nuspec file!
 	-->

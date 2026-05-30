@@ -10,7 +10,7 @@ installed it turns on strict compiler settings and enforces code-style, quality,
 banned-API rules on the consuming project.
 
 The package emits **no production assembly** — the shipped payload is the files under
-`packages/Opinionated.Dotnet.CodingStandards/pkgsrc/`.
+`packages/Opinionated.DotNet.CodingStandards/pkgsrc/`.
 
 ## Stack
 
@@ -22,8 +22,8 @@ The package emits **no production assembly** — the shipped payload is the file
 ## Commands
 
 ```powershell
-dotnet build Opinionated.Dotnet.CodingStandards.slnx          # build (warnings = errors)
-dotnet test  Opinionated.Dotnet.CodingStandards.slnx          # run the integration tests
+dotnet build Opinionated.DotNet.CodingStandards.slnx          # build (warnings = errors)
+dotnet test  Opinionated.DotNet.CodingStandards.slnx          # run the integration tests
 dotnet test  --filter "FullyQualifiedName~CodeAnalysisRules"  # run a single test class
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs          # verify nuspec deps == Directory.Packages.props
 ```
