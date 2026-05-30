@@ -29,10 +29,10 @@ default and produces no `RS0030` when the toggle is set `false`.
 
 ## Acceptance criteria
 
-- [ ] Each of the seven `Ban*` toggles has a test asserting `RS0030` is absent when the toggle is `false`
-- [ ] Each test uses the corresponding banned-code sample that fires `RS0030` at the default setting
-- [ ] All new tests pass
-- [ ] Tests reuse the existing `PackageFixture` / `ProjectBuilder` helpers
+- [x] Each of the seven `Ban*` toggles has a test asserting `RS0030` is absent when the toggle is `false`
+- [x] Each test uses the corresponding banned-code sample that fires `RS0030` at the default setting
+- [x] All new tests pass (7/7 opt-out tests pass)
+- [x] Tests reuse the existing `PackageFixture` / `ProjectBuilder` helpers
 
 ## Blocked by
 

@@ -29,6 +29,16 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     }
 
     [Fact]
+    public async Task NotBanInvariantCultureStringComparisonWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanInvariantCultureStringComparisonApis", Value: "false")]);
+        await project.AddFile("sample.cs", """_ = "a test".IndexOf("test", StringComparison.InvariantCulture);""");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task BanInvariantCultureStringComparision()
     {
         using var project = await CreateProjectBuilder();
@@ -39,6 +49,16 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     }
 
     [Fact]
+    public async Task NotBanEnumTryParseWithoutIgnoreCaseWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanEnumTryParseWithoutIgnoreCaseApis", Value: "false")]);
+        await project.AddFile("sample.cs", """_ = Enum.TryParse<StringComparison>("StringComparison.Ordinal", out _);""");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task BanEnumTryParseWithoutIgnoreCase()
     {
         using var project = await CreateProjectBuilder();
@@ -46,6 +66,16 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("RS0030").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task NotBanRoundWithoutMidpointRoundingWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanRoundWithoutMidpointRoundingApis", Value: "false")]);
+        await project.AddFile("sample.cs", "_ = Math.Round(0.4);");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
     }
 
     [Fact]
@@ -61,6 +91,16 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     }
 
     [Fact]
+    public async Task NotBanUseOfCultureInfoConstructorWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanUseOfCultureInfoConstructorApis", Value: "false")]);
+        await project.AddFile("sample.cs", """_ = new System.Globalization.CultureInfo("en-UK");""");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task BanUseOfCultureInfoConstructor()
     {
         using var project = await CreateProjectBuilder();
@@ -73,6 +113,16 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     }
 
     [Fact]
+    public async Task NotBanUseOfTupleInFavourOfValueTupleWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "BanUseOfTupleInFavourOfValueTupleApis", Value: "false")]);
+        await project.AddFile("sample.cs", "_ = new Tuple<int, int>(1, 2);");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
+    }
+
+    [Fact]
     public async Task BanUseOfTupleInFavourOfValueTuple()
     {
         using var project = await CreateProjectBuilder();
@@ -82,6 +132,18 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("RS0030").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task NotBanUseOfNewtonsoftJsonWhenPropertyDisabled()
+    {
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        await project.AddFile("sample.cs", """_ = Newtonsoft.Json.JsonConvert.SerializeObject("test");""");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
     }
 
     [Fact]
