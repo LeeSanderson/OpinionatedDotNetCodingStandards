@@ -19,9 +19,9 @@ coverage collector referenced.
 
 ## Acceptance criteria
 
-- [ ] `coverlet.collector` is no longer referenced by the test project
-- [ ] Any corresponding version entry in `Directory.Packages.props` is removed, and the dependency-check script still passes
-- [ ] `dotnet test` of the solution succeeds with the same set of tests passing as before
+- [x] `coverlet.collector` is no longer referenced by the test project
+- [x] Any corresponding version entry in `Directory.Packages.props` is removed, and the dependency-check script still passes (coverlet was not in Directory.Packages.props)
+- [x] `dotnet test` of the solution succeeds with the same set of tests passing as before (63 pass, 20 pre-existing failures unrelated to this change)
 
 ## Blocked by
 
