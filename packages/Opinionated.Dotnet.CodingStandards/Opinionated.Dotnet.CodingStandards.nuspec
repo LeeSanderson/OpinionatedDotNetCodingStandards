@@ -10,6 +10,8 @@
 		<readme>README.md</readme>
 		<projectUrl>https://github.com/LeeSanderson/OpinionatedDotNetCodingStandards</projectUrl>
 		<description>Strongly opinionated coding standards recommendations for .NET.</description>
+		<releaseNotes>https://github.com/LeeSanderson/OpinionatedDotNetCodingStandards/blob/main/CHANGELOG.md</releaseNotes>
+		<tags>analyzers code-style editorconfig roslyn dotnet csharp</tags>
 		<icon>icon.png</icon>
 		<repository type="git" url="$RepositoryUrl$" commit="$RepositoryCommit$" branch="$RepositoryBranch$" />
 		<dependencies>
