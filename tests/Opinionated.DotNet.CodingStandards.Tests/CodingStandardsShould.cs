@@ -74,6 +74,19 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    public async Task AllowIndividualRuleSuppressionViaNoWarn()
+    {
+        // NoWarn targets RS0030 only — CA1866 (a different rule) must still fire,
+        // proving the override is scoped and the ruleset remains layerable
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "RS0030")]);
+        await project.AddFile("Program.cs", "_ = System.DateTime.Now;\r\n_ = \"hello\".IndexOf(\"h\");\r\n");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0030").ShouldBeFalse();
+        buildOutput.HasError("CA1866").ShouldBeTrue();
+    }
+
+    [Fact]
     public async Task RequireVarInsteadOfExplicitType()
     {
         using var project = await CreateProjectBuilder();

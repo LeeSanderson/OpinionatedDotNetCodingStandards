@@ -23,10 +23,10 @@ build output, demonstrating the ruleset is layerable.
 
 ## Acceptance criteria
 
-- [ ] A test downgrades or disables a single rule's severity via a consumer-side override
-- [ ] The test asserts the targeted rule's diagnostic level changes (e.g. error → warning, or removed) while unrelated rules still fire
-- [ ] The test passes
-- [ ] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers
+- [x] A test downgrades or disables a single rule's severity via a consumer-side override (`<NoWarn>RS0030</NoWarn>` in the project properties)
+- [x] The test asserts the targeted rule's diagnostic level changes (RS0030 absent after NoWarn) while CA1866 (a different rule, IndexOf with single-char string) still fires
+- [x] The test passes
+- [x] The test reuses the existing `PackageFixture` / `ProjectBuilder` helpers
 
 ## Blocked by
 
