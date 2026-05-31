@@ -43,11 +43,16 @@ Read the files the chosen issue touches before changing anything.
 
 ## 4. Implementation
 
-Use the `tdd` skill to drive the change red-green-refactor.
+Classify the issue before choosing an approach:
+
+- **Documentation or pipeline** (README updates, CI/CD config, GitHub Actions, NuGet packaging, changelog): implement directly — no TDD loop needed.
+- **Code changes** (analyzers, source generators, library logic, tests): use the `tdd` skill to drive the change red-green-refactor.
 
 ## 5. Feedback loops
 
-Before committing, run and fix any failures:
+Skip this step entirely for pure documentation or pipeline issues.
+
+For code changes, before committing run and fix any failures:
 
 ```powershell
 dotnet build && dotnet test
