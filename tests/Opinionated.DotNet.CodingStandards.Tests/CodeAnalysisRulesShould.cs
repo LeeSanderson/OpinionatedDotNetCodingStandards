@@ -9,6 +9,8 @@ public class CodeAnalysisRulesShould(PackageFixture fixture, ITestOutputHelper t
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
+    [RuleDoc("CA1000", "Do not declare static members on generic types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1000")]
     public async Task ProhibitStaticMembersOnGenericTypes()
     {
         using var project = await CreateProjectBuilder();
