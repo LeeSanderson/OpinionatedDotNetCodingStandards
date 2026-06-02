@@ -30,6 +30,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0161", "Convert to file-scoped namespace",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0161")]
     public async Task RequireFileScopedNamespaces()
     {
         using var project = await CreateProjectBuilder();
@@ -74,6 +76,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("CA1866", "Use char overload",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1866")]
     public async Task AllowIndividualRuleSuppressionViaNoWarn()
     {
         // NoWarn targets RS0030 only — CA1866 (a different rule) must still fire,
@@ -87,6 +91,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0007", "Use implicit type",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0007")]
     public async Task RequireVarInsteadOfExplicitType()
     {
         using var project = await CreateProjectBuilder();
@@ -109,6 +115,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0004", "Remove Unnecessary Cast",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0004")]
     public async Task RequireRemovalOfUnnecessaryCast()
     {
         using var project = await CreateProjectBuilder();
@@ -131,6 +139,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0005", "Using directive is unnecessary.",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0005")]
     public async Task RequireRemovalOfUnnecessaryUsings()
     {
         using var project = await CreateProjectBuilder();
@@ -150,6 +160,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0011", "Add braces",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0011")]
     public async Task RequireBracesForControlFlow()
     {
         using var project = await CreateProjectBuilder();
@@ -173,6 +185,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0020", "Use pattern matching",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0020")]
     public async Task RequirePatternMatchingForIsCheck()
     {
         using var project = await CreateProjectBuilder();
@@ -200,6 +214,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0029", "Use coalesce expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0029")]
     public async Task RequireCoalesceExpression()
     {
         using var project = await CreateProjectBuilder();
@@ -222,6 +238,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0031", "Use null propagation",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031")]
     public async Task RequireNullPropagation()
     {
         using var project = await CreateProjectBuilder();
@@ -244,6 +262,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0036", "Order modifiers",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0036")]
     public async Task RequireCorrectModifierOrder()
     {
         using var project = await CreateProjectBuilder();
@@ -262,6 +282,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0040", "Add accessibility modifiers",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0040")]
     public async Task RequireAccessibilityModifiers()
     {
         using var project = await CreateProjectBuilder();
@@ -281,6 +303,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0044", "Add readonly modifier",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0044")]
     public async Task RequireReadonlyModifierOnFields()
     {
         using var project = await CreateProjectBuilder();
@@ -319,6 +343,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0054", "Use compound assignment",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0054")]
     public async Task RequireCompoundAssignment()
     {
         using var project = await CreateProjectBuilder();
@@ -342,6 +368,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0055", "Fix formatting",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0055")]
     public async Task RequireProperFormatting()
     {
         using var project = await CreateProjectBuilder();
@@ -360,6 +388,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0059", "Unnecessary assignment of a value",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0059")]
     public async Task RequireRemovalOfUnnecessaryValueAssignment()
     {
         using var project = await CreateProjectBuilder();
@@ -383,6 +413,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0062", "Make local function 'static'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0062")]
     public async Task RequireStaticLocalFunctions()
     {
         using var project = await CreateProjectBuilder();
@@ -405,6 +437,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0065", "Misplaced using directive",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0065")]
     public async Task RequireUsingDirectivesOutsideNamespace()
     {
         using var project = await CreateProjectBuilder();
@@ -426,6 +460,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0071", "Simplify interpolation",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0071")]
     public async Task RequireSimplifiedInterpolation()
     {
         using var project = await CreateProjectBuilder();
@@ -449,6 +485,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0080", "Remove unnecessary suppression operator",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080")]
     public async Task RequireRemovalOfUnnecessarySuppressionOperator()
     {
         using var project = await CreateProjectBuilder();
@@ -471,6 +509,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0082", "'typeof' can be converted to 'nameof'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0082")]
     public async Task RequireNameofOverTypeof()
     {
         using var project = await CreateProjectBuilder();
@@ -490,6 +530,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0110", "Remove unnecessary discard",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110")]
     public async Task RequireRemovalOfUnnecessaryDiscard()
     {
         using var project = await CreateProjectBuilder();
@@ -513,6 +555,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0170", "Property pattern can be simplified",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0170")]
     public async Task RequireSimplifiedPropertyPattern()
     {
         using var project = await CreateProjectBuilder();
@@ -539,6 +583,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0280", "Use 'nameof'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0280")]
     public async Task RequireNameofForStrings()
     {
         using var project = await CreateProjectBuilder();
@@ -562,6 +608,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE1005", "Delegate invocation can be simplified.",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1005")]
     public async Task RequireSimplifiedDelegateInvocation()
     {
         using var project = await CreateProjectBuilder();
@@ -585,6 +633,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE1006", "Naming Styles",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1006")]
     public async Task RequireCorrectNamingStyle()
     {
         using var project = await CreateProjectBuilder();
@@ -604,6 +654,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2001", "Embedded statements must be on their own line",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2001")]
     public async Task RequireEmbeddedStatementsOnOwnLine()
     {
         using var project = await CreateProjectBuilder();
@@ -622,6 +674,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2002", "Consecutive braces must not have blank line between them",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2002")]
     public async Task RequireNoBlankLineBetweenBraces()
     {
         using var project = await CreateProjectBuilder();
@@ -643,6 +697,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2003", "Blank line required between block and subsequent statement",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2003")]
     public async Task RequireBlankLineAfterBlock()
     {
         using var project = await CreateProjectBuilder();
@@ -668,6 +724,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2004", "Blank line not allowed after constructor initializer colon",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2004")]
     public async Task RequireNoBlankLineAfterConstructorColon()
     {
         using var project = await CreateProjectBuilder();
@@ -696,6 +754,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2005", "Blank line not allowed after conditional expression token",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005")]
     public async Task RequireNoBlankLineAfterConditionalToken()
     {
         using var project = await CreateProjectBuilder();
@@ -720,6 +780,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE2006", "Blank line not allowed after arrow expression clause token",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006")]
     public async Task RequireNoBlankLineAfterArrowExpression()
     {
         using var project = await CreateProjectBuilder();

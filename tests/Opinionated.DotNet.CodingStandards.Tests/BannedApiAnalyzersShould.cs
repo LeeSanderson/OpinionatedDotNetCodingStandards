@@ -9,6 +9,8 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
+    [RuleDoc("RS0030", "Do not use banned APIs",
+        HelpLink = "https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md")]
     public async Task BanNonUtcDates()
     {
         using var project = await CreateProjectBuilder();
