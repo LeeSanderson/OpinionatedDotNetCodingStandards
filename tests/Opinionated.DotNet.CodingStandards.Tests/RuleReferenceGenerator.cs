@@ -6,6 +6,101 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 
 public static class RuleReferenceGenerator
 {
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir)
+    {
+        var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var file in Directory.GetFiles(analyzerDir, "*.editorconfig"))
+        {
+            foreach (var (id, _, _, _) in ParseEnforcedRules(file))
+            {
+                result.Add(id);
+            }
+        }
+
+        return result;
+    }
+
+    public static IReadOnlyList<RuleDocEntry> CollectRuleDocEntries(Assembly assembly)
+    {
+        var entries = new List<RuleDocEntry>();
+        foreach (var type in assembly.GetTypes())
+        {
+            foreach (var attr in type.GetCustomAttributes<RuleDocAttribute>())
+            {
+                entries.Add(new RuleDocEntry(attr.RuleId, attr, IsClassLevel: true));
+            }
+
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            {
+                foreach (var attr in method.GetCustomAttributes<RuleDocAttribute>())
+                {
+                    entries.Add(new RuleDocEntry(attr.RuleId, attr, IsClassLevel: false));
+                }
+            }
+        }
+
+        return entries;
+    }
+
+    public static ReconciliationResult Reconcile(
+        string analyzerDir, Assembly testAssembly, IReadOnlyCollection<string> knownUncovered)
+    {
+        var activeRules = CollectActiveRules(analyzerDir);
+        var docEntries = CollectRuleDocEntries(testAssembly);
+        return Reconcile(activeRules, docEntries, knownUncovered);
+    }
+
+    public static ReconciliationResult Reconcile(
+        IReadOnlySet<string> activeRules,
+        IReadOnlyList<RuleDocEntry> docEntries,
+        IReadOnlyCollection<string> knownUncovered)
+    {
+        var knownUncoveredSet = new HashSet<string>(knownUncovered, StringComparer.OrdinalIgnoreCase);
+
+        var idCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in docEntries)
+        {
+            idCounts.TryGetValue(entry.RuleId, out var n);
+            idCounts[entry.RuleId] = n + 1;
+        }
+
+        var duplicateIds = idCounts
+            .Where(kvp => kvp.Value > 1)
+            .Select(kvp => kvp.Key)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var orphanDocs = docEntries
+            .Where(e => !activeRules.Contains(e.RuleId))
+            .Select(e => e.RuleId)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var coveredByDoc = new HashSet<string>(docEntries.Select(e => e.RuleId), StringComparer.OrdinalIgnoreCase);
+
+        var uncoveredRules = activeRules
+            .Where(r => !coveredByDoc.Contains(r) && !knownUncoveredSet.Contains(r))
+            .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var invariantViolations = new List<string>();
+        foreach (var entry in docEntries)
+        {
+            if (!entry.IsClassLevel && entry.Doc.Untestable != null)
+            {
+                invariantViolations.Add($"{entry.RuleId}: method-level [RuleDoc] has non-null Untestable");
+            }
+
+            if (entry.IsClassLevel && string.IsNullOrEmpty(entry.Doc.Untestable))
+            {
+                invariantViolations.Add($"{entry.RuleId}: class-level [RuleDoc] has empty/null Untestable");
+            }
+        }
+
+        return new ReconciliationResult(uncoveredRules, orphanDocs, duplicateIds, invariantViolations);
+    }
+
     public static Dictionary<string, RuleDocAttribute> CollectRuleDocs(Assembly assembly)
     {
         var docs = new Dictionary<string, RuleDocAttribute>(StringComparer.OrdinalIgnoreCase);
