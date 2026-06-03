@@ -51,17 +51,6 @@ public class RuleDocCoverageShould
         "CA5390", "CA5391", "CA5392", "CA5393", "CA5395", "CA5396", "CA5397", "CA5398",
         "CA5401", "CA5402", "CA5403", "CA5404", "CA5405",
         "EnableGenerateDocumentationFile",
-        "IDE0010", "IDE0017", "IDE0018",
-        "IDE0019", "IDE0028", "IDE0030", "IDE0033",
-        "IDE0034", "IDE0039", "IDE0043", "IDE0045",
-        "IDE0046", "IDE0051", "IDE0052", "IDE0056", "IDE0057",
-        "IDE0060", "IDE0064", "IDE0066", "IDE0070",
-        "IDE0074", "IDE0076", "IDE0078", "IDE0079",
-        "IDE0083", "IDE0100", "IDE0130", "IDE0180",
-        "IDE0200", "IDE0230", "IDE0240", "IDE0241", "IDE0250", "IDE0260", "IDE0270",
-        "IDE0300", "IDE0301", "IDE0302", "IDE0303", "IDE0304", "IDE0305",
-        "IDE0330",
-        "IDE2000",
     };
 
     [Fact]

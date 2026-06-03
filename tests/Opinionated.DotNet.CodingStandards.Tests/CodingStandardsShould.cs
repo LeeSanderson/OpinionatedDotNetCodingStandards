@@ -794,7 +794,7 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
             public static class Program
             {
                 public static int Get() =>
-            
+
                     1;
                 public static int Main() => 0;
             }
@@ -802,5 +802,858 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("IDE2006").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0010", "Add missing cases",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0010")]
+    public async Task RequireAllSwitchCasesToBeCovered()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            enum Color { Red, Green, Blue }
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var color = Color.Red;
+                    switch (color)
+                    {
+                        case Color.Red:
+                            return 1;
+                    }
+
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0010").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0017", "Simplify object initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0017")]
+    public async Task RequireObjectInitializerSyntax()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class Config { public int Value { get; set; } }
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var config = new Config();
+                    config.Value = 42;
+                    return config.Value;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0017").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0018", "Inline variable declaration",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0018")]
+    public async Task RequireInlineVariableDeclaration()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int result;
+                    if (int.TryParse("42", out result))
+                        return result;
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0018").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0019", "Use pattern matching to avoid 'as' followed by a 'null' check",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0019")]
+    public async Task RequirePatternMatchingForAsNullCheck()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    object? obj = "test";
+                    var s = obj as string;
+                    if (s != null)
+                        return s.Length;
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0019").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0028", "Use collection initializers or expressions",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0028")]
+    public async Task RequireCollectionInitializerSyntax()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var list = new System.Collections.Generic.List<int>();
+                    list.Add(1);
+                    list.Add(2);
+                    return list.Count;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0028").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0033", "Use explicitly provided tuple name",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0033")]
+    public async Task RequireExplicitlyProvidedTupleName()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var t = (a: 1, b: 2);
+                    return t.Item1;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0033").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0034", "Simplify 'default' expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0034")]
+    public async Task RequireSimplifiedDefaultExpression()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int x = default(int);
+                    return x;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0034").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0039", "Use local function instead of lambda",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0039")]
+    public async Task RequireLocalFunctionOverLambda()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    System.Func<int> getValue = () => 42;
+                    return getValue();
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0039").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0043", "Format string contains invalid placeholder",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0043")]
+    public async Task RejectInvalidFormatString()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var s = string.Format("{0} {1}", "hello");
+                    return s.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("IDE0043").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0045", "Convert to conditional expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0045")]
+    public async Task RequireConditionalExpressionForAssignment()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var x = 1;
+                    string result;
+                    if (x > 0)
+                    {
+                        result = "positive";
+                    }
+                    else
+                    {
+                        result = "non-positive";
+                    }
+                    return result.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0045").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0046", "Convert to conditional expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0046")]
+    public async Task RequireConditionalExpressionForReturn()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static string Get(int x)
+                {
+                    if (x > 0)
+                    {
+                        return "positive";
+                    }
+                    else
+                    {
+                        return "non-positive";
+                    }
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0046").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0051", "Remove unused private members",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0051")]
+    public async Task RequireUnusedPrivateMembersToBeRemoved()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                private static void UnusedMethod()
+                {
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0051").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0052", "Remove unread private members",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0052")]
+    public async Task RequireUnreadPrivateMembersToBeRemoved()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                private static int _writeOnly;
+                private static void Write()
+                {
+                    _writeOnly = 42;
+                }
+                public static int Main()
+                {
+                    Write();
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0052").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0056", "Use index operator",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0056")]
+    public async Task RequireIndexOperator()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var arr = new[] { 1, 2, 3 };
+                    return arr[arr.Length - 1];
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0056").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0057", "Use range operator",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0057")]
+    public async Task RequireRangeOperator()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var s = "hello";
+                    return s.Substring(2).Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0057").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0060", "Remove unused parameter",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0060")]
+    public async Task RequireUnusedParametersToBeRemoved()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                private static int Add(int x, int unused)
+                {
+                    return x;
+                }
+                public static int Main()
+                {
+                    return Add(1, 2);
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0060").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0066", "Convert switch statement to expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0066")]
+    public async Task RequireSwitchExpression()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static string Get(int x)
+                {
+                    switch (x)
+                    {
+                        case 1:
+                            return "one";
+                        default:
+                            return "other";
+                    }
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0066").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0076", "Invalid global 'SuppressMessageAttribute'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0076")]
+    public async Task RejectInvalidGlobalSuppressMessageAttribute()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Diagnostics.CodeAnalysis;
+            [assembly: SuppressMessage("Usage", "CA1063", Scope = "member", Target = "~M:test.Program.NonExistentMethod")]
+            namespace test;
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("IDE0076").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0078", "Use pattern matching",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0078")]
+    public async Task RequireOrPattern()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Check(object obj)
+                {
+                    if (obj is int || obj is long)
+                    {
+                        return 1;
+                    }
+                    return 0;
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0078").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0083", "Use pattern matching",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0083")]
+    public async Task RequireNotPattern()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Check(object obj)
+                {
+                    if (!(obj is string))
+                    {
+                        return 0;
+                    }
+                    return 1;
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0083").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0100", "Remove redundant equality",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0100")]
+    public async Task RequireRemovalOfRedundantEquality()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static bool IsPositive(int x)
+                {
+                    return (x > 0) == true;
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0100").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0130", "Namespace does not match folder structure",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0130")]
+    public async Task RequireNamespaceToMatchFolderStructure()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Services/Service.cs",
+            """
+            namespace test;
+            public static class Service { }
+            """);
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("IDE0130").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0180", "Use tuple to swap values",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0180")]
+    public async Task RequireTupleSwap()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var a = 1;
+                    var b = 2;
+                    var temp = a;
+                    a = b;
+                    b = temp;
+                    return a + b;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0180").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0200", "Remove unnecessary lambda expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0200")]
+    public async Task RequireMethodGroupConversion()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var items = new System.Collections.Generic.List<int>() { 1, 2, 3 };
+                    items.ForEach(x => System.Console.WriteLine(x));
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0200").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0230", "Use UTF-8 string literal",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0230")]
+    public async Task RequireUtf8StringLiteral()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    System.ReadOnlySpan<byte> bytes = new byte[] { 104, 101, 108, 108, 111 };
+                    return bytes.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0230").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0240", "Remove redundant nullable directive",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0240")]
+    public async Task RequireRemovalOfRedundantNullableDirective()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #nullable enable
+            namespace test;
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0240").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0250", "Make struct 'readonly'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0250")]
+    public async Task RequireReadonlyStruct()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public struct MyPoint
+            {
+                public int X { get; }
+                public int Y { get; }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0250").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0300", "Simplify collection initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0300")]
+    public async Task RequireCollectionExpressionForArray()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int[] arr = new int[] { 1, 2, 3 };
+                    return arr.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0300").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0301", "Simplify collection initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0301")]
+    public async Task RequireCollectionExpressionForList()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    System.Collections.Immutable.ImmutableArray<int> arr = System.Collections.Immutable.ImmutableArray<int>.Empty;
+                    return arr.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0301").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0303", "Simplify collection initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0303")]
+    public async Task RequireCollectionExpressionForImmutableArrayCreate()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    System.Collections.Immutable.ImmutableArray<int> arr = System.Collections.Immutable.ImmutableArray.Create(1, 2, 3);
+                    return arr.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0303").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0305", "Simplify collection initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0305")]
+    public async Task RequireCollectionExpressionForFluentCreation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    System.Collections.Generic.List<int> list = new[] { 1, 2, 3 }.ToList();
+                    return list.Count;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0305").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0330", "Use 'System.Threading.Lock'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0330")]
+    public async Task RequireSystemThreadingLock()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                private static readonly object _lock = new object();
+                public static int Main()
+                {
+                    lock (_lock)
+                    {
+                        return 0;
+                    }
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0330").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE2000", "Avoid multiple blank lines",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2000")]
+    public async Task RejectMultipleBlankLines()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var x = 0;
+
+
+                    return x;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE2000").ShouldBeTrue();
     }
 }
