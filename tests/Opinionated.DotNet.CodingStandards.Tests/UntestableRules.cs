@@ -27,4 +27,7 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("MA0070", "Obsolete attributes should include explanations",
     HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md",
     Untestable = "CA1041 covers the same null/empty ObsoleteAttribute message condition and fires instead of MA0070 in this harness")]
+[RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md",
+    Untestable = "Diagnostic ID is registered in the Meziantou.Analyzer 2.0.286 editorconfig but the analyzer implementation is absent in this version; the rule never fires")]
 public static class UntestableRules { }
