@@ -54,10 +54,12 @@ internal sealed class ProjectBuilder : IDisposable
 
     public ValueTask AddCsprojFile(
         (string Name, string Value)[]? properties = null,
-        (string Name, string Version)[]? packageReferences = null)
+        (string Name, string Version)[]? packageReferences = null,
+        string[]? additionalFiles = null)
     {
         var propertyElement = BuildPropertyElement(properties);
         var referencesElement = BuildReferencesElement(packageReferences);
+        var additionalFilesElement = BuildAdditionalFilesElement(additionalFiles);
 
         var content = $"""
                        <Project Sdk="Microsoft.NET.Sdk">
@@ -74,6 +76,7 @@ internal sealed class ProjectBuilder : IDisposable
                            <PackageReference Include="Opinionated.DotNet.CodingStandards" Version="*" />
                          </ItemGroup>
                          {referencesElement}
+                         {additionalFilesElement}
                        </Project>
                        """;
 
@@ -96,6 +99,22 @@ internal sealed class ProjectBuilder : IDisposable
         }
 
         return referencesElement;
+    }
+
+    private static XElement BuildAdditionalFilesElement(string[]? additionalFiles)
+    {
+        var element = new XElement("ItemGroup");
+        if (additionalFiles != null)
+        {
+            foreach (var file in additionalFiles)
+            {
+                var item = new XElement("AdditionalFiles");
+                item.SetAttributeValue("Include", file);
+                element.Add(item);
+            }
+        }
+
+        return element;
     }
 
     private static XElement BuildPropertyElement((string Name, string Value)[]? properties)

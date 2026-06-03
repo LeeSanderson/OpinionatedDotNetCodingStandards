@@ -10,10 +10,11 @@ public class CodingStandardsTestBase(PackageFixture fixture, ITestOutputHelper t
 
     internal async Task<ProjectBuilder> CreateProjectBuilder(
         (string Name, string Value)[]? properties = null,
-        (string Name, string Version)[]? packageReferences = null)
+        (string Name, string Version)[]? packageReferences = null,
+        string[]? additionalFiles = null)
     {
         var project = new ProjectBuilder(fixture, testOutputHelper);
-        await project.AddCsprojFile(properties, packageReferences);
+        await project.AddCsprojFile(properties, packageReferences, additionalFiles);
         return project;
     }
 }

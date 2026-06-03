@@ -1,5 +1,8 @@
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
+[RuleDoc("RS0035", "External access to internal symbols outside the restricted namespace(s) is prohibited",
+    HelpLink = "https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md",
+    Untestable = "Requires cross-assembly setup with RestrictedInternalsVisibleToAttribute; not triggerable from a single-project build")]
 [RuleDoc("IDE0001", "Simplify name",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0001",
     Untestable = "IDE-only; not emitted by build analysis")]

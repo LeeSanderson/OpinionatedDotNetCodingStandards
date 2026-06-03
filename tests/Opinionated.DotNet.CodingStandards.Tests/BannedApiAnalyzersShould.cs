@@ -9,6 +9,21 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
+    [RuleDoc("RS0031", "The list of banned symbols contains a duplicate",
+        HelpLink = "https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md")]
+    public async Task ReportDuplicateBannedSymbolEntry()
+    {
+        using var project = await CreateProjectBuilder(additionalFiles: ["BannedSymbols.txt"]);
+        // P:System.DateTime.Now is already in the package's BannedSymbols.NonUtcDates.txt — adding it
+        // again in a second file triggers RS0031.
+        await project.AddFile("BannedSymbols.txt", "P:System.DateTime.Now;Duplicate entry");
+        await project.AddFile("sample.cs", "class Program { static int Main() => 0; }");
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("RS0031").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("RS0030", "Do not use banned APIs",
         HelpLink = "https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md")]
     public async Task BanNonUtcDates()
