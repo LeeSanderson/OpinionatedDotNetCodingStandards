@@ -18,4 +18,13 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("IDE0084", "Use pattern matching (IsNot operator)",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0084",
     Untestable = "VB.NET-only operator; not applicable in C# projects")]
+[RuleDoc("MA0023", "Add RegexOptions.ExplicitCapture",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0023.md",
+    Untestable = "SYSLIB1045 fires for all runtime Regex construction and appears to suppress MA0023 in Meziantou.Analyzer 2.0.286")]
+[RuleDoc("MA0054", "Embed the caught exception as innerException",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0054.md",
+    Untestable = "MA0054 does not fire in the build harness for any catch-and-rethrow pattern; the analyzer's data-flow conditions are not met by single-project builds")]
+[RuleDoc("MA0070", "Obsolete attributes should include explanations",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md",
+    Untestable = "CA1041 covers the same null/empty ObsoleteAttribute message condition and fires instead of MA0070 in this harness")]
 public static class UntestableRules { }
