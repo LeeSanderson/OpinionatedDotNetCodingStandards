@@ -8,6 +8,9 @@ public class RuleDocCoverageShould
     private static readonly string AnalyzerDir =
         Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "analyzers");
 
+    private static readonly string EditorConfigPath =
+        Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
+
     // All active rules not yet covered by [RuleDoc]; shrink this list as tests are added.
     private static readonly IReadOnlyCollection<string> KnownUncovered = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
@@ -73,7 +76,7 @@ public class RuleDocCoverageShould
     [Fact]
     public void AllActiveRulesAreCovered()
     {
-        var result = RuleReferenceGenerator.Reconcile(AnalyzerDir, typeof(RuleDocCoverageShould).Assembly, KnownUncovered);
+        var result = RuleReferenceGenerator.Reconcile(AnalyzerDir, typeof(RuleDocCoverageShould).Assembly, KnownUncovered, EditorConfigPath);
 
         result.UncoveredRules.ShouldBeEmpty(
             $"Active rules not covered by [RuleDoc] or KnownUncovered:{Environment.NewLine}{string.Join(Environment.NewLine, result.UncoveredRules)}");

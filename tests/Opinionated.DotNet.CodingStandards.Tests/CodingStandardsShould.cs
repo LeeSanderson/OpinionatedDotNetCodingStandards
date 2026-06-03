@@ -325,6 +325,8 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
     }
 
     [Fact]
+    [RuleDoc("IDE0049", "Use language keywords instead of framework type names",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0049")]
     public async Task RequireLanguageKeywordsOverFrameworkTypes()
     {
         using var project = await CreateProjectBuilder();

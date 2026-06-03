@@ -6,12 +6,20 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 
 public static class RuleReferenceGenerator
 {
-    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir)
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir, string? editorConfigPath = null)
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var file in Directory.GetFiles(analyzerDir, "*.editorconfig"))
         {
             foreach (var (id, _, _, _) in ParseEnforcedRules(file))
+            {
+                result.Add(id);
+            }
+        }
+
+        if (editorConfigPath != null)
+        {
+            foreach (var (id, _, _, _) in ParseEnforcedRules(editorConfigPath))
             {
                 result.Add(id);
             }
@@ -43,9 +51,9 @@ public static class RuleReferenceGenerator
     }
 
     public static ReconciliationResult Reconcile(
-        string analyzerDir, Assembly testAssembly, IReadOnlyCollection<string> knownUncovered)
+        string analyzerDir, Assembly testAssembly, IReadOnlyCollection<string> knownUncovered, string? editorConfigPath = null)
     {
-        var activeRules = CollectActiveRules(analyzerDir);
+        var activeRules = CollectActiveRules(analyzerDir, editorConfigPath);
         var docEntries = CollectRuleDocEntries(testAssembly);
         return Reconcile(activeRules, docEntries, knownUncovered);
     }
@@ -124,7 +132,7 @@ public static class RuleReferenceGenerator
         return docs;
     }
 
-    public static string Generate(string analyzerDir, Assembly testAssembly)
+    public static string Generate(string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
     {
         var ruleDocs = CollectRuleDocs(testAssembly);
         var files = Directory.GetFiles(analyzerDir, "*.editorconfig").OrderBy(Path.GetFileName).ToArray();
@@ -153,29 +161,59 @@ public static class RuleReferenceGenerator
 
             foreach (var rule in rules.OrderBy(r => r.Id, StringComparer.OrdinalIgnoreCase))
             {
-                string description;
-                string helpLink;
-
-                if (ruleDocs.TryGetValue(rule.Id, out var doc))
-                {
-                    description = doc.Description;
-                    helpLink = doc.HelpLink ?? "";
-                }
-                else
-                {
-                    description = rule.Description;
-                    helpLink = rule.HelpLink;
-                }
-
-                var helpCell = string.IsNullOrEmpty(helpLink) ? "" : $"[docs]({helpLink})";
-                var desc = description.Replace("|", "\\|");
-                sb.AppendLine($"| `{rule.Id}` | {desc} | {rule.Severity} | {helpCell} |");
+                AppendRuleRow(sb, rule, ruleDocs);
             }
 
             sb.AppendLine();
         }
 
+        if (editorConfigPath != null)
+        {
+            var editorRules = ParseEnforcedRules(editorConfigPath);
+            if (editorRules.Count > 0)
+            {
+                sb.AppendLine("## IDE / editor rules");
+                sb.AppendLine();
+                sb.AppendLine("These rules are configured in the IDE tier. Build enforcement varies: some fire");
+                sb.AppendLine("during `dotnet build`, others are IDE-only and not emitted by Roslyn build analyzers.");
+                sb.AppendLine();
+                sb.AppendLine("| Rule ID | Description | Severity | Help |");
+                sb.AppendLine("|---------|-------------|----------|------|");
+
+                foreach (var rule in editorRules.OrderBy(r => r.Id, StringComparer.OrdinalIgnoreCase))
+                {
+                    AppendRuleRow(sb, rule, ruleDocs);
+                }
+
+                sb.AppendLine();
+            }
+        }
+
         return sb.ToString();
+    }
+
+    private static void AppendRuleRow(
+        StringBuilder sb,
+        (string Id, string Description, string Severity, string HelpLink) rule,
+        Dictionary<string, RuleDocAttribute> ruleDocs)
+    {
+        string description;
+        string helpLink;
+
+        if (ruleDocs.TryGetValue(rule.Id, out var doc))
+        {
+            description = doc.Description;
+            helpLink = doc.HelpLink ?? "";
+        }
+        else
+        {
+            description = rule.Description;
+            helpLink = rule.HelpLink;
+        }
+
+        var helpCell = string.IsNullOrEmpty(helpLink) ? "" : $"[docs]({helpLink})";
+        var desc = description.Replace("|", "\\|");
+        sb.AppendLine($"| `{rule.Id}` | {desc} | {rule.Severity} | {helpCell} |");
     }
 
     private static List<(string Id, string Description, string Severity, string HelpLink)> ParseEnforcedRules(string filePath)
