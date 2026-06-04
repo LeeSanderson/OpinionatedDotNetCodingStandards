@@ -20,6 +20,52 @@ own rule ID. This was confirmed by systematic control/violation probe testing (c
 | `IDE0070` | Manual `GetHashCode` combining → `HashCode.Combine(...)` | `note:IDE0070` | `error:IDE0055` |
 | `IDE0079` | Unnecessary `[SuppressMessage]` / `#pragma warning disable` | `note:IDE0079` | `error:IDE0055` |
 
+## CA1066 — distinct but related: diagnostic simply absent from SARIF
+
+CA1066 ("Implement IEquatable when overriding Object.Equals") is a separate failure
+mode added during issue 010 (commit `63c9751`, 2026-06-04). Unlike the IDE rules above,
+CA1066 does **not** re-route through IDE0055 — the formatter fires correctly when the
+violation code is formatted correctly. The rule simply never appears in SARIF at all.
+
+| Rule | What it does | Expected in SARIF | Actual in SARIF |
+|------|-------------|-------------------|-----------------|
+| `CA1066` | Class overrides `Equals(object)` without `IEquatable<T>` | `error:CA1066` | *(absent)* |
+
+**Probes used (all formatted correctly with blank lines between types):**
+
+```csharp
+// violation: override Equals without IEquatable<Box> → no CA1066, no IDE0055
+public class Box
+{
+    public override bool Equals(object? obj) => obj is Box;
+    public override int GetHashCode() => 0;
+}
+
+// control: override Equals with IEquatable<Box> → no CA1066, no IDE0055 (correct)
+public class Box : System.IEquatable<Box>
+{
+    public override bool Equals(object? obj) => obj is Box;
+    public bool Equals(Box? other) => other != null;
+    public override int GetHashCode() => 0;
+}
+```
+
+Both violation and control produce only `error:SA1649` (file-name mismatch, harmless)
+and zero CA1066. The rule is configured as `dotnet_diagnostic.CA1066.severity = warning`
+in the package editorconfig with `TreatWarningsAsErrors=true`.
+
+Note: CA1065 (also `# Enabled: False, Severity: warning` in the same editorconfig)
+fires correctly as `error:CA1065`, so the `Enabled: False` comment alone does not
+explain the absence.
+
+**What to investigate for CA1066:**
+
+1. Check whether CA1066 is marked with `EnforceOnBuild = Never` or equivalent metadata
+   in the NetAnalyzers 10.0.x source (opposite of the IDE rule investigation above).
+2. Confirm whether CA1066 was deprecated or folded into another rule in a recent
+   NetAnalyzers release (e.g. merged into CA1067 or silently disabled).
+3. Test on NetAnalyzers 9.x to see if the rule fired in earlier versions.
+
 ## What the probes showed
 
 **Methodology:** paired violation/control tests differing only in whether the
