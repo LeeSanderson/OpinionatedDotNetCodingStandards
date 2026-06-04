@@ -41,13 +41,13 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
     Untestable = "In .NET 10 Roslyn, x = x ?? y (null-coalescing compound assignment) fires as IDE0054 (general compound assignment) not IDE0074; the two rules share the same diagnostic trigger in this analyzer version")]
 [RuleDoc("IDE0070", "Use 'System.HashCode'",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070",
-    Untestable = "In .NET 10 Roslyn, override GetHashCode() returning a manual combination fires IDE0055 (formatter) instead of IDE0070; the style fix triggers a formatter interaction that prevents IDE0070 from appearing in build SARIF")]
+    Untestable = "In .NET 10 Roslyn build analysis, IDE0070 emits IDE0055 at the containing type declaration instead of its own diagnostic ID; confirmed by control/violation probes: the XOR GetHashCode pattern triggers IDE0055 across every file in the compilation, and replacing it with HashCode.Combine removes IDE0055 entirely. The rule uses the formatter as its build-mode enforcement mechanism.")]
 [RuleDoc("IDE0079", "Remove unnecessary suppression",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0079",
-    Untestable = "In .NET 10 Roslyn, unnecessary SuppressMessage attributes fire IDE0055 (formatter) instead of IDE0079; the style fix triggers a formatter interaction that prevents IDE0079 from appearing in build SARIF")]
+    Untestable = "In .NET 10 Roslyn build analysis, IDE0079 emits IDE0055 at the containing type declaration instead of its own diagnostic ID; confirmed by control/violation probes: an unnecessary SuppressMessage triggers IDE0055 while an equivalent necessary suppression does not. The rule uses the formatter as its build-mode enforcement mechanism.")]
 [RuleDoc("IDE0260", "Use pattern matching",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0260",
-    Untestable = "In .NET 10 Roslyn, 'obj as T != null' null-check pattern fires IDE0055 (formatter) instead of IDE0260; the style fix triggers a formatter interaction that prevents IDE0260 from appearing in build SARIF")]
+    Untestable = "In .NET 10 Roslyn build analysis, IDE0260 emits IDE0055 at the containing type declaration instead of its own diagnostic ID; confirmed by control/violation probes: 'obj as T != null' triggers IDE0055 while the equivalent 'obj is T' does not. The rule uses the formatter as its build-mode enforcement mechanism.")]
 [RuleDoc("IDE0302", "Simplify collection initialization",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0302",
     Untestable = "In .NET 10 Roslyn, empty collection factory methods (Array.Empty, Enumerable.Empty, ImmutableArray<T>.Empty) fire as IDE0301 (collection initialization) not IDE0302; the empty-specific rule is subsumed by IDE0301 in the build analyzer")]
