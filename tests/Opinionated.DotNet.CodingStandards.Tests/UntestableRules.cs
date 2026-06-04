@@ -39,9 +39,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("IDE0074", "Use compound assignment",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0074",
     Untestable = "In .NET 10 Roslyn, x = x ?? y (null-coalescing compound assignment) fires as IDE0054 (general compound assignment) not IDE0074; the two rules share the same diagnostic trigger in this analyzer version")]
-[RuleDoc("IDE0241", "Remove unnecessary nullable directive",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0241",
-    Untestable = "In .NET 10 Roslyn, #nullable restore at the top of a file fires as IDE0240 (redundant nullable directive) rather than IDE0241; the distinction between redundant and unnecessary is not observed in build output")]
 [RuleDoc("IDE0070", "Use 'System.HashCode'",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070",
     Untestable = "In .NET 10 Roslyn, override GetHashCode() returning a manual combination fires IDE0055 (formatter) instead of IDE0070; the style fix triggers a formatter interaction that prevents IDE0070 from appearing in build SARIF")]
@@ -51,9 +48,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("IDE0260", "Use pattern matching",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0260",
     Untestable = "In .NET 10 Roslyn, 'obj as T != null' null-check pattern fires IDE0055 (formatter) instead of IDE0260; the style fix triggers a formatter interaction that prevents IDE0260 from appearing in build SARIF")]
-[RuleDoc("IDE0270", "Use coalesce expression",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0270",
-    Untestable = "In .NET 10 Roslyn, null-check-then-throw patterns fire IDE0055 (formatter) instead of IDE0270; the style fix triggers a formatter interaction that prevents IDE0270 from appearing in build SARIF")]
 [RuleDoc("IDE0302", "Simplify collection initialization",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0302",
     Untestable = "In .NET 10 Roslyn, empty collection factory methods (Array.Empty, Enumerable.Empty, ImmutableArray<T>.Empty) fire as IDE0301 (collection initialization) not IDE0302; the empty-specific rule is subsumed by IDE0301 in the build analyzer")]

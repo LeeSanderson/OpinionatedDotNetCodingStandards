@@ -1656,4 +1656,54 @@ public class CodingStandardsShould(PackageFixture fixture, ITestOutputHelper tes
 
         buildOutput.HasNote("IDE2000").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("IDE0241", "Remove unnecessary nullable directive",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0241")]
+    public async Task RejectUnnecessaryNullableRestore()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs",
+            """
+            namespace test;
+            #nullable disable
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            #nullable restore
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0241").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("IDE0270", "Use coalesce expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0270")]
+    public async Task RejectNullCheckThrowWhenCoalesceThrowApplies()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static string Get(string? input)
+                {
+                    string? s = input?.Trim();
+                    if (s == null)
+                    {
+                        throw new System.InvalidOperationException("null");
+                    }
+
+                    return s;
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0270").ShouldBeTrue();
+    }
 }
