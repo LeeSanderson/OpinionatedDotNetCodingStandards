@@ -1057,4 +1057,366 @@ public class CodeAnalysisRulesShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("CA2245").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1003", "Use generic event handler instances",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1003")]
+    public async Task RequireGenericEventHandlerInstances()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public delegate void MyEventHandler(object sender, EventArgs e);
+            public class MyClass
+            {
+                public event MyEventHandler? Changed;
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1003").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1008", "Enums should have zero value",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1008")]
+    public async Task RequireEnumZeroValue()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public enum Status { Active = 1, Inactive = 2 }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1008").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1012", "Abstract types should not have public constructors",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1012")]
+    public async Task ProhibitPublicConstructorsOnAbstractTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public abstract class AbstractBase
+            {
+                public AbstractBase() { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1012").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1019", "Define accessors for attribute arguments",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1019")]
+    public async Task RequireAccessorsForAttributeArguments()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            [AttributeUsage(AttributeTargets.Class)]
+            public class MyAttribute : Attribute
+            {
+                public MyAttribute(string name) { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1019").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1027", "Mark enums with FlagsAttribute",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1027")]
+    public async Task RequireFlagsAttributeOnBitmaskEnums()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public enum Permissions { None = 0, Read = 1, Write = 2, Execute = 4 }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1027").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1028", "Enum Storage should be Int32",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1028")]
+    public async Task RequireInt32EnumStorage()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public enum Color : byte { Red, Green, Blue }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1028").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1030", "Use events where appropriate",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1030")]
+    public async Task RequireEventsForEventRaisingMethods()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyClass
+            {
+                public void RaiseMyEvent() { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1030").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1033", "Interface methods should be callable by child types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1033")]
+    public async Task RequireInterfaceMethodsCallableByChildTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public class MyClass : IComparable
+            {
+                int IComparable.CompareTo(object? obj) => 0;
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1033").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1043", "Use Integral Or String Argument For Indexers",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1043")]
+    public async Task RequireIntegralOrStringIndexers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyCollection
+            {
+                public int this[double key] => 0;
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1043").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1044", "Properties should not be write only",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1044")]
+    public async Task ProhibitWriteOnlyProperties()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyClass
+            {
+                private int _value;
+                public int Value { set { _value = value; } }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1044").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1046", "Do not overload equality operator on reference types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1046")]
+    public async Task ProhibitEqualityOperatorOnReferenceTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            #pragma warning disable CS0660, CS0661
+            public class MyClass
+            {
+                public static bool operator ==(MyClass? a, MyClass? b) => false;
+                public static bool operator !=(MyClass? a, MyClass? b) => true;
+            }
+            #pragma warning restore CS0660, CS0661
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1046").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1052", "Static holder types should be Static or NotInheritable",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1052")]
+    public async Task RequireStaticClassForStaticOnlyMembers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class Utilities
+            {
+                public static void DoWork() { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1052").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1058", "Types should not extend certain base types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1058")]
+    public async Task ProhibitExtendingApplicationException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyException : System.ApplicationException
+            {
+                public MyException(string message) : base(message) { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1058").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1063", "Implement IDisposable Correctly",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1063")]
+    public async Task RequireCorrectIDisposableImplementation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public class MyClass : IDisposable
+            {
+                ~MyClass() { }
+                public void Dispose() { }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1063").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1065", "Do not raise exceptions in unexpected locations",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1065")]
+    public async Task ProhibitExceptionsInUnexpectedLocations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyClass
+            {
+                static MyClass() { throw new System.InvalidOperationException("init failed"); }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1065").ShouldBeTrue();
+    }
 }
