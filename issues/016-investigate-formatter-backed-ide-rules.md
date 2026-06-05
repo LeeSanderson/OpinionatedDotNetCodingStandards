@@ -256,6 +256,117 @@ calls from `Microsoft.Extensions.Logging`. The package is not available in the s
 
 ---
 
+## New untestable rules from issue 012 (added 2026-06-05)
+
+Eight CA rules were marked `Untestable` during the issue-012 backfill pass (CA18xx
+NetAnalyzers performance rules). They fall into two distinct failure modes.
+
+### CA1802 / CA1842 / CA1843 / CA1853 / CA1870 — diagnostic absent from SARIF
+
+These five rules are configured as `dotnet_diagnostic.<ID>.severity = warning` with
+`TreatWarningsAsErrors=true` but never appear in SARIF for any tested violation pattern.
+
+| Rule | What it does | Expected in SARIF | Actual in SARIF |
+|------|-------------|-------------------|-----------------|
+| `CA1802` | `public static readonly` field initialized with compile-time constant → should be `const` | `error:CA1802` | *(absent)* |
+| `CA1842` | `Task.WhenAll(singleTask)` → redundant, use task directly | `error:CA1842` | *(absent)* |
+| `CA1843` | `Task.WaitAll(singleTask)` → redundant, use task directly | `error:CA1843` | *(absent)* |
+| `CA1853` | `dict.ContainsKey(k)` followed by `dict[k]` / `dict.TryGetValue` → use `TryGetValue` directly | `error:CA1853` | *(absent)* |
+| `CA1870` | `span.IndexOfAny(SearchValues.Create(...))` inline → cache `SearchValues` as static field | `error:CA1870` | *(absent)* |
+
+**Probes used (CA1802):**
+```csharp
+// violation: public static readonly field with constant initializer
+public class Config
+{
+    public static readonly string DefaultName = "app";
+    public static readonly int MaxRetries = 3;
+}
+```
+SARIF: absent (other diagnostics such as IDE0005/IDE0055 fire but not CA1802).
+
+**Probes used (CA1842/CA1843):**
+```csharp
+// CA1842 violation: Task.WhenAll with a single task
+var t = Task.FromResult(42);
+await Task.WhenAll(t);
+
+// CA1843 violation: Task.WaitAll with a single task
+var t = Task.FromResult(0);
+Task.WaitAll(t);
+```
+Multiple patterns tried (generic `Task<T>`, non-generic `Task`, `Task.CompletedTask`,
+`Task.Delay(0)`). CA1842/CA1843 never appear in SARIF.
+
+**Probes used (CA1853):**
+```csharp
+// violation: ContainsKey + TryGetValue
+if (!dict.ContainsKey("key"))
+    dict.TryGetValue("key", out _);
+
+// also tried: ContainsKey + dict[key], ContainsKey + TryAdd
+```
+CA1853 absent; CA1864 (ContainsKey + Add → TryAdd) fires correctly.
+
+**Probes used (CA1870):**
+```csharp
+// violation: SearchValues.Create inline in IndexOfAny
+var text = "hello world".AsSpan();
+text.IndexOfAny(System.Buffers.SearchValues.Create("aeiou"));
+
+// also tried: ContainsAny, fully-qualified type, various using styles
+```
+CA1870 absent across all patterns; IDE0055 and IDE0007 fire but CA1870 never appears.
+
+**What to investigate for all five rules:**
+1. Check whether each rule is flagged `EnforceOnBuild = Never` or `CustomTags.NotConfigurable`
+   in the NetAnalyzers 10.0.x source — same investigation recommended for CA1066 and CA1419.
+2. Check for any `.editorconfig` or MSBuild property that silently overrides the configured
+   severity to `none` in the build harness context.
+3. Test on NetAnalyzers 9.x to determine if these rules fired in earlier versions.
+
+---
+
+### CA1845 / CA1867 — subsumed by another rule in .NET 10
+
+These two rules fire correctly in isolation, but a different (more general) rule fires
+first for the canonical violation pattern, preventing the specific rule from appearing.
+
+| Rule | Expected | Subsumes | Why |
+|------|----------|----------|-----|
+| `CA1845` | `string.Concat(s.Substring(0, n), "!")` → use span-based Concat | `IDE0057` fires instead | The Substring call fires "Substring can be simplified to range indexer" before CA1845 sees the concat |
+| `CA1867` | `s.EndsWith("x", StringComparison.Ordinal)` → use char overload | `CA1865` fires instead | In .NET 10 CA1865 fires for both StartsWith and EndsWith with Ordinal; CA1867 is only supposed to cover EndsWith without StringComparison, but CA1866 fires for that case |
+
+**CA1845 probe:**
+```csharp
+// canonical violation — fires IDE0057, not CA1845
+string.Concat(s.Substring(0, 5), "!");
+
+// suppressing IDE0057 does not reveal CA1845 — still absent
+```
+
+**CA1867 probe:**
+```csharp
+// EndsWith without StringComparison → CA1866 fires (not CA1867)
+s.EndsWith("x");
+
+// EndsWith with StringComparison.Ordinal → CA1865 fires (not CA1867)
+s.EndsWith("x", StringComparison.Ordinal);
+```
+In .NET 10, CA1866 covers both `StartsWith(string)` and `EndsWith(string)` without
+StringComparison; CA1865 covers both with `StringComparison.Ordinal`. CA1867 never fires
+independently for any tested EndsWith pattern.
+
+**What to investigate:**
+1. **CA1845**: Determine whether suppressing IDE0057 (e.g. via `#pragma warning disable IDE0057`)
+   causes CA1845 to appear. If so, the rule can be tested with an explicit suppression in the
+   violation file.
+2. **CA1867**: Check the NetAnalyzers 10.0.x source to confirm whether CA1867 was intentionally
+   subsumed by CA1866/CA1865, or whether a separate trigger pattern exists that fires CA1867
+   independently (e.g. `Contains(string)` with a single-char argument).
+
+---
+
 ## Acceptance criteria
 
 - The root cause is identified and linked to a Roslyn source location or GitHub issue.
