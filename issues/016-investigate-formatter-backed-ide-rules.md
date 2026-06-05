@@ -491,6 +491,128 @@ All trigger compiler errors that prevent SARIF output from the CA2243 analyzer.
 
 ---
 
+## New untestable rules from issue 014 (added 2026-06-05)
+
+46 CA rules were marked `Untestable` during the issue-014 backfill pass (CA23xx/CA30xx/CA5xxx
+NetAnalyzers security rules). They fall into six distinct failure modes.
+
+### CA3075 / CA3077 / CA5360 / CA5367 / CA5384 / CA5385 / CA5402 — diagnostic absent from SARIF
+
+These rules were actively probed with BCL violation patterns but produced no diagnostic in
+NetAnalyzers 10.0.x.
+
+| Rule | What it does | Probed pattern | Actual in SARIF |
+|------|-------------|----------------|-----------------|
+| `CA3075` | Insecure DTD processing in XML | `XmlReaderSettings { DtdProcessing = Parse }` + `XmlReader.Create` | *(absent)* |
+| `CA3077` | Insecure `XmlDocument`/`XmlTextReader` processing | `XmlDocument` with `XmlResolver` + `LoadXml` | *(absent)* |
+| `CA5360` | Dangerous methods in `ISerializable` deserialization | `ISerializable` constructor calling `Process.Start` | *(absent)* |
+| `CA5367` | Serialize types with pointer fields | `[Serializable]` class with `unsafe` `int*` field + `AllowUnsafeBlocks=true` | *(absent)* |
+| `CA5384` | Do not use DSA | `DSA.Create()` + `DSA.SignData()` | *(absent)* |
+| `CA5385` | RSA key size must be sufficient | `RSA.Create(512)` + `RSA.Create()` + `KeySize = 512` | *(absent)* |
+| `CA5402` | `CreateEncryptor` with default IV | `Aes.Create().CreateEncryptor()` (parameterless overload) | *(absent)* |
+
+**What to investigate:**
+1. Check whether each rule is flagged `EnforceOnBuild = Never` in the NetAnalyzers 10.0.x source —
+   same investigation recommended for CA1066 / CA1419 / CA1802 above.
+2. For CA3075/CA3077: confirm whether the `XmlTextReader` constructor approach (which targets
+   `System.Xml.XmlTextReader`) is available on .NET 10 and whether a direct constructor call
+   triggers the rule.
+3. For CA5360: confirm whether the rule requires the `ISerializable` constructor to be reachable
+   via a deserialization path (i.e. a call to `BinaryFormatter.Deserialize` in the same
+   compilation) rather than firing on the constructor declaration alone.
+4. For CA5367: confirm whether `AllowUnsafeBlocks` is actually set to `true` in the generated
+   test project when the inline code uses `unsafe`; the rule may require the `[Serializable]`
+   class to be in a context that would normally serialize it.
+5. For CA5384/CA5385: check whether the abstract-factory pattern (`DSA.Create()`,
+   `RSA.Create(int)`) is the specific trigger or whether the rule only fires on concrete
+   subclass instantiation (e.g. `new DSACryptoServiceProvider()`, `new RSACryptoServiceProvider(512)`).
+6. For CA5402: confirm whether `CreateEncryptor()` with no arguments is the target — the
+   documentation describes this as firing when the default IV is used; try an explicit
+   `CreateEncryptor(key, null)` call to see if the parameterized form fires CA5402.
+
+---
+
+### CA2300–CA2302 / CA5373 / CA5387 — SYSLIB obsoletion supersedes the CA diagnostic
+
+The underlying API is marked `[Obsolete]` with a SYSLIB error code in .NET 9+. With
+`TreatWarningsAsErrors=true` the SYSLIB diagnostic fires as a build error before the CA rule
+has a chance to appear in SARIF.
+
+| Rule | API | SYSLIB error |
+|------|-----|-------------|
+| `CA2300` | `BinaryFormatter` (any use) | `SYSLIB0011` |
+| `CA2301` | `BinaryFormatter.Deserialize` without `Binder` | `SYSLIB0011` |
+| `CA2302` | Data-flow variant of CA2301 | `SYSLIB0011` |
+| `CA5373` | `PasswordDeriveBytes` | `SYSLIB0041` |
+| `CA5387` | `Rfc2898DeriveBytes` constructor | `SYSLIB0060` |
+
+**What to investigate:**
+1. Confirm whether adding a `#pragma warning disable SYSLIB0011` / `SYSLIB0041` / `SYSLIB0060`
+   in the violation file (without suppressing globally) allows the CA diagnostic to appear
+   alongside or after the suppressed SYSLIB warning.
+2. If suppression works, determine whether the test harness's code-injection mechanism can
+   inject a targeted pragma per test so these rules can be promoted to tested.
+3. If SYSLIB obsoletion permanently prevents the CA rule from appearing even with suppression,
+   confirm the `Untestable` entries are correctly worded.
+
+---
+
+### CA2305 / CA2310–CA2312 / CA2315 / CA2321–CA2322 / CA3061 / CA5368 / CA5370 / CA5374 / CA5396 — removed or .NET Framework-only types
+
+The types these rules target were removed from the cross-platform BCL in .NET Core/5+.
+
+| Rule | Missing type |
+|------|-------------|
+| `CA2305` | `System.Web.UI.LosFormatter` |
+| `CA2310`–`CA2312` | `System.Runtime.Serialization.NetDataContractSerializer` |
+| `CA2315` | `System.Web.UI.ObjectStateFormatter` |
+| `CA2321`–`CA2322` | `System.Web.Script.Serialization.JavaScriptSerializer` |
+| `CA3061` | `System.Xml.Schema.XmlSchemaCollection` (.NET 1.x) |
+| `CA5368` | `System.Web.UI.Page` |
+| `CA5370` | `System.Xml.XmlValidatingReader` (.NET 1.x) |
+| `CA5374` | `System.Xml.Xsl.XslTransform` (.NET 1.x) |
+| `CA5396` | `System.Web.HttpCookie` |
+
+These are permanently untestable in a .NET 5+ build harness — no investigation required.
+
+---
+
+### CA2326–CA2330 / CA5375–CA5377 / CA5382–CA5383 / CA5391 / CA5395 / CA5404–CA5405 — external NuGet package dependency
+
+The rules target APIs from packages not included in the simple build harness.
+
+| Rule group | Required package |
+|-----------|-----------------|
+| `CA2326`–`CA2330` | `Newtonsoft.Json` (`TypeNameHandling` / `JsonSerializer`) |
+| `CA5375`–`CA5377` | Azure Storage SDK (`WindowsAzure.Storage` / `Azure.Storage.Blobs`) |
+| `CA5382`–`CA5383` | `Microsoft.AspNetCore.Http` (cookie options) |
+| `CA5391` | `Microsoft.AspNetCore.Mvc` (antiforgery) |
+| `CA5395` | `System.Web.Mvc` or `Microsoft.AspNetCore.Mvc` (HTTP verb attributes) |
+| `CA5404`–`CA5405` | `Microsoft.IdentityModel.Tokens` (token validation) |
+
+**What to investigate:**
+1. Determine whether `CreateProjectBuilder` in the test harness supports adding NuGet package
+   references to the generated project. If so, the Newtonsoft.Json and IdentityModel rules could
+   be promoted to tested at low cost (small, stable packages with no network side-effects in CI).
+2. The Azure Storage and ASP.NET Core rules are heavier dependencies — confirm whether adding them
+   to the harness is practical or whether they should remain permanently untestable.
+
+---
+
+### CA2350–CA2356 / CA2361–CA2362 / CA3147 / CA5363 / CA5365 / CA5381 / CA5388 — taint analysis, ASP.NET framework, or auto-generated code
+
+These rules require capabilities the single-project build harness cannot provide:
+
+| Category | Rules |
+|----------|-------|
+| Inter-procedural taint analysis (untrusted data reaching a sink) | `CA2350`, `CA2351`, `CA2354`, `CA2355`, `CA5381`, `CA5388` |
+| Auto-generated `DataSet`/`DataTable` classes (DataSet Designer / xsd.exe) | `CA2361`, `CA2362` |
+| ASP.NET MVC (`System.Web.Mvc`) not available in .NET Core/5+ | `CA2356`, `CA3147`, `CA5363`, `CA5365`, `CA5368`, `CA5395` |
+
+These are permanently untestable in the current harness — no investigation required.
+
+---
+
 ## Acceptance criteria
 
 - The root cause is identified and linked to a Roslyn source location or GitHub issue.
