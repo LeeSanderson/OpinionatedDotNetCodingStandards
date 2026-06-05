@@ -72,4 +72,34 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA1727", "Use PascalCase for named placeholders",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727",
     Untestable = "Fires on non-PascalCase named placeholders in structured logging message templates (ILogger extension methods); Microsoft.Extensions.Logging is not available in the simple single-project build harness")]
+[RuleDoc("CA1824", "Mark assemblies with NeutralResourcesLanguageAttribute",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1824",
+    Untestable = "Fires only when an assembly contains embedded .resx resources but lacks NeutralResourcesLanguageAttribute; the test harness does not support adding EmbeddedResource items to the csproj")]
+[RuleDoc("CA1828", "Do not use CountAsync() or LongCountAsync() when AnyAsync() can be used",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1828",
+    Untestable = "Fires only for Entity Framework Core's CountAsync()/LongCountAsync() extension methods on IQueryable<T>; the full EF Core package is not practical to add to a standalone single-project harness")]
+[RuleDoc("CA1873", "Avoid potentially expensive logging",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873",
+    Untestable = "Fires on string concatenation/interpolation in ILogger.LogXxx calls; Microsoft.Extensions.Logging is not available in the simple single-project build harness (same constraint as CA1727)")]
+[RuleDoc("CA1845", "Use span-based 'string.Concat'",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845",
+    Untestable = "In .NET 10 NetAnalyzers build analysis, the canonical violation pattern string.Concat(s.Substring(0, 5), \"!\") fires IDE0057 (Substring can be simplified to a range indexer) instead of CA1845; CA1845 is absent from SARIF output even when IDE0057 is suppressed")]
+[RuleDoc("CA1842", "Do not use 'WhenAll' with a single task",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842",
+    Untestable = "In .NET 10 NetAnalyzers build analysis, CA1842 does not fire for Task.WhenAll(singleTask) with either generic Task<T> or non-generic Task arguments; exhaustive probing with multiple patterns confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1842.severity = warning configured")]
+[RuleDoc("CA1843", "Do not use 'WaitAll' with a single task",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1843",
+    Untestable = "In .NET 10 NetAnalyzers build analysis, CA1843 does not fire for Task.WaitAll(singleTask) with either generic Task<T> or non-generic Task arguments; exhaustive probing with multiple patterns confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1843.severity = warning configured")]
+[RuleDoc("CA1867", "Use char overload",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867",
+    Untestable = "In .NET 10 NetAnalyzers, CA1866 fires for both string.StartsWith(string) and string.EndsWith(string) single-char patterns without StringComparison (subsuming CA1867), and CA1865 fires for both with StringComparison.Ordinal; CA1867 never fires independently for any tested EndsWith pattern")]
+[RuleDoc("CA1802", "Use literals where appropriate",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802",
+    Untestable = "CA1802 does not fire in NetAnalyzers 10.0.x build analysis for public static readonly fields initialized with compile-time constants (string, int, bool) in either static or instance classes; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1802.severity = warning configured")]
+[RuleDoc("CA1853", "Unnecessary call to 'Dictionary.ContainsKey(key)'",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853",
+    Untestable = "CA1853 does not fire in NetAnalyzers 10.0.x build analysis for ContainsKey followed by TryGetValue or TryAdd patterns; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1853.severity = warning configured. CA1864 (prefer TryAdd over ContainsKey+Add) fires correctly and is covered separately")]
+[RuleDoc("CA1870", "Use a cached 'SearchValues' instance",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870",
+    Untestable = "CA1870 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern where SearchValues.Create is called inline in an IndexOfAny/ContainsAny call; exhaustive probing with multiple patterns confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1870.severity = warning configured")]
 public static class UntestableRules { }

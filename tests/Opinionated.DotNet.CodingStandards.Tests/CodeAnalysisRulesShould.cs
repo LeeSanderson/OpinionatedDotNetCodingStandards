@@ -1878,4 +1878,795 @@ public class CodeAnalysisRulesShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("CA1725").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1810", "Initialize reference type static fields inline",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1810")]
+    public async Task RequireInlineStaticFieldInitialization()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Config
+            {
+                public static readonly string Value;
+                static Config() { Value = "hello"; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1810").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1813", "Avoid unsealed attributes",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1813")]
+    public async Task RequireSealedAttributes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            [System.AttributeUsage(System.AttributeTargets.Class)]
+            public class MyAttribute : System.Attribute { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1813").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1814", "Prefer jagged arrays over multidimensional",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1814")]
+    public async Task PreferJaggedArraysOverMultidimensional()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class Grid
+            {
+                public int[,] Matrix = new int[3, 3];
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1814").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1815", "Override equals and operator equals on value types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1815")]
+    public async Task RequireEqualsOverrideOnValueTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public struct Point { public int X; public int Y; }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1815").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1820", "Test for empty strings using string length",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1820")]
+    public async Task RequireStringLengthForEmptyStringTests()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string s = "hello";
+                    if (s.Equals(string.Empty)) { }
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1820").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1821", "Remove empty Finalizers",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1821")]
+    public async Task ProhibitEmptyFinalizers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyClass { ~MyClass() { } }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1821").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1823", "Avoid unused private fields",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1823")]
+    public async Task ProhibitUnusedPrivateFields()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyClass
+            {
+                private string _unused = "value";
+                public string GetValue() => "other";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1823").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1830", "Prefer strongly-typed Append and Insert method overloads on StringBuilder",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1830")]
+    public async Task RequireStronglyTypedStringBuilderOverloads()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var sb = new System.Text.StringBuilder();
+                    sb.Append(true.ToString());
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1830").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1831", "Use AsSpan or AsMemory instead of Range-based indexers when appropriate",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1831")]
+    public async Task RequireAsSpanInsteadOfStringRangeIndexer()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string text = "hello world";
+                    System.ReadOnlySpan<char> slice = text[0..5];
+                    return slice.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1831").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1832", "Use AsSpan or AsMemory instead of Range-based indexers when appropriate",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1832")]
+    public async Task RequireAsSpanInsteadOfArrayRangeIndexerForReadOnlySpan()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    byte[] bytes = new byte[10];
+                    System.ReadOnlySpan<byte> slice = bytes[2..];
+                    return slice.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1832").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1833", "Use AsSpan or AsMemory instead of Range-based indexers when appropriate",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1833")]
+    public async Task RequireAsMemoryInsteadOfArrayRangeIndexerForReadOnlyMemory()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    byte[] bytes = new byte[10];
+                    System.Memory<byte> slice = bytes[2..];
+                    return slice.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1833").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1835", "Prefer the 'Memory'-based overloads for 'ReadAsync' and 'WriteAsync'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1835")]
+    public async Task RequireMemoryBasedStreamReadAsyncOverloads()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.IO;
+            using System.Threading.Tasks;
+            namespace test;
+            public static class Program
+            {
+                public static async Task<int> Main()
+                {
+                    using var stream = new MemoryStream();
+                    var buffer = new byte[1024];
+                    await stream.ReadAsync(buffer, 0, buffer.Length);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1835").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1837", "Use 'Environment.ProcessId'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1837")]
+    public async Task RequireEnvironmentProcessId()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Diagnostics;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int pid = Process.GetCurrentProcess().Id;
+                    return pid == 0 ? 1 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1837").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1838", "Avoid 'StringBuilder' parameters for P/Invokes",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1838")]
+    public async Task ProhibitStringBuilderPInvokeParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Runtime.InteropServices;
+            using System.Text;
+            namespace test;
+            internal static class NativeMethods
+            {
+                [DllImport("kernel32.dll", CharSet = CharSet.Unicode)]
+                internal static extern int GetTempPath(int nBufferLength, StringBuilder lpBuffer);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1838").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1839", "Use 'Environment.ProcessPath'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1839")]
+    public async Task RequireEnvironmentProcessPath()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Diagnostics;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string path = Process.GetCurrentProcess().MainModule!.FileName;
+                    return path == null ? 1 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1839").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1840", "Use 'Environment.CurrentManagedThreadId'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1840")]
+    public async Task RequireEnvironmentCurrentManagedThreadId()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Threading;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int threadId = Thread.CurrentThread.ManagedThreadId;
+                    return threadId == 0 ? 1 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1840").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1844", "Provide memory-based overrides of async methods when subclassing 'Stream'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1844")]
+    public async Task RequireMemoryBasedStreamAsyncOverrides()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.IO;
+            using System.Threading;
+            using System.Threading.Tasks;
+            namespace test;
+            public class MyStream : Stream
+            {
+                public override bool CanRead => true;
+                public override bool CanSeek => false;
+                public override bool CanWrite => true;
+                public override long Length => 0;
+                public override long Position { get => 0; set { } }
+                public override void Flush() { }
+                public override int Read(byte[] buffer, int offset, int count) => 0;
+                public override long Seek(long offset, SeekOrigin origin) => 0;
+                public override void SetLength(long value) { }
+                public override void Write(byte[] buffer, int offset, int count) { }
+                public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken ct)
+                    => Task.FromResult(0);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1844").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1849", "Call async methods when in an async method",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1849")]
+    public async Task RequireAsyncMethodsInAsyncContext()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Threading;
+            using System.Threading.Tasks;
+            namespace test;
+            public static class Program
+            {
+                public static async Task<int> Main()
+                {
+                    var semaphore = new SemaphoreSlim(1);
+                    semaphore.Wait();
+                    return await Task.FromResult(0);
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1849").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1850", "Prefer static 'HashData' method over 'ComputeHash'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850")]
+    public async Task RequireStaticHashDataMethod()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    byte[] data = new byte[10];
+                    using var sha = SHA256.Create();
+                    byte[] hash = sha.ComputeHash(data);
+                    return hash.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1850").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1851", "Possible multiple enumerations of 'IEnumerable' collection",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1851")]
+    public async Task ProhibitMultipleEnumerationsOfIEnumerable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Collections.Generic;
+            using System.Linq;
+            namespace test;
+            public static class Program
+            {
+                public static int CountItems(IEnumerable<int> items)
+                {
+                    if (!items.Any())
+                        return 0;
+                    return items.Count();
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1851").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1855", "Prefer 'Clear' over 'Fill'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1855")]
+    public async Task PreferClearOverFillDefault()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    byte[] bytes = new byte[10];
+                    System.Span<byte> span = bytes;
+                    span.Fill(default);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1855").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1856", "Incorrect usage of ConstantExpected attribute",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1856")]
+    public async Task ProhibitIncorrectConstantExpectedUsage()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Diagnostics.CodeAnalysis;
+            namespace test;
+            public static class Program
+            {
+                public static int Method([ConstantExpected(Min = 10, Max = 5)] int value) => value;
+                public static int Main() => Method(7);
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1856").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1857", "A constant is expected for the parameter",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1857")]
+    public async Task RequireConstantForConstantExpectedParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Diagnostics.CodeAnalysis;
+            namespace test;
+            public static class Helper
+            {
+                public static int Double([ConstantExpected] int x) => x * 2;
+            }
+            public static class Program
+            {
+                static int _multiplier = 3;
+                public static int Main() => Helper.Double(_multiplier);
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1857").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1858", "Use 'StartsWith' instead of 'IndexOf'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1858")]
+    public async Task RequireStartsWithInsteadOfIndexOfEqualsZero()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string s = "hello world";
+                    bool startsWithHello = s.IndexOf("hello") == 0;
+                    return startsWithHello ? 0 : 1;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1858").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1864", "Prefer the 'IDictionary.TryAdd(TKey, TValue)' method",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1864")]
+    public async Task RequireTryAddInsteadOfContainsKeyAndAdd()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Collections.Generic;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var dict = new Dictionary<string, int>();
+                    if (!dict.ContainsKey("key"))
+                        dict.Add("key", 1);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1864").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1865", "Use char overload",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1865")]
+    public async Task RequireCharOverloadForStartsWith()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string s = "hello world";
+                    bool starts = s.StartsWith("h", StringComparison.Ordinal);
+                    return starts ? 0 : 1;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1865").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1868", "Unnecessary call to 'Contains(item)'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868")]
+    public async Task ProhibitUnnecessaryContainsBeforeSetAdd()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Collections.Generic;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var set = new HashSet<string>();
+                    if (!set.Contains("item"))
+                        set.Add("item");
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1868").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1869", "Cache and reuse 'JsonSerializerOptions' instances",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869")]
+    public async Task RequireCachedJsonSerializerOptions()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Text.Json;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string json = JsonSerializer.Serialize(42, new JsonSerializerOptions { WriteIndented = true });
+                    return json.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1869").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1871", "Do not pass a nullable struct to 'ArgumentNullException.ThrowIfNull'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1871")]
+    public async Task ProhibitNullableStructThrowIfNull()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main(int? value = null)
+                {
+                    System.ArgumentNullException.ThrowIfNull(value);
+                    return value!.Value;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1871").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1872", "Prefer 'Convert.ToHexString' and 'Convert.ToHexStringLower' over call chains based on 'BitConverter.ToString'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1872")]
+    public async Task RequireConvertToHexStringOverBitConverter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    byte[] bytes = new byte[] { 1, 2, 3 };
+                    string hex = System.BitConverter.ToString(bytes).Replace("-", "");
+                    return hex.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1872").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1874", "Use 'Regex.IsMatch'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874")]
+    public async Task RequireRegexIsMatchInsteadOfMatchesCount()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Text.RegularExpressions;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    bool hasDigits = Regex.Match("abc123", @"\d+").Success;
+                    return hasDigits ? 0 : 1;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1874").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1875", "Use 'Regex.Count'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875")]
+    public async Task RequireRegexCountInsteadOfMatchesCount()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Text.RegularExpressions;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int count = Regex.Matches("abc123def456", @"\d+").Count;
+                    return count;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1875").ShouldBeTrue();
+    }
 }
