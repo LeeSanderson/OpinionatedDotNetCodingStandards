@@ -367,6 +367,130 @@ independently for any tested EndsWith pattern.
 
 ---
 
+## New untestable rules from issue 013 (added 2026-06-05)
+
+Seven CA rules were marked `Untestable` during the issue-013 backfill pass (CA20xx/CA21xx/CA22xx
+NetAnalyzers Reliability and Usage rules). They fall into three distinct failure modes.
+
+### CA2020 / CA2153 — diagnostic absent from SARIF for .NET 10 targets
+
+| Rule | What it does | Expected in SARIF | Actual in SARIF |
+|------|-------------|-------------------|-----------------|
+| `CA2020` | `nint`/`nuint` arithmetic in `checked`/`unchecked` expressions that changed semantics between .NET 5 and .NET 7 | `error:CA2020` | *(absent)* |
+| `CA2153` | Catch block catching `AccessViolationException` or other corrupted-state exceptions | `error:CA2153` | *(absent)* |
+
+**CA2020 probe:**
+```csharp
+// violation: nint arithmetic in checked context that had different behaviour in .NET 5
+checked { nint a = 1; nint b = a + 1; }
+// also tried: unchecked, explicit IntPtr arithmetic, various nint/nuint patterns
+```
+CA2020 never appears in SARIF. Likely explanation: the rule targets source code that ran
+on .NET 5–6 and will run on .NET 7+ with changed semantics; projects already targeting
+`net7.0`+ are not affected, so the analyzer suppresses the diagnostic.
+
+**CA2153 probe:**
+```csharp
+try { throw new System.AccessViolationException(); }
+catch (System.AccessViolationException) { }
+```
+CA2153 never appears in SARIF. Likely explanation: in .NET 6+ the runtime no longer raises
+corrupted-state exceptions by default (CLR behavior changed), so the analyzer considers the
+pattern safe on modern targets.
+
+**What to investigate:**
+1. Check whether CA2020 has a `<TargetFramework>` guard in the NetAnalyzers source that
+   suppresses it for `net7.0`+ targets. If so, the rule can never fire in this test harness
+   (which targets `net$(NETCoreAppMaximumVersion)`, currently `net10.0`).
+2. Check whether CA2153 has a similar target-framework guard or was intentionally disabled
+   for .NET 6+ targets given the CSE runtime behavior change.
+3. If the rules are unconditionally suppressed for modern targets, confirm the `Untestable`
+   entries are correctly worded and no workaround is needed.
+
+---
+
+### CA2218 / CA2224 / CA2226 — compiler enforces the invariant; analyzer never fires
+
+These three rules are preempted by C# compiler errors that fire before the Roslyn analyzer
+can add its own diagnostic.
+
+| Rule | What it does | Expected in SARIF | Actual in SARIF |
+|------|-------------|-------------------|-----------------|
+| `CA2218` | `Equals` override without `GetHashCode` override | `error:CA2218` | `error:CS0659` (promoted by `TreatWarningsAsErrors`) |
+| `CA2224` | `operator==` without `Equals` override | `error:CA2224` | `error:CS0660`/`CS0661` |
+| `CA2226` | `operator<=` without `operator>=` (unpaired relational operator) | `error:CA2226` | `error:CS0216` (hard compile error) |
+
+**What to investigate:**
+1. Confirm whether the analyzer has an explicit check to suppress its diagnostic when the
+   corresponding compiler diagnostic is already present (so the rule is by design a fallback
+   for languages that don't emit the compiler warning, e.g. VB.NET).
+2. Check if there is any C# pattern that triggers CA2218/CA2224 WITHOUT the compiler
+   diagnostic — for example, partial classes, cross-assembly scenarios, or `unsafe` code.
+3. For CA2226, confirm that the C# spec mandates paired operators and CS0216 is always a
+   hard error (not a warning), making CA2226 permanently untestable in C#.
+
+---
+
+### CA2216 / CA2243 — diagnostic absent from SARIF (no pattern found)
+
+| Rule | What it does | Expected in SARIF | Actual in SARIF |
+|------|-------------|-------------------|-----------------|
+| `CA2216` | `IDisposable` class with `IntPtr`/`HandleRef`/`UIntPtr` field but no finalizer | `error:CA2216` | *(absent)* |
+| `CA2243` | `[assembly: AssemblyFileVersion("not-a-version")]` or `[Guid("invalid")]` | `error:CA2243` | `error:CS0591`/`CS7035` |
+
+**CA2216 probes (exhaustive):**
+All of the following patterns were tried; CA2216 never appeared in SARIF:
+```csharp
+// Minimal: IDisposable + IntPtr field, no finalizer
+public class MyResource : System.IDisposable
+{
+    private System.IntPtr _handle;
+    public void Dispose() { }
+}
+
+// Full Dispose(bool) pattern: still no CA2216
+public class MyResource : System.IDisposable
+{
+    private System.IntPtr _handle = new System.IntPtr(1);
+    protected virtual void Dispose(bool disposing) { ... }
+    public void Dispose() { Dispose(true); GC.SuppressFinalize(this); }
+}
+
+// HandleRef field (explicitly listed as trigger type in the docs): still no CA2216
+public class MyResource : System.IDisposable
+{
+    public System.Runtime.InteropServices.HandleRef Handle;
+    public virtual void Dispose() { GC.SuppressFinalize(this); }
+}
+```
+Note: CA1063 ("wrong Dispose pattern") fires correctly for these patterns, confirming the
+Dispose-related analyzers are running. CA2216 alone is absent.
+
+**CA2243 probe:**
+The rule checks `GuidAttribute`, `AssemblyVersionAttribute`, and `AssemblyFileVersionAttribute`
+string arguments. In C#, the compiler independently validates all three:
+- `[Guid("bad")]` → `CS0591` (hard compile error)
+- `[assembly: AssemblyVersion("x")]` → `CS7035` (hard compile error)
+- `[assembly: AssemblyFileVersion("x")]` → `CS7035` + `CS0579` (duplicate; SDK generates one)
+
+All trigger compiler errors that prevent SARIF output from the CA2243 analyzer.
+
+**What to investigate (CA2216):**
+1. Check the NetAnalyzers 10.0.x source for `CA2216` to determine whether it has a
+   `EnforceOnBuild = Never` flag, a `.NET 10` target-framework guard, or a dependency
+   on CA1063 not firing (i.e. it only fires on types with a *correct* Dispose pattern).
+2. Determine whether `SafeHandle`-based patterns (instead of raw `IntPtr`) prevent CA2216
+   from firing — the recommended modern pattern avoids raw `IntPtr` entirely.
+3. Test whether the rule fires when `GC.SuppressFinalize` is removed from `Dispose()`.
+
+**What to investigate (CA2243):**
+1. Determine whether a non-standard attribute type (one that the compiler does not
+   independently validate) can trigger CA2243 without triggering a compiler error first.
+2. Check the NetAnalyzers source to see the full list of attribute types CA2243 checks and
+   whether any of them are not compiler-validated.
+
+---
+
 ## Acceptance criteria
 
 - The root cause is identified and linked to a Roslyn source location or GitHub issue.
