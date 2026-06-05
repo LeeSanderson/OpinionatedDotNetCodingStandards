@@ -7,7 +7,7 @@ public class RuleReferenceGeneratorShould
     [Fact]
     public void FindRuleDocOnTaggedMethod()
     {
-        var docs = RuleReferenceGenerator.CollectRuleDocs(typeof(CodeAnalysisRulesShould).Assembly);
+        var docs = RuleReferenceGenerator.CollectRuleDocs(typeof(RuleReferenceGeneratorShould).Assembly);
 
         docs.ContainsKey("CA1000").ShouldBeTrue();
         docs["CA1000"].Description.ShouldBe("Do not declare static members on generic types");
