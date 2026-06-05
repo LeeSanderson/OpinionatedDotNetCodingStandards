@@ -14,15 +14,9 @@ public class RuleDocCoverageShould
     // All active rules not yet covered by [RuleDoc]; shrink this list as tests are added.
     private static readonly IReadOnlyCollection<string> KnownUncovered = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
     {
-        "CA2002", "CA2009", "CA2011", "CA2012", "CA2013", "CA2014", "CA2015",
-        "CA2017", "CA2018", "CA2019", "CA2020", "CA2021", "CA2022", "CA2023", "CA2024",
-        "CA2100", "CA2101", "CA2119", "CA2153",
-        "CA2201", "CA2207", "CA2211", "CA2213", "CA2214", "CA2215",
-        "CA2216", "CA2217", "CA2218", "CA2219", "CA2224", "CA2226", "CA2231", "CA2235",
-        "CA2237", "CA2243", "CA2244", "CA2246", "CA2247",
-        "CA2248", "CA2249", "CA2252", "CA2253", "CA2254", "CA2255",
-        "CA2256", "CA2257", "CA2258", "CA2259", "CA2260", "CA2261", "CA2262", "CA2263",
-        "CA2264", "CA2265",
+        "CA2017", "CA2023",
+        "CA2100",
+        "CA2253", "CA2254", "CA2258",
         "CA2300", "CA2301", "CA2302", "CA2305", "CA2310", "CA2311", "CA2312", "CA2315",
         "CA2321", "CA2322", "CA2326", "CA2327", "CA2328", "CA2329", "CA2330",
         "CA2350", "CA2351", "CA2352", "CA2353", "CA2354", "CA2355", "CA2356",

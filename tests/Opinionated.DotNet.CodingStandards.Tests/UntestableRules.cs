@@ -102,4 +102,43 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA1870", "Use a cached 'SearchValues' instance",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870",
     Untestable = "CA1870 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern where SearchValues.Create is called inline in an IndexOfAny/ContainsAny call; exhaustive probing with multiple patterns confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1870.severity = warning configured")]
+[RuleDoc("CA2020", "Prevent behavioral change caused by built-in operators of IntPtr and UIntPtr",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020",
+    Untestable = "CA2020 does not fire in NetAnalyzers 10.0.x build analysis for nint/nuint arithmetic in checked or unchecked expressions; the rule targets behavioral changes introduced between .NET 5 and .NET 7 but does not produce diagnostics for projects already targeting .NET 7+")]
+[RuleDoc("CA2153", "Do Not Catch Corrupted State Exceptions",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153",
+    Untestable = "CA2153 does not fire in NetAnalyzers 10.0.x build analysis for catch blocks that catch AccessViolationException or other corrupted-state exceptions; in .NET 6+ the runtime changed CSE behavior and the analyzer does not emit this diagnostic for modern targets")]
+[RuleDoc("CA2218", "Override GetHashCode on overriding Equals",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2218",
+    Untestable = "In C#, the compiler issues CS0659 (warning promoted to error by TreatWarningsAsErrors) for any class that overrides Equals without overriding GetHashCode; this compiler diagnostic preempts CA2218, which never appears as a separate analyzer diagnostic")]
+[RuleDoc("CA2224", "Override Equals on overloading operator equals",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2224",
+    Untestable = "In C#, the compiler issues CS0660/CS0661 (promoted to errors by TreatWarningsAsErrors) for any class that defines operator== without overriding Equals/GetHashCode; these compiler diagnostics preempt CA2224. Additionally CA1046 fires for reference-type equality operator overloads, and CA2224 never appears as a separate diagnostic")]
+[RuleDoc("CA2226", "Operators should have symmetrical overloads",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2226",
+    Untestable = "In C#, the compiler enforces paired operators (==,!=; <,>; <=,>=) with CS0216 compile error, making it impossible to define only one of a pair; CA2226 therefore never fires as an analyzer diagnostic in C# projects")]
+[RuleDoc("CA2017", "Parameter count mismatch",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017",
+    Untestable = "Fires on ILogger message templates where argument count does not match the number of named placeholders; Microsoft.Extensions.Logging is not available in the simple single-project build harness (same constraint as CA1727)")]
+[RuleDoc("CA2023", "Invalid braces in message template",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023",
+    Untestable = "Fires on ILogger calls with syntactically invalid brace patterns in message templates; Microsoft.Extensions.Logging is not available in the simple single-project build harness")]
+[RuleDoc("CA2100", "Review SQL queries for security vulnerabilities",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100",
+    Untestable = "Requires data-flow taint analysis to track untrusted input from parameter to SQL string; build-based harness cannot trigger inter-procedural data-flow rules that require full program analysis")]
+[RuleDoc("CA2253", "Named placeholders should not be numeric values",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2253",
+    Untestable = "Fires on ILogger structured logging message templates that use numeric placeholder names ({0}) instead of named placeholders ({name}); Microsoft.Extensions.Logging is not available in the simple single-project build harness (same constraint as CA1727)")]
+[RuleDoc("CA2254", "Template should be a static expression",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254",
+    Untestable = "Fires on ILogger calls where the message template argument is a variable or non-constant expression rather than a string literal; Microsoft.Extensions.Logging is not available in the simple single-project build harness (same constraint as CA1727)")]
+[RuleDoc("CA2258", "Providing a 'DynamicInterfaceCastableImplementation' interface in Visual Basic is unsupported",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2258",
+    Untestable = "VB.NET-only rule; not applicable in C# projects")]
+[RuleDoc("CA2243", "Attribute string literals should parse correctly",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243",
+    Untestable = "All attribute string types validated by CA2243 (GuidAttribute, AssemblyVersionAttribute, AssemblyFileVersionAttribute) are also validated by the C# compiler, which emits hard errors (CS0591, CS0647, CS7035) and/or duplicate-attribute errors before the analyzer diagnostic can appear in SARIF output; CA2243 therefore cannot be triggered in a project where TreatWarningsAsErrors is active")]
+[RuleDoc("CA2216", "Disposable types should declare finalizer",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216",
+    Untestable = "CA2216 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern: IDisposable classes with IntPtr, UIntPtr, or HandleRef fields but no finalizer emit CA1063 (wrong Dispose pattern) instead, and even with a correct Dispose(bool) pattern, CA2216 is never emitted in the SARIF output; the rule appears suppressed for .NET 10 targets")]
 public static class UntestableRules { }
