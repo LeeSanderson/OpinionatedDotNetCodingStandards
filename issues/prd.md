@@ -102,6 +102,8 @@ stays complete during the transition via a temporary editorconfig-comment fallba
     needs documentation/coverage, so that new rules cannot ship undocumented.
 25. As a consumer of the package, I want the rule reference to accurately describe every enforced
     rule, so that I can trust the documentation.
+26. As a maintainer, I want each test file to stay under 1000 lines, so that files remain
+    navigable and pull request diffs are reviewable.
 
 ## Implementation Decisions
 
@@ -171,6 +173,13 @@ stays complete during the transition via a temporary editorconfig-comment fallba
   for exempt rules.
 - **`KnownUncovered` allowlist** (new, in the test project) — seeded with every currently-untested
   active rule; shrinks as backfill proceeds; deleted when empty.
+
+### File organisation convention
+
+When a test file exceeds 1000 lines it is split into logically-grouped files placed in a folder
+named after the original file (without `.cs`). Each split file and its class use the
+fully-qualified name `<OriginalClass><Group>Should` (e.g. `CodeAnalysisRulesDesignShould`).
+Namespace mirrors the folder structure. Tests within each file are sorted by rule ID.
 
 ### Removed / changed
 - `scripts/CheckRuleReferenceFreshness.cs` is **deleted**; its job becomes "regenerate + diff" in
@@ -248,3 +257,8 @@ stays complete during the transition via a temporary editorconfig-comment fallba
   `[RuleDoc]`s, and shrinking the allowlist.
 - This PRD is intended to be broken into vertical-slice issues via the `prd-to-issues` workflow and
   ground out via `work-on-next-issue`.
+- **File-size cleanup (issues 017–019):** once the backfill issues land, three test files exceed
+  1000 lines. Issues 017–019 apply the file-organisation convention to split them:
+  `CodeAnalysisRulesShould.cs` → 7 files under `CodeAnalysisRules/`;
+  `CodingStandardsShould.cs` → 2 files under `CodingStandards/`;
+  `MeziantouAnalyzersShould.cs` → 2 files under `MeziantouAnalyzers/`.
