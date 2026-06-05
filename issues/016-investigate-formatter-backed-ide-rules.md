@@ -165,6 +165,97 @@ build mode) or a bug in Roslyn's build-time analyzer for .NET 10.
    editorconfig forces the analyzer to emit the rule's own ID rather than routing
    through IDE0055.
 
+## New untestable rules from issue 011 (added 2026-06-05)
+
+Five CA rules were marked `Untestable` during the issue-011 backfill pass. They fall into
+three distinct failure modes, described below.
+
+### CA1419 — diagnostic absent from SARIF (same mode as CA1066)
+
+CA1419 ("Provide a parameterless constructor … for concrete types derived from SafeHandle")
+does not appear in SARIF when a concrete public `SafeHandle` subclass has no parameterless
+constructor. The rule is configured as `dotnet_diagnostic.CA1419.severity = warning` with
+`TreatWarningsAsErrors=true`. Observed in the build harness for NetAnalyzers 10.0.x.
+
+**Probe used:**
+```csharp
+public class MyHandle : SafeHandle
+{
+    public MyHandle(IntPtr handle) : base(IntPtr.Zero, true) { SetHandle(handle); }
+    public override bool IsInvalid => handle == IntPtr.Zero;
+    protected override bool ReleaseHandle() => true;
+}
+```
+SARIF contains only `error:IDE0055` and `error:SA1649` — no `CA1419`.
+
+**What to investigate:**
+1. Check whether `CA1419` is flagged `EnforceOnBuild = Never` in the NetAnalyzers source
+   (same check recommended for CA1066 above).
+2. Confirm whether the rule requires P/Invoke context (e.g. the SafeHandle is passed to a
+   `[DllImport]` method) rather than firing on the type declaration alone.
+3. Test whether adding a `[DllImport]` call that uses `MyHandle` as a parameter type causes
+   CA1419 to fire.
+
+---
+
+### CA1420 / CA1421 — require `[assembly: DisableRuntimeMarshalling]`
+
+CA1420 ("Property, type, or attribute requires runtime marshalling") and CA1421 ("This
+method uses runtime marshalling even when `DisableRuntimeMarshallingAttribute` is applied")
+only fire when the assembly has `[assembly: System.Runtime.CompilerServices.DisableRuntimeMarshalling]`
+applied. Adding this attribute to the test project has assembly-wide impact — it changes
+the marshalling semantics of every P/Invoke in the compilation, making isolated testing
+impractical with the current single-file harness.
+
+**What to investigate:**
+1. Confirm whether the test harness's `CreateProjectBuilder` can be extended to support
+   a second (separate) assembly-attributes file, keeping `DisableRuntimeMarshalling`
+   isolated to the violation project without contaminating the test runner itself.
+2. Identify the minimal violation pattern for each rule so a probe test can be written
+   once the harness issue is resolved.
+3. Check the NetAnalyzers source for CA1420/CA1421 to understand exactly which P/Invoke
+   parameter types trigger each rule (e.g. `string` param vs `[MarshalAs]` attribute vs
+   value-type with `[StructLayout]`).
+
+---
+
+### CA1516 — requires hardware SIMD intrinsics
+
+CA1516 ("Use cross-platform intrinsics") fires when platform-specific hardware intrinsics
+(`System.Runtime.Intrinsics.X86.*`, `System.Runtime.Intrinsics.Arm.*`) are used where
+cross-platform `Vector128`/`Vector256` alternatives exist. No typical application code
+triggers this rule, so no natural violation exists in the single-project harness.
+
+**What to investigate:**
+1. Confirm the minimal violation pattern: e.g. does `Sse2.Add(...)` without an
+   `Sse2.IsSupported` guard (or with an alternative `Vector128` path available) fire CA1516?
+2. Determine whether the test project's target framework and CPU architecture affect
+   whether the rule fires at build time. CA1516 may only fire for projects that explicitly
+   opt into unsafe / intrinsics code via `<AllowUnsafeBlocks>true</AllowUnsafeBlocks>`.
+3. If a minimal probe compiles and fires the rule, promote CA1516 to tested.
+
+---
+
+### CA1727 — requires `Microsoft.Extensions.Logging`
+
+CA1727 ("Use PascalCase for named placeholders") fires on non-PascalCase placeholder names
+in structured logging message templates — specifically `ILogger.Log*` extension method
+calls from `Microsoft.Extensions.Logging`. The package is not available in the simple
+`net8.0` console-app projects created by the test harness.
+
+**What to investigate:**
+1. Determine whether the test harness's `CreateProjectBuilder` supports adding NuGet
+   package references to the generated project. If so, add
+   `Microsoft.Extensions.Logging.Abstractions` and write a minimal ILogger test.
+2. Check whether CA1727 also fires for `[LoggerMessage]`-attributed partial methods
+   (which are declared without calling `ILogger` at the call site) — this pattern might
+   require only the `Abstractions` package rather than the full `Logging` stack.
+3. As a fallback, confirm whether the `Opinionated.DotNet.CodingStandards` NuGet package
+   itself transitively exposes `Microsoft.Extensions.Logging.Abstractions`, which would
+   make `ILogger` available in test projects without an extra package reference.
+
+---
+
 ## Acceptance criteria
 
 - The root cause is identified and linked to a Roslyn source location or GitHub issue.
