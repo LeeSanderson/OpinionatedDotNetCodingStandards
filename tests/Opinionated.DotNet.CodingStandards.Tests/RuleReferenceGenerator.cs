@@ -51,20 +51,17 @@ public static class RuleReferenceGenerator
     }
 
     public static ReconciliationResult Reconcile(
-        string analyzerDir, Assembly testAssembly, IReadOnlyCollection<string> knownUncovered, string? editorConfigPath = null)
+        string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
     {
         var activeRules = CollectActiveRules(analyzerDir, editorConfigPath);
         var docEntries = CollectRuleDocEntries(testAssembly);
-        return Reconcile(activeRules, docEntries, knownUncovered);
+        return Reconcile(activeRules, docEntries);
     }
 
     public static ReconciliationResult Reconcile(
         IReadOnlySet<string> activeRules,
-        IReadOnlyList<RuleDocEntry> docEntries,
-        IReadOnlyCollection<string> knownUncovered)
+        IReadOnlyList<RuleDocEntry> docEntries)
     {
-        var knownUncoveredSet = new HashSet<string>(knownUncovered, StringComparer.OrdinalIgnoreCase);
-
         var idCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in docEntries)
         {
@@ -88,7 +85,7 @@ public static class RuleReferenceGenerator
         var coveredByDoc = new HashSet<string>(docEntries.Select(e => e.RuleId), StringComparer.OrdinalIgnoreCase);
 
         var uncoveredRules = activeRules
-            .Where(r => !coveredByDoc.Contains(r) && !knownUncoveredSet.Contains(r))
+            .Where(r => !coveredByDoc.Contains(r))
             .OrderBy(x => x, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
@@ -197,19 +194,9 @@ public static class RuleReferenceGenerator
         (string Id, string Description, string Severity, string HelpLink) rule,
         Dictionary<string, RuleDocAttribute> ruleDocs)
     {
-        string description;
-        string helpLink;
-
-        if (ruleDocs.TryGetValue(rule.Id, out var doc))
-        {
-            description = doc.Description;
-            helpLink = doc.HelpLink ?? "";
-        }
-        else
-        {
-            description = rule.Description;
-            helpLink = rule.HelpLink;
-        }
+        ruleDocs.TryGetValue(rule.Id, out var doc);
+        var description = doc?.Description ?? "";
+        var helpLink = doc?.HelpLink ?? "";
 
         var helpCell = string.IsNullOrEmpty(helpLink) ? "" : $"[docs]({helpLink})";
         var desc = description.Replace("|", "\\|");

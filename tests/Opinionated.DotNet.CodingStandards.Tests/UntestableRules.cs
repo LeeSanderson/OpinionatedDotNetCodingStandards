@@ -291,4 +291,7 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA5405", "Do not always skip token validation in delegates",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5405",
     Untestable = "Fires when Microsoft.IdentityModel.Tokens validation delegates (AudienceValidator, IssuerValidator, etc.) always return true without checking; requires Microsoft.IdentityModel.Tokens package not included in the simple build harness")]
+[RuleDoc("EnableGenerateDocumentationFile", "Set MSBuild property 'GenerateDocumentationFile' to 'true'",
+    HelpLink = "https://github.com/dotnet/roslyn/issues/41640",
+    Untestable = "Project-configuration recommendation, not a code-pattern violation; fires based on the absence of the GenerateDocumentationFile MSBuild property and cannot be triggered or suppressed by writing code in the test harness")]
 public static class UntestableRules { }

@@ -23,7 +23,7 @@ public class RuleReferenceGeneratorShould
             new("CA9999", new RuleDocAttribute("CA9999", "Orphan rule"), IsClassLevel: false),
         };
 
-        var result = RuleReferenceGenerator.Reconcile(activeRules, entries, Array.Empty<string>());
+        var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
         result.OrphanDocs.ShouldContain("CA9999");
     }
@@ -37,7 +37,7 @@ public class RuleReferenceGeneratorShould
             new("CA1000", new RuleDocAttribute("CA1000", "Static members on generic types"), IsClassLevel: false),
         };
 
-        var result = RuleReferenceGenerator.Reconcile(activeRules, entries, Array.Empty<string>());
+        var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
         result.UncoveredRules.ShouldContain("CA1001");
     }
@@ -52,7 +52,7 @@ public class RuleReferenceGeneratorShould
             new("CA1000", new RuleDocAttribute("CA1000", "Second doc"), IsClassLevel: false),
         };
 
-        var result = RuleReferenceGenerator.Reconcile(activeRules, entries, Array.Empty<string>());
+        var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
         result.DuplicateIds.ShouldContain("CA1000");
     }
@@ -66,7 +66,7 @@ public class RuleReferenceGeneratorShould
             new("CA1000", new RuleDocAttribute("CA1000", "desc") { Untestable = "Cannot test" }, IsClassLevel: false),
         };
 
-        var result = RuleReferenceGenerator.Reconcile(activeRules, entries, Array.Empty<string>());
+        var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
         result.InvariantViolations.ShouldHaveSingleItem();
         result.InvariantViolations[0].ShouldContain("CA1000");
@@ -82,7 +82,7 @@ public class RuleReferenceGeneratorShould
             new("CA1000", new RuleDocAttribute("CA1000", "desc"), IsClassLevel: true),
         };
 
-        var result = RuleReferenceGenerator.Reconcile(activeRules, entries, Array.Empty<string>());
+        var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
         result.InvariantViolations.ShouldHaveSingleItem();
         result.InvariantViolations[0].ShouldContain("CA1000");
