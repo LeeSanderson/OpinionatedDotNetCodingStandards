@@ -692,23 +692,47 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1846").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1852", "Seal internal types",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852",
-        Untestable = "CA1852 is formatter-backed: unsealed internal class patterns produce IDE0055 (Fix formatting) in SARIF instead of CA1852 in NetAnalyzers 10.0.x; CA1852 cannot be triggered with its own diagnostic ID in build analysis regardless of whether the class has members, is in a separate file, or has other variations")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852")]
     public async Task SealInternalTypes()
     {
         using var project = await CreateProjectBuilder();
-        await project.AddFile("InternalService.cs",
+
+        // The package auto-injects [assembly: InternalsVisibleTo("<project>.Tests")] into every
+        // non-test project (see build/Opinionated.DotNet.CodingStandards.targets). CA1852 suppresses
+        // itself whenever the assembly exposes its internals to a friend assembly, because the friend
+        // could subclass the type. Opt back in via the documented
+        // dotnet_code_quality.CA1852.ignore_internalsvisibleto option so the rule fires here.
+        await project.AddFile(
+            ".editorconfig",
+            """
+            [*.cs]
+            dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
+            """);
+        await project.AddFile(
+            "InternalService.cs",
             """
             namespace test;
-            internal class InternalService { }
+
+            internal class InternalService
+            {
+                public int GetValue() => 42;
+            }
             """);
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
-            public static class Program { public static int Main() => 0; }
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var service = new InternalService();
+                    return service.GetValue();
+                }
+            }
             """);
         var buildOutput = await project.BuildAndGetOutput();
 

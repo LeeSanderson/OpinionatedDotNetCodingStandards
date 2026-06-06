@@ -101,17 +101,74 @@ public async Task SealInternalTypes()
 }
 ```
 
+## Resolution (2026-06-06)
+
+**CA1852 is now a tested rule.** The "formatter-backed / routes through IDE0055" hypothesis
+was wrong — it was an instance of the confounder flagged when closing issue 017 (CA1826):
+the original probe's `internal class InternalService { }` puts the opening brace on the same
+line, violating `csharp_new_line_before_open_brace`, so IDE0055 ("Fix formatting") fired and
+was the *only* diagnostic — misread as "CA1852 routing through the formatter." With a
+well-formatted class, IDE0055 disappears entirely and is **not** how CA1852 behaves.
+
+### Real root cause: the package's own `InternalsVisibleTo` injection
+
+CA1852 is a normal NetAnalyzers quality rule (`SealInternalTypes.cs`,
+`RuleLevel.IdeHidden_BulkConfigurable` → default severity Hidden, **not** `EnforceOnBuild = Never`).
+It reports its own ID at command-line `dotnet build` once severity is raised — which the package
+editorconfig does (`dotnet_diagnostic.CA1852.severity = warning`).
+
+The reason it never fired in the harness: **CA1852 suppresses itself for the entire compilation
+when the assembly carries `[assembly: InternalsVisibleTo(...)]`** (a friend assembly could subclass
+the internal type). And `build/Opinionated.DotNet.CodingStandards.targets` (lines 81–91)
+auto-injects `[assembly: InternalsVisibleTo("<ProjectName>.Tests")]` into every project whose name
+does **not** end in `Tests`. The harness project is `test.csproj` → `InternalsVisibleTo` is always
+added → CA1852 is suppressed.
+
+Verified by scratch-project probe matrix (`dotnet build` + SARIF, package v999.9.9):
+
+| Probe | Result |
+|-------|--------|
+| `internal class InternalService { }` (brace same line), used | only `error:IDE0055` (formatting) — the original confounder |
+| well-formatted unsealed internal class, unused | only `note:MA0182` (unused), no CA1852 |
+| well-formatted unsealed internal class, used (Exe) | **0 diagnostics** — suppressed by injected `InternalsVisibleTo` |
+| same, `OutputType=Library` | 0 diagnostics — not Exe-vs-Library |
+| same + `.editorconfig` `dotnet_code_quality.CA1852.ignore_internalsvisibleto = true` | **single `error:CA1852`** ✓ |
+
+### Fix applied
+
+Un-skipped `SealInternalTypes` in `CodeAnalysisRulesPerformanceModernShould.cs`; removed the
+`Untestable` reason; the test now adds a discovered `.editorconfig` with the documented
+`dotnet_code_quality.CA1852.ignore_internalsvisibleto = true` option (available since .NET 8) so
+the rule fires despite the package-injected friend-assembly attribute, then asserts
+`HasError("CA1852")`. Test passes in the harness.
+
+### Note for sibling issues 025 (CA1061) and 028 (CA1511)
+
+The prior session (issue 017) grouped CA1061/CA1511/CA1852 with CA1826 as "CA-prefix rules that
+route through IDE0055." That grouping is now confirmed unreliable for CA1852: its real cause was
+`InternalsVisibleTo`, unrelated to the formatter. CA1061 and CA1511 have *different* suspected
+causes (CS0109 compiler preemption / VB-only semantics for CA1061; a separate confounder for
+CA1511) and must each be re-probed independently with well-formatted code before being accepted
+as untestable.
+
+### Sources
+
+- Analyzer source: `dotnet/roslyn-analyzers` `src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Runtime/SealInternalTypes.cs`
+- Option docs: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852 (`dotnet_code_quality.CAxxxx.ignore_internalsvisibleto`)
+- Related issues: dotnet/roslyn-analyzers #7511 (CA1852 fires at CLI build), #6438 (`InternalsVisibleTo` disables CA1852), #6141/PR #6278 (top-level-statements `Program` skip)
+
 ## Acceptance criteria
 
-- [ ] Root cause identified: confirmed whether CA1852 uses the formatter pipeline in `EnforceOnBuild`
-      mode (same as IDE-style rules) or has `EnforceOnBuild = Never`
-- [ ] One of:
-  - [ ] A violation pattern found (or workaround like suppressing IDE0055) that triggers
-        `error:CA1852` in SARIF → test updated, `Skip` removed, test passes in CI; OR
-  - [ ] Confirmed no pattern can trigger CA1852 in build SARIF → `Untestable` reason updated
-        with the confirmed root cause (e.g. linked NetAnalyzers GitHub issue URL)
-- [ ] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
-- [ ] If the test is promoted, `RuleReferenceGenerator` coverage test continues to pass
+- [x] Root cause identified: CA1852 is a normal quality rule (not formatter-backed, not
+      `EnforceOnBuild = Never`); it is suppressed because the package injects
+      `[assembly: InternalsVisibleTo("<project>.Tests")]` and CA1852 ignores types exposed to a
+      friend assembly by default
+- [x] A violation pattern found (opt back in via `dotnet_code_quality.CA1852.ignore_internalsvisibleto = true`)
+      that triggers `error:CA1852` in SARIF → test updated, `Skip` removed, test passes in CI
+- [x] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
+- [x] `RuleReferenceGenerator` coverage test continues to pass (CA1852 still has exactly one
+      method-level `[RuleDoc]`, now with `Untestable == null`); `docs/rule-reference.md` regenerates
+      with no diff
 
 ## Blocked by
 
