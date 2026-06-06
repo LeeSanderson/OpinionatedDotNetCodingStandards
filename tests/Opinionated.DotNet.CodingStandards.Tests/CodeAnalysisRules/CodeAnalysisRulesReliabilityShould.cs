@@ -388,24 +388,29 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
         buildOutput.HasError("CA2020").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2153", "Do Not Catch Corrupted State Exceptions",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153",
-        Untestable = "CA2153 does not fire in NetAnalyzers 10.0.x build analysis for catch blocks that catch AccessViolationException or other corrupted-state exceptions; in .NET 6+ the runtime changed CSE behavior and the analyzer does not emit this diagnostic for modern targets")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153")]
     public async Task ProhibitCatchingCorruptedStateExceptions()
     {
-        using var project = await CreateProjectBuilder();
+        // CA2153 only fires on a method annotated with [HandleProcessCorruptedStateExceptions]
+        // that catches a general exception type (System.Exception / System.Object / System.SystemException)
+        // without rethrowing - NOT on catching AccessViolationException directly. The HPCSE attribute is
+        // [Obsolete(SYSLIB0032)] (a warning) in .NET 10, so SYSLIB0032 is suppressed via NoWarn so the
+        // build does not fail before CA2153 surfaces.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0032")]);
         await project.AddFile(
             "Program.cs",
             """
-            using System;
+            using System.Runtime.ExceptionServices;
             namespace test;
             public static class Program
             {
+                [HandleProcessCorruptedStateExceptions]
                 public static void M()
                 {
                     try { }
-                    catch (AccessViolationException) { }
+                    catch (Exception) { }
                 }
                 public static int Main() => 0;
             }
