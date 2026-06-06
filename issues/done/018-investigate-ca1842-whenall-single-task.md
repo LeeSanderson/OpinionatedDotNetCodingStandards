@@ -110,3 +110,48 @@ None — can start immediately.
 
 - User story 2: every build-enforced rule backed by at least one test
 - User story 7: rules that genuinely cannot be triggered documented with a written reason
+
+## Resolution (2026-06-06)
+
+**Root cause confirmed — NOT `EnforceOnBuild = Never`, and NOT genuinely untestable.**
+This was the same "confounded untestable" pattern as CA1826 (017) and CA1852 (022): the
+earlier probes were misread. CA1842 *can* fire; the original probes simply never bound to the
+overload the analyzer detects.
+
+The analyzer is `DoNotUseWhenAllOrWaitAllWithSingleArgument` (NetAnalyzers,
+`src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Tasks/`). It reports CA1842 only when **both**:
+
+1. `IsWhenOrWaitAllMethod` — the bound target method has exactly one parameter and that
+   parameter is `params` (i.e. the `params Task[]` / `params Task<TResult>[]` overload), and
+2. `IsSingleTaskArgument` — the single argument's value is an **implicit**
+   `IArrayCreationOperation` with one element of type `Task`/`Task<T>` (the compiler-synthesised
+   params array produced when a bare single task is passed).
+
+.NET 9 added `Task.WhenAll(params ReadOnlySpan<Task>)` (and the generic counterpart). Under
+C# 13's "params collections" feature, a bare `Task.WhenAll(singleTask)` now binds to the
+**`params ReadOnlySpan<Task>`** overload in preference to `params Task[]`. A span-bound call
+produces **no implicit `Task[]` creation**, so `IsSingleTaskArgument` never matches and the
+diagnostic is silently never produced. This is why every default-LangVersion probe yielded an
+empty SARIF — including explicit single-element arrays (`new[] { t }`, `IsImplicit == false`) and
+`IEnumerable<Task>` (that overload is not `params`).
+
+**Fix / pattern found (acceptance criterion 1):** pinning the violation project to
+`<LangVersion>12</LangVersion>` disables params-span expansion, so the bare call binds to
+`params Task[]` and produces the implicit single-element array the analyzer detects. With
+LangVersion 12, `await Task.WhenAll(Task.FromResult(42))` reports `error:CA1842`.
+
+**Real-world caveat:** on the package's default modern toolchain (C# 13+/.NET 10), CA1842 will
+*not* catch a bare single-task `WhenAll` in real user code, because that call binds to the span
+overload the analyzer cannot see. The rule's analyzer logic is correct and the package wiring
+(severity = warning, TreatWarningsAsErrors) is verified by this test, but the upstream analyzer
+has not been updated for the `params ReadOnlySpan<Task>` overload. This is an upstream
+NetAnalyzers gap, not a package defect.
+
+**Changes:**
+- Un-skipped `ProhibitWhenAllWithSingleTask`; removed the `Untestable` reason from its
+  `[RuleDoc]`. Test now builds with `LangVersion=12` and asserts `HasError("CA1842")`.
+- Cross-issue note added to issue 019 (CA1843): identical root cause and fix — confirmed
+  `error:CA1843` under LangVersion 12 during this investigation.
+
+**Verification:** `dotnet build` 0/0; full suite 313 passed / 52 skipped / 0 failed;
+`RuleDocCoverageShould` + `RuleReferenceGeneratorShould` green.

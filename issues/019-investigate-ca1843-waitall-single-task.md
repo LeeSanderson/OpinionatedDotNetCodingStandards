@@ -106,6 +106,26 @@ public async Task ProhibitWaitAllWithSingleTask()
 - [ ] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
 - [ ] If the test is promoted, `RuleReferenceGenerator` coverage test continues to pass
 
+## Cross-issue note (added 2026-06-06 while closing issue 018)
+
+Root cause and fix are **confirmed and identical to CA1842 (issue 018)** — apply the same
+solution here. The investigation-plan hypotheses in steps 2 and 4 were correct.
+
+The analyzer (`DoNotUseWhenAllOrWaitAllWithSingleArgument`) only reports CA1843 when the bare
+single-task call binds to the `params Task[]` overload **and** the compiler synthesises an
+*implicit* single-element `Task[]` (`IsSingleTaskArgument` checks for an implicit
+`IArrayCreationOperation`). .NET 9 added `Task.WaitAll(params ReadOnlySpan<Task>)`, and under
+C# 13's params-collections overload resolution a bare `Task.WaitAll(t)` binds to the **span**
+overload, which produces no implicit array — so the analyzer never matches. CA1843 is therefore
+absent on the default modern toolchain, not because of `EnforceOnBuild = Never`.
+
+**Fix:** build the violation project with `<LangVersion>12</LangVersion>` (pass
+`CreateProjectBuilder(properties: [("LangVersion", "12")])`). During issue 018's probe,
+`Task.WaitAll(t)` (with `var t = Task.CompletedTask;`) emitted `error:CA1843` under LangVersion 12.
+Un-skip `ProhibitWaitAllWithSingleTask`, remove the `Untestable` reason from its `[RuleDoc]`, and
+assert `HasError("CA1843")`. Keep the real-world caveat in mind: CA1843 will not catch a bare
+single-task `WaitAll` in default C# 13+ user code (span-overload gap upstream).
+
 ## Blocked by
 
 None — can start immediately.

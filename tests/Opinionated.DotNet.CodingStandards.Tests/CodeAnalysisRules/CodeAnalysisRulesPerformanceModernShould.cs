@@ -581,13 +581,20 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1826").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1842", "Do not use 'WhenAll' with a single task",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842",
-        Untestable = "CA1842 produces no diagnostic in build SARIF for any Task.WhenAll(singleTask) pattern (generic Task<T>, non-generic Task, await or return form); the SARIF is empty even with clean code and dotnet_diagnostic.CA1842.severity = warning configured")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842")]
     public async Task ProhibitWhenAllWithSingleTask()
     {
-        using var project = await CreateProjectBuilder();
+        // LangVersion 12 is required to trigger CA1842. The analyzer
+        // (DoNotUseWhenAllOrWaitAllWithSingleArgument) only fires when the bare single-task call
+        // binds to the params Task[]/Task<T>[] overload AND produces an *implicit* single-element
+        // array (IsSingleTaskArgument checks for an implicit IArrayCreationOperation). .NET 9 added
+        // `params ReadOnlySpan<Task>` overloads, and C# 13's "params collections" overload
+        // resolution prefers the span overload for a bare single-task argument — that call produces
+        // no implicit Task[] creation, so the analyzer never matches it. Pinning C# 12 disables
+        // params-span expansion, so the call binds to params Task[] and the rule fires.
+        using var project = await CreateProjectBuilder(properties: [("LangVersion", "12")]);
         await project.AddFile(
             "Program.cs",
             """
