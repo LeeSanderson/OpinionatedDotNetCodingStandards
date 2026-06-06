@@ -142,18 +142,58 @@ public async Task PreferAsSpanOverSubstring()
 }
 ```
 
+## Resolution (closed 2026-06-06)
+
+Promoted CA1846 to a tested rule using the pattern confirmed in the cross-issue note above —
+the "IDE0057 subsumption / untestable" theory was a misdiagnosis (the same false-untestable
+confounder corrected for CA1826/CA1842/CA1843/CA1845/CA1852).
+
+**Root cause of the original failure:** the old probe asserted on `s.Substring(1).AsSpan()`.
+The analyzer `PreferAsSpanOverSubstring` registers on `OperationKind.Argument` and only fires
+when a `Substring(int)`/`Substring(int, int)` result is passed *as an argument* to a method that
+exposes another overload of the same arity/return type taking `ReadOnlySpan<char>` in that
+position. A `Substring(...).AsSpan()` chain is never an argument substitution, so the analyzer
+could never see it — CA1846 was absent for that reason, not because IDE0057 suppressed it.
+
+**Working pattern (verified — `error:CA1846` present in build SARIF this iteration):**
+
+```csharp
+namespace test;
+
+public static class Program
+{
+    public static bool TryParseSuffix(string text, out int value)
+    {
+        return int.TryParse(text.Substring(7), out value);
+    }
+
+    public static int Main() => 0;
+}
+```
+
+`int.TryParse(string, out int)` has an `int.TryParse(ReadOnlySpan<char>, out int)` overload of
+the same arity/return type, so the `text.Substring(7)` argument fires CA1846. IDE0057 co-fires as
+a harmless `note` at the Substring site and does **not** suppress CA1846 — no pragma/editorconfig
+suppression is needed (dropped the redundant `using System;` and `#pragma warning disable IDE0057`
+from the old probe, both of which only added noise).
+
+**Verification this iteration:**
+- Targeted `PreferAsSpanOverSubstring`: passed (1/1) — confirmed `HasError("CA1846")`.
+- `dotnet build`: 0 warnings, 0 errors.
+- Full suite: 316 passed, 49 skipped, 0 failed (CA1846 moved from skipped → passing).
+- `RuleReferenceGeneratorShould` + `RuleDocCoverageShould`: green; `docs/rule-reference.md`
+  needs no regeneration (generator does not emit the `Untestable` field; description/HelpLink
+  unchanged).
+
 ## Acceptance criteria
 
-- [ ] Root cause confirmed: whether IDE0057 is the sole reason CA1846 is absent, and whether
-      the two-argument `Substring(i, n).AsSpan()` form avoids IDE0057
-- [ ] One of:
-  - [ ] An alternative pattern found (two-argument Substring, global IDE0057 suppression, or
-        attribute suppression) that causes `error:CA1846` to appear in SARIF → test updated,
-        `Skip` removed, test passes in CI; OR
-  - [ ] Confirmed no pattern can trigger CA1846 without being preempted by IDE0057 → `Untestable`
-        reason updated with specific confirmed mechanism
-- [ ] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
-- [ ] If the test is promoted, `RuleReferenceGenerator` coverage test continues to pass
+- [x] Root cause confirmed: CA1846 registers on `OperationKind.Argument`; the original
+      `Substring(...).AsSpan()` probe was never an argument substitution the analyzer inspects.
+      IDE0057 is NOT the cause — it co-fires as a note and does not suppress CA1846.
+- [x] An alternative pattern found (`int.TryParse(text.Substring(7), out value)`) that causes
+      `error:CA1846` to appear in SARIF → test updated, `Skip` removed, test passes.
+- [x] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
+- [x] `RuleReferenceGenerator` coverage test continues to pass
 
 ## Blocked by
 

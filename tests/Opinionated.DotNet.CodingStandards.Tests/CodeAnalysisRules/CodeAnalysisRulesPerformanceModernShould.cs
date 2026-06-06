@@ -685,26 +685,32 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1845").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1846", "Prefer 'AsSpan' over 'Substring'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846",
-        Untestable = "CA1846 does not appear in build SARIF for s.Substring(n).AsSpan() patterns; IDE0057 (suggestion: Substring can be simplified) fires at the same site and CA1846 is absent — #pragma warning disable IDE0057 does not suppress suggestion-level IDE diagnostics in Roslyn's build pipeline, so CA1846 never appears independently")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846")]
     public async Task PreferAsSpanOverSubstring()
     {
+        // CA1846 (PreferAsSpanOverSubstring) registers on OperationKind.Argument, not on the
+        // Substring(...).AsSpan() chain the earlier "untestable" probe asserted on (the analyzer
+        // never sees that chain as an argument substitution, so it could never fire). It fires when
+        // a Substring(int)/Substring(int, int) result is passed directly as an argument to a method
+        // that exposes another overload of the same arity/return type taking ReadOnlySpan<char> in
+        // that position. int.TryParse(string, out int) has an int.TryParse(ReadOnlySpan<char>, out int)
+        // overload, so the text.Substring(7) argument fires error:CA1846. IDE0057 still co-fires as a
+        // harmless note at the Substring site but does not suppress CA1846.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
             namespace test;
+
             public static class Program
             {
-                public static ReadOnlySpan<char> GetSlice(string s)
+                public static bool TryParseSuffix(string text, out int value)
                 {
-            #pragma warning disable IDE0057
-                    return s.Substring(1).AsSpan();
-            #pragma warning restore IDE0057
+                    return int.TryParse(text.Substring(7), out value);
                 }
+
                 public static int Main() => 0;
             }
             """);
