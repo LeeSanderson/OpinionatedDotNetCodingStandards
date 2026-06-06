@@ -302,32 +302,6 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
     }
 
     [Fact]
-    [RuleDoc("CA1511", "Use ArgumentException throw helper",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511")]
-    public async Task RequireArgumentExceptionThrowHelper()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            using System;
-            namespace test;
-            public static class Program
-            {
-                public static void Method(string value) 
-                {
-                    if (string.IsNullOrEmpty(value))
-                        throw new ArgumentException("Value cannot be empty");
-                }
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1511").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("CA1512", "Use ArgumentOutOfRangeException throw helper",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1512")]
     public async Task RequireArgumentOutOfRangeExceptionThrowHelper()

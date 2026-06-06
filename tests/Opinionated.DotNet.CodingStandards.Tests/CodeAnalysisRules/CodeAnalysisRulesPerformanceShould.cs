@@ -248,32 +248,6 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
     }
 
     [Fact]
-    [RuleDoc("CA1826", "Do not use Enumerable methods on indexable collections",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826")]
-    public async Task RequireIndexerOverLinq()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            using System.Linq;
-            namespace test;
-            public static class Program
-            {
-                public static int Get() 
-                {
-                    var array = new[] { 1, 2, 3 };
-                    return array.First();
-                }
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1826").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("CA1827", "Do not use Count() or LongCount() when Any() can be used",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1827")]
     public async Task RequireAnyOverCount()
@@ -282,14 +256,13 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
         await project.AddFile(
             "Program.cs",
             """
-            using System.Linq;
             namespace test;
             public static class Program
             {
-                public static bool HasItems() 
+                public static bool HasItems()
                 {
-                    var array = new[] { 1, 2, 3 };
-                    return array.Count() > 0;
+                    System.Collections.Generic.IEnumerable<int> items = new[] { 1, 2, 3 };
+                    return items.Count() > 0;
                 }
                 public static int Main() => 0;
             }

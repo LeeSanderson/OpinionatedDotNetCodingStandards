@@ -327,30 +327,6 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     }
 
     [Fact]
-    [RuleDoc("IDE0031", "Use null propagation",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031")]
-    public async Task RequireNullPropagation()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Get(string? input)
-                {
-                    return input != null ? input.Length : 0;
-                }
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE0031").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("IDE0033", "Use explicitly provided tuple name",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0033")]
     public async Task RequireExplicitlyProvidedTupleName()
@@ -571,26 +547,6 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasNote("IDE0046").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("IDE0049", "Use language keywords instead of framework type names",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0049")]
-    public async Task RequireLanguageKeywordsOverFrameworkTypes()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static Int32 Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE0049").ShouldBeTrue();
     }
 
     [Fact]

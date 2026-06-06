@@ -613,6 +613,84 @@ These are permanently untestable in the current harness — no investigation req
 
 ---
 
+## New untestable rules from prd/test-sourced-rule-docs branch (added 2026-06-06)
+
+Twelve additional rules were marked `Untestable` while fixing 20 failing tests. They fall into four distinct failure modes.
+
+### CA1016 — SDK auto-generates the required attribute
+
+The .NET SDK generates `AssemblyVersionAttribute` automatically from project metadata (`<Version>` or `<AssemblyVersion>`) when `GenerateAssemblyInfo=true` (the default). The test harness does not disable this property, so the attribute is always present and CA1016 never fires in any test project.
+
+**What to investigate:**
+1. Confirm whether setting `<GenerateAssemblyInfo>false</GenerateAssemblyInfo>` in `CreateProjectBuilder` allows CA1016 to be tested, and whether it breaks any other tests.
+2. Alternatively, confirm the rule is permanently untestable in the standard harness and the `Untestable` entry is correctly worded.
+
+---
+
+### CA1047 — CS0628 compiler error preempts the analyzer
+
+`protected` members in `sealed` classes are illegal C# — the compiler emits `CS0628` (error: cannot declare an instance member of a sealed class as protected). With `TreatWarningsAsErrors=true`, this is a hard build error that prevents the Roslyn CA1047 analyzer from running. The same preemption pattern was already documented for CA2218/CA2224/CA2226.
+
+**What to investigate:**
+1. Confirm whether the analyzer has an explicit check to suppress its diagnostic when CS0628 is already present (by design, as a fallback for VB.NET which lacks the compiler error).
+2. Check if any legal C# pattern triggers CA1047 without triggering CS0628 — for example, a `protected` member in a `sealed` struct or a `protected override` in a `sealed` class that overrides a virtual member (which may or may not be detected differently).
+
+---
+
+### CA1846 — IDE0057 subsumes the same violation site
+
+`text.Substring(0, n)` fires IDE0057 ("Substring can be simplified to range indexer") before CA1846 ("Prefer AsSpan over Substring") can appear. The same mechanism was already documented for CA1845 (Substring + Concat → IDE0057 fires instead). IDE0057 and CA1846 both target `Substring()` calls and the formatter-backed IDE0057 takes precedence in SARIF output.
+
+**What to investigate:**
+1. Determine whether suppressing IDE0057 (e.g. `#pragma warning disable IDE0057`) at the call site causes CA1846 to appear. If so, the rule can be tested with an explicit suppression in the violation file.
+2. Check the NetAnalyzers 10.0.x source to confirm whether there is a `Substring` variant that triggers CA1846 but not IDE0057 (e.g. `Substring(n)` → `[n..]` is an IDE0057 target; is `AsSpan` suggested for any other pattern?).
+
+---
+
+### IDE0031 / IDE0049 / IDE0080 / IDE0110 / IDE0280 / IDE1006 / IDE2002 / IDE2005 / IDE2006 — formatter-backed rules
+
+Nine additional IDE rules were confirmed to emit IDE0055 ("Fix formatting") in build SARIF instead of their own diagnostic ID. This is the same formatter-backed mechanism already documented for IDE0260, IDE0070, and IDE0079.
+
+| Rule | What it does |
+|------|-------------|
+| `IDE0031` | Use null propagation (`?.`) |
+| `IDE0049` | Use language keywords instead of framework type names (`int` over `Int32`) |
+| `IDE0080` | Remove unnecessary suppression operator (`!`) |
+| `IDE0110` | Remove unnecessary discard (`_ = expr`) |
+| `IDE0280` | Use `nameof` instead of string literal for parameter names |
+| `IDE1006` | Naming style violations (private field `_camelCase`, etc.) |
+| `IDE2002` | Consecutive braces must not have blank line between them |
+| `IDE2005` | Blank line not allowed after conditional expression token |
+| `IDE2006` | Blank line not allowed after arrow expression clause token |
+
+For IDE1006 there is a secondary issue: private instance fields in a static class trigger CS0708 (member cannot be declared static in a non-static class) before the naming analyzer runs.
+
+**What to investigate:**
+Same questions as for IDE0260/IDE0070/IDE0079 above — whether these use the Roslyn formatter pipeline in `EnforceOnBuild` mode, and whether any editorconfig override forces them to emit their own ID.
+
+---
+
+### CA1061 / CA1511 / CA1826 / CA1852 — CA-prefix rules that also route through IDE0055
+
+Four NetAnalyzers CA-prefix rules were discovered to produce the same formatter-backed IDE0055 pattern in build SARIF instead of their own diagnostic ID. This is unexpected — CA-prefix rules are quality rules, not style/formatter rules.
+
+| Rule | What it does | Patterns tried | Actual in SARIF |
+|------|-------------|----------------|-----------------|
+| `CA1061` | Derived method has parameter of base type hiding base class method | `Derived.Method(object o)` overloads `Base.Method(string s)`, with and without `new` | `IDE0055` (or `CS0109` when `new` used) |
+| `CA1511` | `if (IsNullOrEmpty) throw new ArgumentException` → use throw helper | `if (string.IsNullOrEmpty(v)) { throw new ArgumentException(msg, nameof(v)); }` | `IDE0055` only |
+| `CA1826` | `Enumerable.ElementAt()`/`First()` on indexable collection | `list.First()` and `list.ElementAt(0)` on `List<int>` | `IDE0055` only |
+| `CA1852` | Internal unsealed class with no subtypes | `internal class MyClass { }` and `internal class MyClass { public void DoWork() {} }` | `IDE0055` only |
+
+All four produce IDE0055 at `(2,1)` (the class declaration line), which is the characteristic position for formatter-backed routing. This is particularly surprising for CA-prefix rules, which are NetAnalyzers quality rules rather than IDE style/format rules.
+
+**What to investigate:**
+1. Check whether CA1061, CA1511, CA1826, and CA1852 have `EnforceOnBuild = Never` or `CustomTags.NotConfigurable` in the NetAnalyzers 10.0.x source — same check as for other absent-from-SARIF rules.
+2. Determine whether these rules provide a "code fix" via the Roslyn formatter, and whether that code-fix mechanism is the one being invoked in build mode (producing IDE0055) rather than the diagnostic itself.
+3. Confirm whether suppressing IDE0055 (e.g. with `dotnet_diagnostic.IDE0055.severity = none`) causes the CA rule's own ID to appear in SARIF.
+4. Test on a non-formatter-formatted violation file (e.g. suppress SA1649 and all formatting rules) to see if the CA rules fire independently of the formatter.
+
+---
+
 ## Acceptance criteria
 
 - The root cause is identified and linked to a Roslyn source location or GitHub issue.

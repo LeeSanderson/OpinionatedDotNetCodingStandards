@@ -654,9 +654,9 @@ public class CodeAnalysisRulesUsageShould(PackageFixture fixture, ITestOutputHel
             namespace test;
             public static class Program
             {
-                public static bool Compare(string a, string b) 
+                public static bool Compare(string a, string b)
                 {
-                    return a.ToLower() == b;
+                    return string.Compare(a, b, System.StringComparison.OrdinalIgnoreCase) == 0;
                 }
                 public static int Main() => 0;
             }

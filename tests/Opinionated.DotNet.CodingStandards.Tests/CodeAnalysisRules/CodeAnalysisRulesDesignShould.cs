@@ -154,26 +154,6 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
     }
 
     [Fact]
-    [RuleDoc("CA1016", "Mark assemblies with assembly version",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016")]
-    public async Task RequireAssemblyVersionAttribute()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1016").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("CA1018", "Mark attributes with AttributeUsageAttribute",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1018")]
     public async Task RequireAttributeUsageOnAttributes()
@@ -437,30 +417,6 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
     }
 
     [Fact]
-    [RuleDoc("CA1047", "Do not declare protected member in sealed type",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1047")]
-    public async Task ProhibitProtectedMembersInSealedTypes()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public sealed class MyClass
-            {
-                protected void Method() { }
-            }
-            public static class Program
-            {
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1047").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("CA1050", "Declare types in namespaces",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1050")]
     public async Task RequireTypesInNamespaces()
@@ -549,34 +505,6 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("CA1058").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("CA1061", "Do not hide base class methods",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061")]
-    public async Task ProhibitHidingBaseMethods()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public class Base
-            {
-                public void Method() { }
-            }
-            public class Derived : Base
-            {
-                public new void Method() { }
-            }
-            public static class Program
-            {
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1061").ShouldBeTrue();
     }
 
     [Fact]

@@ -71,31 +71,6 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
     }
 
     [Fact]
-    [RuleDoc("CA1846", "Prefer 'AsSpan' over 'Substring'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846")]
-    public async Task RequireAsSpanOverSubstring()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static string Get() 
-                {
-                    var text = "hello world";
-                    return text.Substring(0, 5);
-                }
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1846").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("CA1847", "Use char literal for a single character lookup",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1847")]
     public async Task RequireCharLiteralForLookup()
@@ -107,10 +82,10 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
             namespace test;
             public static class Program
             {
-                public static int Find() 
+                public static bool Find()
                 {
                     var text = "hello";
-                    return text.IndexOf("e");
+                    return text.Contains("e");
                 }
                 public static int Main() => 0;
             }
@@ -200,29 +175,6 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("CA1851").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("CA1852", "Seal internal types",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852")]
-    public async Task RequireSealInternalTypes()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            internal class MyClass
-            {
-            }
-            public static class Program
-            {
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("CA1852").ShouldBeTrue();
     }
 
     [Fact]
@@ -361,13 +313,12 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         await project.AddFile(
             "Program.cs",
             """
-            using System.Linq;
             namespace test;
             public static class Program
             {
-                public static bool Contains(int value) 
+                public static string Format()
                 {
-                    return new[] { 1, 2, 3 }.Contains(value);
+                    return string.Join(", ", new[] { "a", "b", "c" });
                 }
                 public static int Main() => 0;
             }

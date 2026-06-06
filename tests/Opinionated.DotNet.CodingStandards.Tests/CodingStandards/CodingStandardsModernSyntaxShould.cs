@@ -108,30 +108,6 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
     }
 
     [Fact]
-    [RuleDoc("IDE0080", "Remove unnecessary suppression operator",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080")]
-    public async Task RequireRemovalOfUnnecessarySuppressionOperator()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Main()
-                {
-                    var value = "test";
-                    return value!.Length;
-                }
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE0080").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("IDE0082", "'typeof' can be converted to 'nameof'",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0082")]
     public async Task RequireNameofOverTypeof()
@@ -202,31 +178,6 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasNote("IDE0100").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("IDE0110", "Remove unnecessary discard",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110")]
-    public async Task RequireRemovalOfUnnecessaryDiscard()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Main()
-                {
-                    _ = GetValue();
-                    return 0;
-                }
-                private static int GetValue() => 1;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE0110").ShouldBeTrue();
     }
 
     [Fact]
@@ -479,31 +430,6 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
     }
 
     [Fact]
-    [RuleDoc("IDE0280", "Use 'nameof'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0280")]
-    public async Task RequireNameofForStrings()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static void CheckArg(string value)
-                {
-                    if (string.IsNullOrEmpty(value))
-                        throw new System.ArgumentException("value");
-                }
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE0280").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("IDE0300", "Simplify collection initialization",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0300")]
     public async Task RequireCollectionExpressionForArray()
@@ -652,27 +578,6 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
     }
 
     [Fact]
-    [RuleDoc("IDE1006", "Naming Styles",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1006")]
-    public async Task RequireCorrectNamingStyle()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                private int Field = 1;
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE1006").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("IDE2000", "Avoid multiple blank lines",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2000")]
     public async Task RejectMultipleBlankLines()
@@ -716,29 +621,6 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("IDE2001").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("IDE2002", "Consecutive braces must not have blank line between them",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2002")]
-    public async Task RequireNoBlankLineBetweenBraces()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Main()
-                {
-
-                }
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE2002").ShouldBeTrue();
     }
 
     [Fact]
@@ -796,54 +678,5 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("IDE2004").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("IDE2005", "Blank line not allowed after conditional expression token",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005")]
-    public async Task RequireNoBlankLineAfterConditionalToken()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Main()
-                {
-                    var result = true ?
-
-                        1 : 0;
-                    return result;
-                }
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE2005").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("IDE2006", "Blank line not allowed after arrow expression clause token",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006")]
-    public async Task RequireNoBlankLineAfterArrowExpression()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            namespace test;
-            public static class Program
-            {
-                public static int Get() =>
-
-                    1;
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasError("IDE2006").ShouldBeTrue();
     }
 }

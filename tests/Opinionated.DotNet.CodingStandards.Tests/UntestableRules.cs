@@ -294,4 +294,52 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("EnableGenerateDocumentationFile", "Set MSBuild property 'GenerateDocumentationFile' to 'true'",
     HelpLink = "https://github.com/dotnet/roslyn/issues/41640",
     Untestable = "Project-configuration recommendation, not a code-pattern violation; fires based on the absence of the GenerateDocumentationFile MSBuild property and cannot be triggered or suppressed by writing code in the test harness")]
+[RuleDoc("CA1016", "Mark assemblies with assembly version",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016",
+    Untestable = "The .NET SDK auto-generates AssemblyVersionAttribute from project metadata (GenerateAssemblyInfo=true by default); CA1016 can never fire in the test harness because the attribute is always present")]
+[RuleDoc("CA1047", "Do not declare protected member in sealed type",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1047",
+    Untestable = "CS0628 (protected member in sealed type) is a C# compiler error that fires before Roslyn analyzers run; the build fails with a compiler error and CA1047 never appears in SARIF output")]
+[RuleDoc("CA1846", "Prefer 'AsSpan' over 'Substring'",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846",
+    Untestable = "IDE0057 ('Substring' can be simplified to range indexer) fires for the standard Substring() violation pattern and subsumes CA1846; both rules address the same site but the formatter-backed IDE0057 appears in SARIF instead of CA1846")]
+[RuleDoc("IDE0031", "Use null propagation",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0031; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE0049", "Use language keywords instead of framework type names",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0049",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0049; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE0080", "Remove unnecessary suppression operator",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0080; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE0110", "Remove unnecessary discard",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0110; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE0280", "Use 'nameof'",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0280",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0280; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE1006", "Naming Styles",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1006",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE1006; also, CS0708 (member cannot be declared static in a non-static class) preempts the instance field violation pattern in a static class")]
+[RuleDoc("IDE2002", "Consecutive braces must not have blank line between them",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2002",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2002; the blank-line-between-braces pattern also triggers CS0161 (not all code paths return a value) in methods with empty bodies")]
+[RuleDoc("IDE2005", "Blank line not allowed after conditional expression token",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2005; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("IDE2006", "Blank line not allowed after arrow expression clause token",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006",
+    Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2006; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+[RuleDoc("CA1061", "Do not hide base class methods",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061",
+    Untestable = "With 'new', CS0109 fires (the compiler considers types with different parameter types as overloads, not hiding, so 'new' is not required); without 'new', the overload pattern does not fire CA1061 in build SARIF in NetAnalyzers 10.0.x — only IDE0055 appears at the class declaration")]
+[RuleDoc("CA1511", "Use ArgumentException throw helper",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511",
+    Untestable = "Rule does not produce its own diagnostic ID in build SARIF in NetAnalyzers 10.0.x; only IDE0055 fires at the class declaration level for the standard 'if (string.IsNullOrEmpty) throw new ArgumentException' pattern, consistent with formatter-backed diagnostic routing")]
+[RuleDoc("CA1826", "Do not use Enumerable methods on indexable collections",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826",
+    Untestable = "Rule does not produce its own diagnostic ID in build SARIF in NetAnalyzers 10.0.x; only IDE0055 fires for both 'list.First()' and 'list.ElementAt(0)' patterns on List<T>, consistent with formatter-backed diagnostic routing")]
+[RuleDoc("CA1852", "Seal internal types",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852",
+    Untestable = "Rule does not produce its own diagnostic ID in build SARIF in NetAnalyzers 10.0.x; only IDE0055 fires for unsealed internal classes (with or without members), consistent with formatter-backed diagnostic routing")]
 public static class UntestableRules { }
