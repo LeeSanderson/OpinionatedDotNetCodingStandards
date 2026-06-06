@@ -578,21 +578,34 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
         buildOutput.HasError("CA1840").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1802", "Use literals where appropriate",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802",
-        Untestable = "CA1802 does not fire in NetAnalyzers 10.0.x build analysis for public static readonly fields initialized with compile-time constants (string, int, bool) in either static or instance classes; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1802.severity = warning configured")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802")]
     public async Task UseLiteralsForStaticReadonlyConstantFields()
     {
         using var project = await CreateProjectBuilder();
+        // CA1802 (UseLiteralsWhereAppropriateAnalyzer) registers on OperationKind.FieldInitializer
+        // and reports a static readonly field whose initializer is a compile-time constant (it
+        // should be const). The earlier "untestable" note was a misdiagnosis caused entirely by
+        // field VISIBILITY. The analyzer's source filters with
+        //   MatchesConfiguredVisibility(..., defaultRequiredVisibility:
+        //       SymbolVisibilityGroup.Internal | SymbolVisibilityGroup.Private)
+        // i.e. by default it ONLY flags non-externally-visible fields and explicitly EXCLUDES
+        // public/externally-visible ones (because const-converting a public member is a binary-
+        // breaking change). The old probe used PUBLIC static readonly fields in a public class, so
+        // every candidate was filtered out and SARIF was empty. A private static readonly field
+        // (here, `x`) initialized with the int literal 3 matches the default visibility + Static
+        // modifier filter and fires error:CA1802. (Note the MS Learn
+        // "only looks at externally visible" prose is stale/incorrect; the analyzer source is
+        // authoritative.)
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
-            public static class Config
+            public class UseReadOnly
             {
-                public static readonly string DefaultName = "DefaultName";
-                public static readonly int MaxRetries = 3;
+                private static readonly int x = 3;
+                public int Get() => x;
             }
             public static class Program { public static int Main() => 0; }
             """);
