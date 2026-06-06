@@ -687,18 +687,26 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
         buildOutput.HasError("CA1061").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1066", "Implement IEquatable when overriding Object.Equals",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066",
-        Untestable = "CA1066 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern where a class overrides Object.Equals(object) without implementing IEquatable<T>; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1066.severity = warning configured")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066")]
     public async Task RequireIEquatableWhenOverridingObjectEquals()
     {
+        // Root cause of the old probe's failure: CA1066 fires ONLY on a struct, never a class.
+        // EquatableAnalyzer.AnalyzeSymbol reports ImplementIEquatableDescriptor under the guard
+        // `overridesObjectEquals && !implementsEquatable && namedType.TypeKind == TypeKind.Struct`
+        // (the class direction is covered by the converse rule CA1067). The old probe used a
+        // `public class Point`, so the struct guard was never satisfied and CA1066 was absent
+        // from SARIF. CA1066's descriptor is also RuleLevel.Disabled (IsEnabledByDefault = false),
+        // but the package's editorconfig sets `dotnet_diagnostic.CA1066.severity = warning`, which
+        // re-enables it; the only remaining requirement is the correct (struct) receiver shape.
+        // TreatWarningsAsErrors promotes the warning to an error -> assert HasError.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
-            public class Point
+            public struct Point
             {
                 public int X { get; set; }
                 public int Y { get; set; }
