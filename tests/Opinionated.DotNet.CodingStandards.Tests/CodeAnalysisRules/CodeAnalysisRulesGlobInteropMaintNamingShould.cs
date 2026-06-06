@@ -566,30 +566,42 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         buildOutput.HasError("CA1419").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1511", "Use ArgumentException throw helper",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511",
-        Untestable = "Rule does not produce its own diagnostic ID in build SARIF in NetAnalyzers 10.0.x; only IDE0055 fires at the class declaration level for the standard 'if (string.IsNullOrEmpty) throw new ArgumentException' pattern, consistent with formatter-backed diagnostic routing")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511")]
     public async Task UseArgumentExceptionThrowHelper()
     {
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
             namespace test;
             public static class Program
             {
                 public static void Validate(string value)
                 {
                     if (string.IsNullOrEmpty(value))
-                        throw new ArgumentException("Value cannot be null or empty", nameof(value));
+                    {
+                        throw new System.ArgumentException("", nameof(value));
+                    }
                 }
                 public static int Main() => 0;
             }
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
+        // CA1511 fires on `if (string.IsNullOrEmpty(arg)) throw new ArgumentException(...)`, recommending
+        // ArgumentException.ThrowIfNullOrEmpty(arg). The old probe used a *meaningful* message
+        // (new ArgumentException("Value cannot be null or empty", nameof(value))) which silently suppresses
+        // the rule: UseExceptionThrowHelpers.HasPossiblyMeaningfulAdditionalArguments runs for every throw
+        // and, for ArgumentException, returns true when args[0] (the message) is neither null nor "" -- so
+        // the analyzer returns early and never emits CA1511. The "only IDE0055 fires / formatter-backed"
+        // conclusion was therefore a wrong-argument-shape misdiagnosis, not a dead rule. The Microsoft
+        // canonical example deliberately uses an EMPTY message: `throw new ArgumentException("", "arg")`.
+        // Using "" as the message (and a constant paramName at index 1) makes the rule fire. CA1511 is
+        // RuleLevel.IdeSuggestion but the package editorconfig raises it to warning, so under
+        // TreatWarningsAsErrors it surfaces as an error. Reference: UseExceptionThrowHelpers.cs in
+        // dotnet/roslyn-analyzers (HasPossiblyMeaningfulAdditionalArguments).
         buildOutput.HasError("CA1511").ShouldBeTrue();
     }
 }
