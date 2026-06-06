@@ -357,12 +357,15 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
         buildOutput.HasError("CA2024").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2020", "Prevent behavioral change caused by built-in operators of IntPtr and UIntPtr",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020",
-        Untestable = "CA2020 does not fire in NetAnalyzers 10.0.x build analysis for nint/nuint arithmetic in checked or unchecked expressions; the rule targets behavioral changes introduced between .NET 5 and .NET 7 but does not produce diagnostics for projects already targeting .NET 7+")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020")]
     public async Task PreventBehavioralChangeFromIntPtrOperators()
     {
+        // CA2020 fires on a checked add/subtract where the left operand is an IntPtr/UIntPtr
+        // (using the `IntPtr` identifier, NOT the `nint` alias - the alias suppresses the rule) and
+        // the right operand is an int literal. The old probe used the `nint` alias inside `unchecked`,
+        // which fails the analyzer's IsChecked and !IsAliasUsed guards, so it never fired.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
@@ -370,7 +373,13 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
             namespace test;
             public static class Program
             {
-                public static nint Add(nint a, nint b) => unchecked(a + b);
+                public static IntPtr AddOffset(IntPtr value)
+                {
+                    checked
+                    {
+                        return value + 2;
+                    }
+                }
                 public static int Main() => 0;
             }
             """);
