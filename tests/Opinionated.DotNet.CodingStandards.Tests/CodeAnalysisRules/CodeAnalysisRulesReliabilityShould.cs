@@ -420,28 +420,36 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
         buildOutput.HasError("CA2153").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2216", "Disposable types should declare finalizer",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216",
-        Untestable = "CA2216 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern: IDisposable classes with IntPtr, UIntPtr, or HandleRef fields but no finalizer emit CA1063 (wrong Dispose pattern) instead, and even with a correct Dispose(bool) pattern, CA2216 is never emitted in the SARIF output; the rule appears suppressed for .NET 10 targets")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216")]
     public async Task DisposableTypesShouldDeclareFinalizer()
     {
+        // CA2216 registers on OperationKind.SimpleAssignment: it fires when an IDisposable class assigns
+        // an IntPtr/UIntPtr/HandleRef instance field from a P/Invoke ([DllImport]) call and declares no
+        // finalizer. The old probe declared the field with no assignment at all, so the assignment action
+        // never ran (CA1063 fired on the bad Dispose pattern instead, masking the real cause).
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
             using System.Runtime.InteropServices;
             namespace test;
+            internal static class NativeMethods
+            {
+                [DllImport("native.dll")]
+                internal static extern IntPtr AllocateResource();
+            }
             public class NativeResource : IDisposable
             {
-                private IntPtr _handle;
+                private readonly IntPtr _handle;
+                public NativeResource()
+                {
+                    _handle = NativeMethods.AllocateResource();
+                }
                 public void Dispose()
                 {
-                    Dispose(true);
-                    GC.SuppressFinalize(this);
                 }
-                protected virtual void Dispose(bool disposing) { }
             }
             public static class Program { public static int Main() => 0; }
             """);
