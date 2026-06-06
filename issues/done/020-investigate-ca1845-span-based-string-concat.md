@@ -122,3 +122,59 @@ None — can start immediately.
 
 - User story 2: every build-enforced rule backed by at least one test
 - User story 7: rules that genuinely cannot be triggered documented with a written reason
+
+---
+
+## Resolution (closed 2026-06-06)
+
+**Root cause: the "IDE0057 subsumption / untestable" note was a misdiagnosis** — the same
+false-untestable confounder pattern already corrected for CA1826 (017), CA1852 (022), and
+CA1842/CA1843 (018/019). CA1845 fires correctly in build SARIF; the old probe simply used a
+violation pattern the analyzer never inspects.
+
+The analyzer is `UseSpanBasedStringConcat` (NetAnalyzers,
+`src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Runtime/UseSpanBasedStringConcat.cs`,
+verified against the current source). It registers **one** action, on
+`OperationKind.Binary` — the string **`+` concatenation operator**. It does **not** register on
+`IInvocationOperation` / existing `string.Concat(...)` calls, and it has **no** reference to
+IDE0057 or any Substring-simplification self-suppression guard (the two analyzers are fully
+independent). It reports the top-most concat when:
+
+1. every operand is `string` (or a `char` literal),
+2. at least one operand is a `Substring(int)` / `Substring(int, int)` call, and
+3. a fixed-arity span-based `string.Concat(ReadOnlySpan<char>, …)` overload of the matching
+   arity exists (BCL provides 2-, 3-, and 4-span overloads; a 5+-operand chain finds no overload
+   and the rule stays silent).
+
+The old test asserted on `a.AsSpan().SequenceEqual(b.Substring(1))` — a `MemoryExtensions`
+method invocation, not a `+` binary op — so CA1845 was never even evaluated. The IDE0057 `note`
+that co-fired on the `Substring` call was incidental and was misread as "the rule routes through
+/ is subsumed by IDE0057."
+
+**Fix / pattern found (acceptance criterion 1):** a real `+` concat with a `Substring` operand,
+e.g. `return text.Substring(1) + "!";`, fires `error:CA1845` (CA1845 is configured
+`severity = warning` and the project sets `TreatWarningsAsErrors`). Verified by scratch-project
+probe (`dotnet build` + SARIF) **and** by the promoted harness test. IDE0057 still emits a `note`
+at the `Substring` site in the same SARIF — confirming it does **not** suppress CA1845, so no
+`#pragma`/editorconfig IDE0057 suppression is needed.
+
+**Note (`RuleLevel`, not `EnforceOnBuild`):** NetAnalyzers CA rules do not use the
+`EnforceOnBuildValues` enum (that is a dotnet/roslyn IDE concept). CA1845 uses
+`RuleLevel.IdeSuggestion` → default `(Info, enabledByDefault: true)`. Raising it to `warning` in
+the package editorconfig is sufficient for build enforcement; the rule was never gated off
+build.
+
+**Changes:**
+- Un-skipped `UseSpanBasedStringConcat`; removed the `Untestable` reason from its `[RuleDoc]`
+  (now `Untestable == null`). Test asserts `HasError("CA1845")` on the `+` concat pattern and
+  carries an explanatory comment.
+- Cross-issue note added to issue 021 (CA1846): the shared "IDE0057 subsumption" theory is also
+  wrong; CA1846 fires on a `Substring` result passed as a method argument that has a
+  `ReadOnlySpan<char>` overload — confirmed `error:CA1846` for
+  `int.TryParse(text.Substring(7), out value)` during this investigation.
+
+**Verification:** `dotnet build` 0 warnings / 0 errors; `UseSpanBasedStringConcat` +
+`RuleDocCoverageShould` + `RuleReferenceGeneratorShould` green (8 passed); full suite
+315 passed / 50 skipped / 0 failed (CA1845 moved from skipped to passing).
+`docs/rule-reference.md` regenerates with no diff (description/help link unchanged; the generator
+does not emit the `Untestable` field).

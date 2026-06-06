@@ -650,26 +650,33 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1843").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1845", "Use span-based 'string.Concat'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845",
-        Untestable = "CA1845 does not appear in build SARIF for any Substring pattern passed to string.Concat or MemoryExtensions.SequenceEqual; IDE0057 (Substring can be simplified) fires as a note/suggestion at the same site and CA1845 is absent even when IDE0057 is suppressed via #pragma — the suggestion-level severity is not suppressed by #pragma warning disable in Roslyn's IDE diagnostic pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845")]
     public async Task UseSpanBasedStringConcat()
     {
+        // CA1845 (UseSpanBasedStringConcat) registers only on OperationKind.Binary — the string
+        // `+` concatenation operator — and never on string.Concat(...) invocations. It reports the
+        // top-most concat when every operand is a string (or char literal), at least one operand is
+        // a Substring(int)/Substring(int, int) call, and a span-based string.Concat overload of the
+        // matching arity (2-4 spans) exists. The earlier "untestable" note blamed IDE0057
+        // subsumption, but that was a misdiagnosis: the old probe used a method call
+        // (a.AsSpan().SequenceEqual(b.Substring(1))) that the analyzer never inspects. A real `+`
+        // concat with a Substring operand fires error:CA1845 — IDE0057 still fires as a note at the
+        // Substring site but does not suppress CA1845.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
             namespace test;
+
             public static class Program
             {
-                public static bool AreEqual(string a, string b)
+                public static string Shorten(string text)
                 {
-            #pragma warning disable IDE0057
-                    return a.AsSpan().SequenceEqual(b.Substring(1));
-            #pragma warning restore IDE0057
+                    return text.Substring(1) + "!";
                 }
+
                 public static int Main() => 0;
             }
             """);

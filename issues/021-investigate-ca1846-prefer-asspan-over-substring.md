@@ -27,6 +27,52 @@ is CA1846's specific trigger: `s.Substring(n)` followed by `.AsSpan()` — the r
 does NOT trigger CA1846. CA1846 is specifically about avoiding the `Substring` allocation when
 the result is immediately converted to span.
 
+## Cross-issue note (confirmed during issue 020, 2026-06-06) — START HERE
+
+The "IDE0057 subsumption / untestable" theory is **wrong** for both CA1845 and CA1846 (verified
+by reading the analyzer source and by scratch-project + harness probes while closing issue 020).
+This is the same false-untestable confounder already corrected for CA1826/CA1852/CA1842/CA1843.
+
+- The analyzer is `PreferAsSpanOverSubstring` (NetAnalyzers,
+  `src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Runtime/PreferAsSpanOverSubstring.cs`).
+  It registers on `OperationKind.Argument`. It fires when the value of an **argument** (after
+  walking down implicit conversions) is a `Substring(int)` / `Substring(int, int)` invocation
+  whose parent is a method invocation, **and** that method has another accessible overload with
+  the same return type and arity where the `Substring` argument position instead takes
+  `ReadOnlySpan<char>`. It has **no** IDE0057 reference and **no** self-suppression guard.
+- CA1846 is therefore **not** about `s.Substring(n).AsSpan()` chaining (what the current test
+  asserts on — the analyzer never sees that as an argument substitution). It is about passing a
+  `Substring` result directly into a method that has a `ReadOnlySpan<char>` overload.
+- **Confirmed working pattern** (`error:CA1846` in build SARIF, IDE0057 co-fires as a harmless
+  `note` and does not suppress it):
+
+  ```csharp
+  namespace test;
+
+  public static class Program
+  {
+      public static bool TryParseSuffix(string text, out int value)
+      {
+          return int.TryParse(text.Substring(7), out value);
+      }
+
+      public static int Main() => 0;
+  }
+  ```
+
+  `int.TryParse(string, out int)` has a `int.TryParse(ReadOnlySpan<char>, out int)` overload of
+  the same arity/return type, so the `text.Substring(7)` argument triggers CA1846.
+
+To close: un-skip `PreferAsSpanOverSubstring`, remove the `Untestable` reason from its
+`[RuleDoc]`, replace the body with the pattern above (drop the `using System;` /
+`#pragma warning disable IDE0057` — both are unnecessary and the redundant `using` would itself
+fire IDE0005→IDE0055 noise), assert `HasError("CA1846")`, and verify the full suite +
+`RuleDocCoverageShould` + `RuleReferenceGeneratorShould`. `RuleLevel.IdeSuggestion` (not
+`EnforceOnBuild`) governs default severity; the package's `severity = warning` is sufficient.
+
+The investigation-plan steps below (IDE0057 suppression, `[SuppressMessage]`, two-argument
+`Substring`) are now moot — keep for historical context only.
+
 ## Investigation plan
 
 1. **Determine whether there is any `AsSpan` context that doesn't involve `Substring`.**
