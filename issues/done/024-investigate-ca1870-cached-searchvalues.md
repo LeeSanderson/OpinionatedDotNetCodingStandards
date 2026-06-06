@@ -126,19 +126,76 @@ public async Task UseCachedSearchValuesInstance()
 }
 ```
 
-## Acceptance criteria
+## Resolution (2026-06-06)
 
-- [ ] Root cause identified: confirmed whether CA1870 requires dataflow analysis disabled in
+**CA1870 is testable and now passes.** The "absent from SARIF" note was a MISDIAGNOSIS — the
+same wrong-probe-pattern class already corrected for CA1826 (017), CA1852 (022), CA1842/CA1843
+(018/019), CA1845/CA1846 (020/021), and CA1853 (023). CA1870 has no `EnforceOnBuild = Never`
+flag and is NOT a dataflow rule (`isDataflowRule: false`).
+
+### Root cause (from the analyzer source)
+
+The analyzer `UseSearchValuesAnalyzer`
+(`src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Performance/UseSearchValues.cs`) registers
+on `OperationKind.Invocation` and nudges you to hoist a constant set of search values into a
+cached `static readonly SearchValues<char>`. It fires when a **constant string / char[] / byte[]
+/ collection-expression / UTF-8 literal of search values is passed DIRECTLY** to a flagged
+method: `string.IndexOfAny`/`LastIndexOfAny` (single `char[]` overload only) or the
+`MemoryExtensions` span overloads `IndexOfAny`, `IndexOfAnyExcept`, `ContainsAny`,
+`ContainsAnyExcept`, `LastIndexOfAny`, `LastIndexOfAnyExcept` whose values parameter is
+`ReadOnlySpan<T>` (char/byte).
+
+The old probe failed for two independent reasons:
+
+1. **Inline `SearchValues.Create("aeiou")` is the rule's DESIRED END STATE, not the violation.**
+   That call binds to `IndexOfAny(ReadOnlySpan<char>, SearchValues<char>)`, whose values
+   parameter is `SearchValues<T>` (not `ReadOnlySpan<T>`), so it is deliberately excluded from
+   the analyzer's detection method-set — the call is never inspected. (The analyzer also doesn't
+   recognise a `SearchValues.Create(...)` invocation as one of its constant argument shapes.)
+2. **Threshold:** `private const int MinLengthWorthReplacing = 6` — fewer values already hit
+   dedicated vectorized overloads, so `"aeiou"` (5 chars) was below the bar regardless.
+   (Exception: an allocating argument such as `"abc".ToCharArray()` can fire below 6.)
+
+### Fix
+
+Pass a **6+ char constant string literal directly** to a span `IndexOfAny`, which binds to
+`MemoryExtensions.IndexOfAny(ReadOnlySpan<char>, ReadOnlySpan<char>)` (the string literal is
+implicitly converted to `ReadOnlySpan<char>`):
+
+```csharp
+public static bool ContainsVowel(string text)
+    => text.AsSpan().IndexOfAny("aeiouAEIOU") >= 0;   // 10 chars >= 6 -> error:CA1870
+```
+
+CA1870 is `RuleLevel.IdeSuggestion` (default Info), but the package editorconfig sets
+`dotnet_diagnostic.CA1870.severity = warning` and the harness uses `TreatWarningsAsErrors=true`,
+so it surfaces as `error:CA1870` in build SARIF — `HasError("CA1870")` is true.
+
+### Acceptance criteria
+
+- [x] Root cause identified: not a dataflow/`EnforceOnBuild=Never` issue — wrong probe pattern
+      (inline `SearchValues.Create`, value count below the 6-value threshold).
+- [x] A violation pattern found — `text.AsSpan().IndexOfAny("aeiouAEIOU")` triggers
+      `error:CA1870`; test updated, `Skip` removed, `Untestable` removed, test passes.
+- [x] No regressions — full suite 318 passed / 47 skipped / 0 failed (CA1870 moved from skipped
+      to passing).
+- [x] `RuleReferenceGenerator` / `RuleDocCoverage` coverage tests continue to pass; no
+      `docs/rule-reference.md` regeneration needed (generator does not emit `Untestable`;
+      title/HelpLink unchanged).
+
+## Original acceptance criteria
+
+- [x] Root cause identified: confirmed whether CA1870 requires dataflow analysis disabled in
       build mode, has `EnforceOnBuild = Never`, or another cause
-- [ ] One of:
-  - [ ] A violation pattern found (direct non-loop call, local variable storage, or
+- [x] One of:
+  - [x] A violation pattern found (direct non-loop call, local variable storage, or
         `ContainsAny` overload) that triggers `error:CA1870` in SARIF → test updated,
         `Skip` removed, test passes in CI; OR
   - [ ] Confirmed no pattern triggers CA1870 in build SARIF → `Untestable` reason updated
         with confirmed root cause (e.g. "CA1870 is a dataflow rule that only runs in IDE mode;
         build-mode analysis does not execute interprocedural data-flow passes")
-- [ ] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
-- [ ] If the test is promoted, `RuleReferenceGenerator` coverage test continues to pass
+- [x] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
+- [x] If the test is promoted, `RuleReferenceGenerator` coverage test continues to pass
 
 ## Blocked by
 

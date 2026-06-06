@@ -823,33 +823,37 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1867").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1870", "Use a cached 'SearchValues' instance",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870",
-        Untestable = "CA1870 produces no diagnostic in build SARIF for any SearchValues.Create called inline in IndexOfAny/ContainsAny, including patterns inside a foreach loop; the SARIF is empty even with clean code and dotnet_diagnostic.CA1870.severity = warning configured")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870")]
     public async Task UseCachedSearchValuesInstance()
     {
+        // CA1870 (UseSearchValuesAnalyzer) fires when a constant set of search values is passed
+        // DIRECTLY to a span IndexOfAny/IndexOfAnyExcept/ContainsAny/LastIndexOfAny call — it nudges
+        // you to hoist the values into a cached `static readonly SearchValues<char>`. The earlier
+        // "untestable" note was a misdiagnosis on two counts:
+        //   1. The old probe passed `SearchValues.Create("aeiou")` INLINE. That is the rule's desired
+        //      end state, not the violation: the call binds to the IndexOfAny(ReadOnlySpan<char>,
+        //      SearchValues<char>) overload, which the analyzer deliberately excludes from its method
+        //      set (the values parameter must be ReadOnlySpan<T>, not SearchValues<T>), so it never
+        //      fires on an already-SearchValues argument.
+        //   2. The analyzer has a threshold: MinLengthWorthReplacing = 6 (fewer values already hit
+        //      dedicated vectorized overloads), so "aeiou" (5 chars) was below it regardless.
+        // Passing a 6+ char string literal directly to a span IndexOfAny binds to the
+        // MemoryExtensions.IndexOfAny(ReadOnlySpan<char>, ReadOnlySpan<char>) overload the analyzer
+        // detects, and fires error:CA1870 (RuleLevel.IdeSuggestion, promoted to warning by the
+        // package editorconfig + TreatWarningsAsErrors).
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System.Buffers;
-
             namespace test;
 
             public static class Program
             {
-                public static bool ContainsVowel(string[] strs)
+                public static bool ContainsVowel(string text)
                 {
-                    foreach (var s in strs)
-                    {
-                        if (s.AsSpan().IndexOfAny(SearchValues.Create("aeiou")) >= 0)
-                        {
-                            return true;
-                        }
-                    }
-
-                    return false;
+                    return text.AsSpan().IndexOfAny("aeiouAEIOU") >= 0;
                 }
 
                 public static int Main() => 0;
