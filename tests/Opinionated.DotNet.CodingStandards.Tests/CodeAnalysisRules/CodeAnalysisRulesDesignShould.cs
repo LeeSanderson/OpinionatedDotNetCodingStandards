@@ -653,4 +653,49 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("CA1070").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1061", "Do not hide base class methods",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061",
+        Untestable = "With 'new', CS0109 fires (the compiler considers types with different parameter types as overloads, not hiding, so 'new' is not required); without 'new', the overload pattern does not fire CA1061 in build SARIF in NetAnalyzers 10.0.x — only IDE0055 appears at the class declaration")]
+    public async Task ProhibitHidingBaseClassMethodsWithLessDerivedType()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class Base { public virtual void Method(string s) { } }
+            public class Derived : Base { public new void Method(object s) { } }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1061").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1066", "Implement IEquatable when overriding Object.Equals",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1066",
+        Untestable = "CA1066 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern where a class overrides Object.Equals(object) without implementing IEquatable<T>; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1066.severity = warning configured")]
+    public async Task RequireIEquatableWhenOverridingObjectEquals()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class Point
+            {
+                public int X { get; set; }
+                public int Y { get; set; }
+                public override bool Equals(object? obj) => obj is Point p && X == p.X && Y == p.Y;
+                public override int GetHashCode() => System.HashCode.Combine(X, Y);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1066").ShouldBeTrue();
+    }
 }

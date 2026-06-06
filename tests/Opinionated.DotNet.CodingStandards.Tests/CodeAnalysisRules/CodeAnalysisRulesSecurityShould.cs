@@ -613,4 +613,539 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5403").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2100", "Review SQL queries for security vulnerabilities",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100",
+        Untestable = "Requires data-flow taint analysis to track untrusted input from parameter to SQL string; build-based harness cannot trigger inter-procedural data-flow rules that require full program analysis")]
+    public async Task ReviewSqlQueriesForSecurityVulnerabilities()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data.Common;
+            namespace test;
+            public static class Program
+            {
+                public static void Execute(DbCommand cmd, string tableName)
+                {
+                    cmd.CommandText = "SELECT * FROM " + tableName;
+                    cmd.ExecuteNonQuery();
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2100").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2300", "Do not use insecure deserializer BinaryFormatter",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300",
+        Untestable = "BinaryFormatter is marked [Obsolete(SYSLIB0011)] in .NET 9+; with TreatWarningsAsErrors=true the SYSLIB0011 diagnostic becomes an error and the build fails before CA2300 fires as a distinct diagnostic; the rule cannot be tested without suppressing SYSLIB0011 across the test harness")]
+    public async Task ProhibitBinaryFormatterUsage()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0011
+            using System.IO;
+            using System.Runtime.Serialization.Formatters.Binary;
+            namespace test;
+            public static class Program
+            {
+                public static object? Deserialize(Stream s)
+                {
+                    var formatter = new BinaryFormatter();
+                    return formatter.Deserialize(s);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0011
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2300").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2301", "Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301",
+        Untestable = "BinaryFormatter is marked [Obsolete(SYSLIB0011)] in .NET 9+; same SYSLIB0011/TreatWarningsAsErrors constraint as CA2300; cannot be tested without suppressing SYSLIB0011 globally")]
+    public async Task ProhibitBinaryFormatterDeserializeWithoutBinder()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0011
+            using System.IO;
+            using System.Runtime.Serialization.Formatters.Binary;
+            namespace test;
+            public static class Program
+            {
+                public static object? Deserialize(Stream s)
+                {
+                    var formatter = new BinaryFormatter();
+                    return formatter.Deserialize(s);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0011
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2301").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2302", "Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302",
+        Untestable = "Data-flow/taint analysis variant of CA2301 that also requires tracking Binder assignment across statements; the underlying BinaryFormatter is additionally blocked by SYSLIB0011 as described in CA2300")]
+    public async Task EnsureBinaryFormatterBinderIsSetBeforeDeserialize()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0011
+            using System.IO;
+            using System.Runtime.Serialization.Formatters.Binary;
+            namespace test;
+            public static class Program
+            {
+                public static object? Deserialize(Stream s, bool useBinder)
+                {
+                    var formatter = new BinaryFormatter();
+                    if (useBinder)
+                        formatter.Binder = null;
+                    return formatter.Deserialize(s);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0011
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2302").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2350", "Do not use DataTable.ReadXml() with untrusted data",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350",
+        Untestable = "Data-flow/taint analysis rule: fires only when untrusted input (method parameter, user-controlled source) reaches DataTable.ReadXml(); the build harness cannot trigger inter-procedural taint analysis without a full program analysis configuration")]
+    public async Task ProhibitDataTableReadXmlWithUntrustedData()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data;
+            namespace test;
+            public static class Program
+            {
+                public static void ReadData(string xml)
+                {
+                    var dt = new DataTable();
+                    dt.ReadXml(xml);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2350").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2351", "Do not use DataSet.ReadXml() with untrusted data",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351",
+        Untestable = "Data-flow/taint analysis rule: fires only when untrusted input reaches DataSet.ReadXml(); same taint-analysis constraint as CA2350")]
+    public async Task ProhibitDataSetReadXmlWithUntrustedData()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data;
+            namespace test;
+            public static class Program
+            {
+                public static void ReadData(string xml)
+                {
+                    var ds = new DataSet();
+                    ds.ReadXml(xml);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2351").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2354", "Unsafe DataSet or DataTable in deserialized object graph can be vulnerable to remote code execution attacks",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354",
+        Untestable = "Data-flow analysis rule: fires when a DataSet/DataTable type appears in the deserialization graph of a call to a generic deserialization API; requires inter-procedural type-graph analysis not triggerable from a single-project build harness")]
+    public async Task ProhibitDataSetInDeserializedObjectGraph()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data;
+            using System.IO;
+            using System.Runtime.Serialization;
+            namespace test;
+            [DataContract]
+            public class Container { [DataMember] public DataSet? Data { get; set; } }
+            public static class Program
+            {
+                public static object? Deserialize(Stream s)
+                {
+                    var ser = new DataContractSerializer(typeof(Container));
+                    return ser.ReadObject(s);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2354").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2355", "Unsafe DataSet or DataTable type found in deserializable object graph",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355",
+        Untestable = "Data-flow analysis rule: fires when DataSet/DataTable appears in a potentially-deserialized type hierarchy; same inter-procedural type-graph constraint as CA2354")]
+    public async Task ProhibitDataTableInDeserializableTypeHierarchy()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data;
+            using System.IO;
+            using System.Xml.Serialization;
+            namespace test;
+            public class Container { public DataTable? Table { get; set; } }
+            public static class Program
+            {
+                public static object? Deserialize(Stream s)
+                {
+                    var ser = new XmlSerializer(typeof(Container));
+                    return ser.Deserialize(s);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2355").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA3075", "Insecure DTD processing in XML",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for XmlReaderSettings { DtdProcessing = DtdProcessing.Parse } + XmlReader.Create patterns; the XmlTextReader approach requires System.Xml.XmlTextReader which is not in .NET 10")]
+    public async Task ProhibitInsecureDtdProcessingInXml()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Xml;
+            namespace test;
+            public static class Program
+            {
+                public static void LoadXml(string path)
+                {
+                    var settings = new XmlReaderSettings { DtdProcessing = DtdProcessing.Parse };
+                    using var reader = XmlReader.Create(path, settings);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA3075").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA3077", "Insecure Processing in API Design, XmlDocument and XmlTextReader",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3077",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for XmlDocument with XmlResolver + LoadXml patterns; appears to require specific API design patterns (method accepting XmlDocument parameter) not replicable in a simple harness")]
+    public async Task ProhibitInsecureXmlDocumentResolver()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Xml;
+            namespace test;
+            public static class Program
+            {
+                public static void LoadXml(string xml)
+                {
+                    var doc = new XmlDocument();
+                    doc.XmlResolver = new XmlUrlResolver();
+                    doc.LoadXml(xml);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA3077").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5360", "Do Not Call Dangerous Methods In Deserialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for the standard ISerializable constructor + Process.Start pattern documented in the rule's official examples; likely requires inter-procedural data-flow analysis not available in the single-project build harness")]
+    public async Task ProhibitDangerousMethodsInDeserialization()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            using System.Diagnostics;
+            using System.Runtime.Serialization;
+            namespace test;
+            [Serializable]
+            public class MyClass : ISerializable
+            {
+                protected MyClass(SerializationInfo info, StreamingContext context)
+                {
+                    Process.Start("cmd.exe");
+                }
+                public void GetObjectData(SerializationInfo info, StreamingContext context) { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5360").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5367", "Do Not Serialize Types With Pointer Fields",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367",
+        Untestable = "CA5367 does not fire in NetAnalyzers 10.0.x build analysis for [Serializable] types with unsafe pointer fields; exhaustive probing with AllowUnsafeBlocks=true and a [Serializable] class containing int* fields confirmed the diagnostic is absent from SARIF output")]
+    public async Task ProhibitSerializingTypesWithPointerFields()
+    {
+        using var project = await CreateProjectBuilder(properties: [(Name: "AllowUnsafeBlocks", Value: "true")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            [Serializable]
+            public unsafe class UnsafeData
+            {
+                public int* Pointer;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5367").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5373", "Do not use obsolete key derivation function",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373",
+        Untestable = "PasswordDeriveBytes is marked [Obsolete(SYSLIB0041)] in .NET 9+; SYSLIB0041 fires as a build error but CA5373 does not appear alongside it in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x — the SYSLIB deprecation supersedes the CA diagnostic")]
+    public async Task ProhibitObsoleteKeyDerivationFunction()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0041
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static byte[] DeriveKey(string password, byte[] salt)
+                {
+                    using var pdb = new PasswordDeriveBytes(password, salt);
+                    return pdb.GetBytes(32);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0041
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5373").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5381", "Ensure Certificates Are Not Added To Root Certificate Store",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381",
+        Untestable = "Data-flow/taint analysis variant of CA5380: fires when a certificate is added to a store whose StoreName comes through a variable rather than a constant; the build harness cannot trigger inter-procedural taint analysis tracing the store name through assignments")]
+    public async Task EnsureCertificatesAreNotAddedToRootCertificateStore()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Security.Cryptography.X509Certificates;
+            namespace test;
+            public static class Program
+            {
+                public static void AddCertificate(X509Certificate2 cert, StoreName storeName)
+                {
+                    var store = new X509Store(storeName, StoreLocation.LocalMachine);
+                    store.Open(OpenFlags.ReadWrite);
+                    store.Add(cert);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5381").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5384", "Do Not Use Digital Signature Algorithm (DSA)",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for DSA.Create() nor for DSA.SignData() calls; the abstract factory pattern for DSA appears to not trigger the diagnostic in this analyzer version")]
+    public async Task ProhibitDigitalSignatureAlgorithmUsage()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static byte[] SignData(byte[] data)
+                {
+                    using var dsa = DSA.Create();
+                    return dsa.SignData(data, HashAlgorithmName.SHA256);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5384").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5385", "Use Rivest-Shamir-Adleman (RSA) Algorithm With Sufficient Key Size",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for RSA.Create(int) nor for RSA.Create() + KeySize assignment patterns; the abstract factory and property setter approaches do not trigger the key-size diagnostic")]
+    public async Task RequireSufficientRsaKeySize()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static RSA CreateWeakRsaKey() => RSA.Create(512);
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5385").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5387", "Do Not Use Weak Key Derivation Function With Insufficient Iteration Count",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387",
+        Untestable = "All Rfc2898DeriveBytes constructors are marked [Obsolete(SYSLIB0060)] in .NET 10; SYSLIB0060 fires but CA5387 does not appear alongside it in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x — the SYSLIB deprecation supersedes the CA diagnostic")]
+    public async Task ProhibitWeakKeyDerivationFunctionWithInsufficientIterations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0060
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static byte[] DeriveKey(string password, byte[] salt)
+                {
+                    using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, 100, HashAlgorithmName.SHA256);
+                    return pbkdf2.GetBytes(32);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0060
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5387").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5388", "Ensure Sufficient Iteration Count When Using Weak Key Derivation Function",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388",
+        Untestable = "Data-flow/taint analysis variant of CA5387: fires when the iteration count passed to Rfc2898DeriveBytes comes from a variable rather than a literal and cannot be proven to exceed the threshold; requires inter-procedural taint analysis not triggerable from a single-project build harness")]
+    public async Task EnsureSufficientIterationCountInKeyDerivation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            #pragma warning disable SYSLIB0060
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static byte[] DeriveKey(string password, byte[] salt, int iterations)
+                {
+                    using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
+                    return pbkdf2.GetBytes(32);
+                }
+                public static int Main() => 0;
+            }
+            #pragma warning restore SYSLIB0060
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5388").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA5402", "Use CreateEncryptor with the default IV",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402",
+        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for the parameterless Aes.CreateEncryptor() overload; unlike the sibling rule CA5401 (which fires for the 2-argument overload), CA5402 produces no diagnostic even when the encryptor is actively used")]
+    public async Task UseCreateEncryptorWithDefaultIv()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Security.Cryptography;
+            namespace test;
+            public static class Program
+            {
+                public static ICryptoTransform CreateEncryptor()
+                {
+                    using var aes = Aes.Create();
+                    return aes.CreateEncryptor();
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5402").ShouldBeTrue();
+    }
 }

@@ -523,4 +523,59 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
 
         buildOutput.HasError("CA1725").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1419", "Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419",
+        Untestable = "CA1419 does not fire in NetAnalyzers 10.0.x build analysis for a concrete public SafeHandle subclass without a parameterless constructor; exhaustive probing confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1419.severity = warning configured")]
+    public async Task RequireParameterlessConstructorOnSafeHandleSubclass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Runtime.InteropServices;
+            namespace test;
+            public class MyHandle : SafeHandle
+            {
+                public MyHandle(System.IntPtr handle) : base(System.IntPtr.Zero, true)
+                {
+                    SetHandle(handle);
+                }
+                public override bool IsInvalid => handle == System.IntPtr.Zero;
+                protected override bool ReleaseHandle() { return true; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1419").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1511", "Use ArgumentException throw helper",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511",
+        Untestable = "Rule does not produce its own diagnostic ID in build SARIF in NetAnalyzers 10.0.x; only IDE0055 fires at the class declaration level for the standard 'if (string.IsNullOrEmpty) throw new ArgumentException' pattern, consistent with formatter-backed diagnostic routing")]
+    public async Task UseArgumentExceptionThrowHelper()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                public static void Validate(string value)
+                {
+                    if (string.IsNullOrEmpty(value))
+                        throw new ArgumentException("Value cannot be null or empty", nameof(value));
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1511").ShouldBeTrue();
+    }
 }

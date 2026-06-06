@@ -577,4 +577,27 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA1840").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1802", "Use literals where appropriate",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1802",
+        Untestable = "CA1802 does not fire in NetAnalyzers 10.0.x build analysis for public static readonly fields initialized with compile-time constants (string, int, bool) in either static or instance classes; the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1802.severity = warning configured")]
+    public async Task UseLiteralsForStaticReadonlyConstantFields()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Config
+            {
+                public static readonly string DefaultName = "DefaultName";
+                public static readonly int MaxRetries = 3;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1802").ShouldBeTrue();
+    }
 }

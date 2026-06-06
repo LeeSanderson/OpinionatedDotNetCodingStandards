@@ -462,4 +462,25 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasNote("MA0079").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("MA0023", "Add RegexOptions.ExplicitCapture",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0023.md",
+        Untestable = "SYSLIB1045 fires for all runtime Regex construction and appears to suppress MA0023 in Meziantou.Analyzer 2.0.286")]
+    public async Task RequireExplicitCaptureInRegex()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Text.RegularExpressions;
+            namespace test;
+            public class C
+            {
+                public bool M(string input) => new Regex("(foo)bar").IsMatch(input);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("MA0023").ShouldBeTrue();
+    }
 }

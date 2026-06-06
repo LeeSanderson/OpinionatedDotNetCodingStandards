@@ -636,4 +636,74 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasNote("MA0178").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("MA0054", "Embed the caught exception as innerException",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0054.md",
+        Untestable = "MA0054 does not fire in the build harness for any catch-and-rethrow pattern; the analyzer's data-flow conditions are not met by single-project builds")]
+    public async Task EmbedCaughtExceptionAsInnerException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System;
+            namespace test;
+            public class C
+            {
+                public void M()
+                {
+                    try { }
+                    catch (Exception ex)
+                    {
+                        throw new InvalidOperationException("Failed");
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0054").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("MA0070", "Obsolete attributes should include explanations",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md",
+        Untestable = "CA1041 covers the same null/empty ObsoleteAttribute message condition and fires instead of MA0070 in this harness")]
+    public async Task ObsoleteAttributesShouldIncludeExplanations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                [System.Obsolete]
+                public void OldMethod() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("MA0070").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md",
+        Untestable = "Diagnostic ID is registered in the Meziantou.Analyzer 2.0.286 editorconfig but the analyzer implementation is absent in this version; the rule never fires")]
+    public async Task ShouldNotCallGetTypeOnTypeInstance()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System;
+            namespace test;
+            public class C
+            {
+                public Type GetActualType(Type t) => t.GetType();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0130").ShouldBeTrue();
+    }
 }

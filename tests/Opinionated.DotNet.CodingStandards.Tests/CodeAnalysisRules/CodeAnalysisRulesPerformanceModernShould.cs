@@ -554,4 +554,256 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
 
         buildOutput.HasNote("CA1875").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1826", "Do not use Enumerable methods on indexable collections",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826")]
+    public async Task ProhibitEnumerableMethodsOnIndexableCollections()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+
+            public static class Program
+            {
+                public static int GetLast(System.Collections.Generic.IReadOnlyList<int> list)
+                {
+                    return list.Last();
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1826").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1842", "Do not use 'WhenAll' with a single task",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1842",
+        Untestable = "CA1842 produces no diagnostic in build SARIF for any Task.WhenAll(singleTask) pattern (generic Task<T>, non-generic Task, await or return form); the SARIF is empty even with clean code and dotnet_diagnostic.CA1842.severity = warning configured")]
+    public async Task ProhibitWhenAllWithSingleTask()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+
+            public static class Program
+            {
+                public static async Task M()
+                {
+                    await Task.WhenAll(Task.FromResult(42));
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1842").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1843", "Do not use 'WaitAll' with a single task",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1843",
+        Untestable = "CA1843 produces no diagnostic in build SARIF for any Task.WaitAll(singleTask) pattern (generic Task<T>, non-generic Task, expression-body or statement form); the SARIF is empty even with clean code and dotnet_diagnostic.CA1843.severity = warning configured")]
+    public async Task ProhibitWaitAllWithSingleTask()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+
+            public static class Program
+            {
+                public static void M()
+                {
+                    var t = Task.CompletedTask;
+                    Task.WaitAll(t);
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1843").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1845", "Use span-based 'string.Concat'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1845",
+        Untestable = "CA1845 does not appear in build SARIF for any Substring pattern passed to string.Concat or MemoryExtensions.SequenceEqual; IDE0057 (Substring can be simplified) fires as a note/suggestion at the same site and CA1845 is absent even when IDE0057 is suppressed via #pragma — the suggestion-level severity is not suppressed by #pragma warning disable in Roslyn's IDE diagnostic pipeline")]
+    public async Task UseSpanBasedStringConcat()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                public static bool AreEqual(string a, string b)
+                {
+            #pragma warning disable IDE0057
+                    return a.AsSpan().SequenceEqual(b.Substring(1));
+            #pragma warning restore IDE0057
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1845").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1846", "Prefer 'AsSpan' over 'Substring'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1846",
+        Untestable = "CA1846 does not appear in build SARIF for s.Substring(n).AsSpan() patterns; IDE0057 (suggestion: Substring can be simplified) fires at the same site and CA1846 is absent — #pragma warning disable IDE0057 does not suppress suggestion-level IDE diagnostics in Roslyn's build pipeline, so CA1846 never appears independently")]
+    public async Task PreferAsSpanOverSubstring()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                public static ReadOnlySpan<char> GetSlice(string s)
+                {
+            #pragma warning disable IDE0057
+                    return s.Substring(1).AsSpan();
+            #pragma warning restore IDE0057
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1846").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1852", "Seal internal types",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852",
+        Untestable = "CA1852 is formatter-backed: unsealed internal class patterns produce IDE0055 (Fix formatting) in SARIF instead of CA1852 in NetAnalyzers 10.0.x; CA1852 cannot be triggered with its own diagnostic ID in build analysis regardless of whether the class has members, is in a separate file, or has other variations")]
+    public async Task SealInternalTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("InternalService.cs",
+            """
+            namespace test;
+            internal class InternalService { }
+            """);
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1852").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1853", "Unnecessary call to 'Dictionary.ContainsKey(key)'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853",
+        Untestable = "CA1853 produces no diagnostic in build SARIF for ContainsKey followed by TryGetValue; the SARIF is empty with clean code. Note: ContainsKey followed by direct indexer access fires CA1854 (a related but distinct rule), which is tested separately")]
+    public async Task ProhibitUnnecessaryContainsKeyCall()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+
+            public static class Program
+            {
+                public static int? GetValue(Dictionary<string, int> dict, string key)
+                {
+                    if (dict.ContainsKey(key))
+                    {
+                        dict.TryGetValue(key, out var value);
+                        return value;
+                    }
+
+                    return null;
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1853").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1867", "Use char overload",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867")]
+    public async Task UseCharOverloadForStartsWithOrdinalIgnoreCase()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                public static bool StartsWithO(string s) => s.StartsWith("o", StringComparison.OrdinalIgnoreCase);
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1867").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA1870", "Use a cached 'SearchValues' instance",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1870",
+        Untestable = "CA1870 produces no diagnostic in build SARIF for any SearchValues.Create called inline in IndexOfAny/ContainsAny, including patterns inside a foreach loop; the SARIF is empty even with clean code and dotnet_diagnostic.CA1870.severity = warning configured")]
+    public async Task UseCachedSearchValuesInstance()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Buffers;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static bool ContainsVowel(string[] strs)
+                {
+                    foreach (var s in strs)
+                    {
+                        if (s.AsSpan().IndexOfAny(SearchValues.Create("aeiou")) >= 0)
+                        {
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1870").ShouldBeTrue();
+    }
 }

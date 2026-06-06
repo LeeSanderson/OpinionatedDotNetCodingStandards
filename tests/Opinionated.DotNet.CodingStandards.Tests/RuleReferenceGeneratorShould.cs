@@ -58,7 +58,7 @@ public class RuleReferenceGeneratorShould
     }
 
     [Fact]
-    public void ReconcileDetectsMethodLevelWithUntestable()
+    public void ReconcileAllowsMethodLevelWithUntestable()
     {
         var activeRules = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { "CA1000" };
         var entries = new List<RuleDocEntry>
@@ -68,9 +68,7 @@ public class RuleReferenceGeneratorShould
 
         var result = RuleReferenceGenerator.Reconcile(activeRules, entries);
 
-        result.InvariantViolations.ShouldHaveSingleItem();
-        result.InvariantViolations[0].ShouldContain("CA1000");
-        result.InvariantViolations[0].ShouldContain("method-level");
+        result.InvariantViolations.ShouldBeEmpty();
     }
 
     [Fact]

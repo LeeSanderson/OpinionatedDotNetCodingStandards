@@ -356,4 +356,83 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA2024").ShouldBeTrue();
     }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2020", "Prevent behavioral change caused by built-in operators of IntPtr and UIntPtr",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020",
+        Untestable = "CA2020 does not fire in NetAnalyzers 10.0.x build analysis for nint/nuint arithmetic in checked or unchecked expressions; the rule targets behavioral changes introduced between .NET 5 and .NET 7 but does not produce diagnostics for projects already targeting .NET 7+")]
+    public async Task PreventBehavioralChangeFromIntPtrOperators()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static nint Add(nint a, nint b) => unchecked(a + b);
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2020").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2153", "Do Not Catch Corrupted State Exceptions",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2153",
+        Untestable = "CA2153 does not fire in NetAnalyzers 10.0.x build analysis for catch blocks that catch AccessViolationException or other corrupted-state exceptions; in .NET 6+ the runtime changed CSE behavior and the analyzer does not emit this diagnostic for modern targets")]
+    public async Task ProhibitCatchingCorruptedStateExceptions()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                public static void M()
+                {
+                    try { }
+                    catch (AccessViolationException) { }
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2153").ShouldBeTrue();
+    }
+
+    [Fact(Skip = "untestable")]
+    [RuleDoc("CA2216", "Disposable types should declare finalizer",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2216",
+        Untestable = "CA2216 does not fire in NetAnalyzers 10.0.x build analysis for any tested code pattern: IDisposable classes with IntPtr, UIntPtr, or HandleRef fields but no finalizer emit CA1063 (wrong Dispose pattern) instead, and even with a correct Dispose(bool) pattern, CA2216 is never emitted in the SARIF output; the rule appears suppressed for .NET 10 targets")]
+    public async Task DisposableTypesShouldDeclareFinalizer()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            using System.Runtime.InteropServices;
+            namespace test;
+            public class NativeResource : IDisposable
+            {
+                private IntPtr _handle;
+                public void Dispose()
+                {
+                    Dispose(true);
+                    GC.SuppressFinalize(this);
+                }
+                protected virtual void Dispose(bool disposing) { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2216").ShouldBeTrue();
+    }
 }

@@ -92,11 +92,6 @@ public static class RuleReferenceGenerator
         var invariantViolations = new List<string>();
         foreach (var entry in docEntries)
         {
-            if (!entry.IsClassLevel && entry.Doc.Untestable != null)
-            {
-                invariantViolations.Add($"{entry.RuleId}: method-level [RuleDoc] has non-null Untestable");
-            }
-
             if (entry.IsClassLevel && string.IsNullOrEmpty(entry.Doc.Untestable))
             {
                 invariantViolations.Add($"{entry.RuleId}: class-level [RuleDoc] has empty/null Untestable");
