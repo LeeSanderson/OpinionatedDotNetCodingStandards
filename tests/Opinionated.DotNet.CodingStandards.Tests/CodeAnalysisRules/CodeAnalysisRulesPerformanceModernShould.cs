@@ -766,10 +766,9 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         buildOutput.HasError("CA1852").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1853", "Unnecessary call to 'Dictionary.ContainsKey(key)'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853",
-        Untestable = "CA1853 produces no diagnostic in build SARIF for ContainsKey followed by TryGetValue; the SARIF is empty with clean code. Note: ContainsKey followed by direct indexer access fires CA1854 (a related but distinct rule), which is tested separately")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853")]
     public async Task ProhibitUnnecessaryContainsKeyCall()
     {
         using var project = await CreateProjectBuilder();
@@ -780,15 +779,18 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
 
             public static class Program
             {
-                public static int? GetValue(Dictionary<string, int> dict, string key)
+                // CA1853 fires when a Dictionary.Remove(key) call is guarded by a
+                // redundant ContainsKey(key) check: Remove already no-ops (returns
+                // false) when the key is absent, so the guard is pointless. The
+                // analyzer is DoNotGuardDictionaryRemoveByContainsKey.
+                //
+                // The original "ContainsKey + TryGetValue" probe never fired because
+                // that is not a CA1853 pattern at all: ContainsKey + indexer is
+                // CA1854, ContainsKey + Add is CA1864, ContainsKey + Remove is CA1853.
+                public static void RemoveIfPresent(Dictionary<string, int> dict, string key)
                 {
                     if (dict.ContainsKey(key))
-                    {
-                        dict.TryGetValue(key, out var value);
-                        return value;
-                    }
-
-                    return null;
+                        dict.Remove(key);
                 }
 
                 public static int Main() => 0;
