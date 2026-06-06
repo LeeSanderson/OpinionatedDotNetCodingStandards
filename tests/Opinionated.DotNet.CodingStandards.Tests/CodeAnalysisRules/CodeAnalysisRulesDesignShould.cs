@@ -654,19 +654,32 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
         buildOutput.HasError("CA1070").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1061", "Do not hide base class methods",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061",
-        Untestable = "With 'new', CS0109 fires (the compiler considers types with different parameter types as overloads, not hiding, so 'new' is not required); without 'new', the overload pattern does not fire CA1061 in build SARIF in NetAnalyzers 10.0.x — only IDE0055 appears at the class declaration")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1061")]
     public async Task ProhibitHidingBaseClassMethodsWithLessDerivedType()
     {
+        // The old probe failed for two independent reasons, both confirmed against the analyzer
+        // source (DoNotHideBaseClassMethodsAnalyzer.GetMethodsHiddenByMethod):
+        //   1. It declared the base method 'virtual'. The analyzer filters base candidates with
+        //      '!(x.IsStatic || x.IsVirtual)', so a virtual base method can never be considered
+        //      hidden -> CA1061 is structurally impossible on that shape.
+        //   2. It marked the derived method 'new'. Because the parameter types differ, the C#
+        //      compiler treats the two methods as overloads (not same-signature hiding), so 'new'
+        //      is not required and CS0109 fires; under TreatWarningsAsErrors that preempts.
+        // The real violation: a NON-virtual base method and a derived overload whose parameter is
+        // LESS derived (base 'string' DerivesFrom derived 'object'), with matching name, return
+        // type, parameter count and parameter names. No 'new' is needed (and adding it would emit
+        // CS0109), and because the signatures differ the compiler emits neither CS0108 nor CS0109,
+        // so the analyzer runs cleanly. CA1061 is RuleLevel.IdeSuggestion but the package raises it
+        // to severity=warning, so it surfaces as an error under TreatWarningsAsErrors.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
-            public class Base { public virtual void Method(string s) { } }
-            public class Derived : Base { public new void Method(object s) { } }
+            public class Base { public void Method(string s) { } }
+            public class Derived : Base { public void Method(object s) { } }
             public static class Program { public static int Main() => 0; }
             """);
         var buildOutput = await project.BuildAndGetOutput();
