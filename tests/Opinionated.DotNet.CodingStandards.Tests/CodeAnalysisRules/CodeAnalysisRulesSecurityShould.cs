@@ -640,18 +640,17 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2100").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2300", "Do not use insecure deserializer BinaryFormatter",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300",
-        Untestable = "BinaryFormatter is marked [Obsolete(SYSLIB0011)] in .NET 9+; with TreatWarningsAsErrors=true the SYSLIB0011 diagnostic becomes an error and the build fails before CA2300 fires as a distinct diagnostic; the rule cannot be tested without suppressing SYSLIB0011 across the test harness")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300")]
     public async Task ProhibitBinaryFormatterUsage()
     {
-        using var project = await CreateProjectBuilder();
+        // BinaryFormatter is [Obsolete(SYSLIB0011)] as error; suppress that at MSBuild scope via NoWarn
+        // so the CA2300 security diagnostic can surface instead of the obsoletion error preempting the build.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0011")]);
         await project.AddFile(
             "Program.cs",
             """
-            #pragma warning disable SYSLIB0011
-            using System.IO;
             using System.Runtime.Serialization.Formatters.Binary;
             namespace test;
             public static class Program
@@ -663,7 +662,6 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
                 }
                 public static int Main() => 0;
             }
-            #pragma warning restore SYSLIB0011
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
