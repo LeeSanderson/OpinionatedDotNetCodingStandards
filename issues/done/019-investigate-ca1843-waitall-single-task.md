@@ -126,6 +126,41 @@ Un-skip `ProhibitWaitAllWithSingleTask`, remove the `Untestable` reason from its
 assert `HasError("CA1843")`. Keep the real-world caveat in mind: CA1843 will not catch a bare
 single-task `WaitAll` in default C# 13+ user code (span-overload gap upstream).
 
+## Resolution (closed 2026-06-06)
+
+Promoted `ProhibitWaitAllWithSingleTask` to a passing test using the **LangVersion 12** fix
+confirmed and documented in issue 018 (CA1842) — the two rules share the analyzer
+`DoNotUseWhenAllOrWaitAllWithSingleArgument` and the identical root cause.
+
+**Root cause (confirmed):** CA1843 is NOT `EnforceOnBuild = Never`. The analyzer only reports
+it when the bare single-task call binds to the `params Task[]` overload and the compiler
+synthesises an *implicit* single-element `Task[]` (`IsSingleTaskArgument` checks for an implicit
+`IArrayCreationOperation`). .NET 9 added `Task.WaitAll(params ReadOnlySpan<Task>)`; under C# 13's
+params-collections overload resolution a bare `Task.WaitAll(t)` binds to the **span** overload,
+which produces no implicit array — so the analyzer never matches and the SARIF is empty. The
+earlier "absent from SARIF" probes were all run on the default C# 13+/.NET 10 toolchain.
+
+**Fix applied:** build the violation project with `<LangVersion>12</LangVersion>` via
+`CreateProjectBuilder(properties: [("LangVersion", "12")])`. C# 12 disables params-span
+expansion, so `Task.WaitAll(t)` (with `var t = Task.CompletedTask;`) binds to `params Task[]` and
+emits `error:CA1843`. Un-skipped the test, removed the `Untestable` reason from its `[RuleDoc]`
+(so `Untestable == null`, satisfying the method-level RuleDoc invariant), and added the
+explanatory comment mirroring CA1842.
+
+**Real-world caveat (kept in mind):** on the default modern toolchain CA1843 will NOT catch a
+bare single-task `WaitAll` in user code (span-overload gap upstream in NetAnalyzers). The test
+still verifies the analyzer logic and the package wiring (severity=warning + TreatWarningsAsErrors).
+
+**Verification:** `dotnet build` 0 warnings/0 errors; targeted CA1843 + RuleDocCoverage +
+RuleReferenceGenerator tests pass (8/8); full suite 314 passed / 51 skipped / 0 failed (CA1843
+moved from skipped → passed); `docs/rule-reference.md` regenerates with no diff.
+
+**Acceptance criteria** — all met:
+- [x] Root cause identified (params ReadOnlySpan span-overload binding under C# 13, not EnforceOnBuild)
+- [x] Violation pattern found that triggers `error:CA1843` → test updated, `Skip` removed, passes
+- [x] No regressions in other `CodeAnalysisRulesPerformanceModernShould` tests
+- [x] `RuleReferenceGenerator` coverage test continues to pass
+
 ## Blocked by
 
 None — can start immediately.
