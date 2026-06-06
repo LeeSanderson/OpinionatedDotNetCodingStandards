@@ -524,12 +524,25 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         buildOutput.HasError("CA1725").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA1419", "Provide a parameterless constructor that is as visible as the containing type for concrete types derived from 'System.Runtime.InteropServices.SafeHandle'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419",
-        Untestable = "CA1419 does not fire in NetAnalyzers 10.0.x build analysis for a concrete public SafeHandle subclass without a parameterless constructor; exhaustive probing confirms the diagnostic is absent from SARIF output even with dotnet_diagnostic.CA1419.severity = warning configured")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1419")]
     public async Task RequireParameterlessConstructorOnSafeHandleSubclass()
     {
+        // The old probe declared a SafeHandle subclass with ONLY a parameterized
+        // constructor (no parameterless one) and asserted CA1419 should fire. That is
+        // exactly the case the analyzer does NOT flag. The analyzer
+        // (ProvidePublicParameterlessSafeHandleConstructorAnalyzer in roslyn-analyzers)
+        // registers a SymbolAction on NamedType and, for a concrete class inheriting
+        // SafeHandle, iterates type.InstanceConstructors looking ONLY for a constructor
+        // whose Parameters.Length == 0; it reports only when such a parameterless
+        // constructor exists AND is less visible than the type. With no parameterless
+        // constructor at all the loop body never matches, so nothing is emitted.
+        // The real violation is a public SafeHandle subclass whose parameterless
+        // constructor is LESS visible (here private) than the public containing type.
+        // CA1419 ships at RuleLevel.IdeSuggestion, but the package's editorconfig sets
+        // dotnet_diagnostic.CA1419.severity = warning, and TreatWarningsAsErrors=true
+        // promotes it to an error in SARIF -> HasError.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
@@ -538,6 +551,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             namespace test;
             public class MyHandle : SafeHandle
             {
+                private MyHandle() : base(System.IntPtr.Zero, true) { }
                 public MyHandle(System.IntPtr handle) : base(System.IntPtr.Zero, true)
                 {
                     SetHandle(handle);
