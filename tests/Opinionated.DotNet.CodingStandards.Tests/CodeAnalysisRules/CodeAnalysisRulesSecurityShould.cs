@@ -1084,17 +1084,19 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5385").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5387", "Do Not Use Weak Key Derivation Function With Insufficient Iteration Count",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387",
-        Untestable = "All Rfc2898DeriveBytes constructors are marked [Obsolete(SYSLIB0060)] in .NET 10; SYSLIB0060 fires but CA5387 does not appear alongside it in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x — the SYSLIB deprecation supersedes the CA diagnostic")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387")]
     public async Task ProhibitWeakKeyDerivationFunctionWithInsufficientIterations()
     {
-        using var project = await CreateProjectBuilder();
+        // Rfc2898DeriveBytes constructors are [Obsolete(SYSLIB0060)] (a warning, not an error) on net10.0;
+        // suppress that at MSBuild scope via NoWarn so the CA5387 dataflow diagnostic surfaces on its own.
+        // CA5387 flags the constructor whose iterations argument (index 2, here the literal 100) is below the
+        // 100000 threshold, reported at the "GetBytes" hazardous usage.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0060")]);
         await project.AddFile(
             "Program.cs",
             """
-            #pragma warning disable SYSLIB0060
             using System.Security.Cryptography;
             namespace test;
             public static class Program
@@ -1106,7 +1108,6 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
                 }
                 public static int Main() => 0;
             }
-            #pragma warning restore SYSLIB0060
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
