@@ -1942,4 +1942,34 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5368").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5370", "Use XmlReader for XmlValidatingReader constructor",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5370")]
+    public async Task RequireXmlReaderForXmlValidatingReaderConstructor()
+    {
+        // CA5370 (UseXmlReaderForValidatingReader -> UseXmlReaderBase) fires on a
+        // new XmlValidatingReader(...) whose first constructor parameter is NOT XmlReader.
+        // The (Stream, XmlNodeType, XmlParserContext) ctor qualifies (first param is Stream).
+        // XmlValidatingReader is plain [Obsolete] (CS0618) on net10.0 and the harness treats
+        // warnings as errors, so NoWarn CS0618 at MSBuild scope lets the security diagnostic surface.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "CS0618")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Xml;
+            namespace test;
+            public static class Program
+            {
+                public static XmlValidatingReader Create(System.IO.Stream xmlFragment, XmlParserContext context)
+                {
+                    return new XmlValidatingReader(xmlFragment, XmlNodeType.Element, context);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5370").ShouldBeTrue();
+    }
 }
