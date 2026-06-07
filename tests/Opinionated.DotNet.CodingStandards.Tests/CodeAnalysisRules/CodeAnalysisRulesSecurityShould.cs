@@ -884,7 +884,7 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     [Fact(Skip = "untestable")]
     [RuleDoc("CA3077", "Insecure Processing in API Design, XmlDocument and XmlTextReader",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3077",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for XmlDocument with XmlResolver + LoadXml patterns; appears to require specific API design patterns (method accepting XmlDocument parameter) not replicable in a simple harness")]
+        Untestable = "CA3077's analyzer (DoNotUseInsecureDtdProcessingInApiDesignAnalyzer, in Microsoft.NetFramework.Analyzers) is hard-gated to .NET Framework targets by the SAME check as CA3075: Initialize registers its NamedType and OperationBlockStart actions only inside 'if (version != null)' where version = SecurityDiagnosticHelpers.GetDotNetFrameworkVersion(compilation) (the source comment reads 'bail if we are not analyzing project targeting .NET Framework'). That helper returns null unless System.String resolves to an assembly named 'mscorlib'; on the net10.0 harness System.String lives in System.Private.CoreLib, so no actions are registered and neither inline usage nor the documented public-derived-type API-design pattern can fire CA3077. Sources: dotnet/roslyn-analyzers Microsoft.NetFramework.Analyzers/DoNotUseInsecureDtdProcessingInApiDesign.cs and Helpers/SecurityDiagnosticHelpers.cs.")]
     public async Task ProhibitInsecureXmlDocumentResolver()
     {
         using var project = await CreateProjectBuilder();
