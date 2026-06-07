@@ -909,28 +909,30 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA3077").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5360", "Do Not Call Dangerous Methods In Deserialization",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for the standard ISerializable constructor + Process.Start pattern documented in the rule's official examples; likely requires inter-procedural data-flow analysis not available in the single-project build harness")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5360")]
     public async Task ProhibitDangerousMethodsInDeserialization()
     {
+        // CA5360 fires when a [Serializable] type's deserialization-callback DIRECTLY calls a
+        // hard-coded dangerous sink (File.*/Directory.Delete/Assembly.Load...). Process.Start is NOT
+        // a sink, and an ISerializable serialization ctor is NOT a recognized callback context; the
+        // recognized contexts are [OnDeserializing]/[OnDeserialized], IDeserializationCallback, and
+        // Dispose/finalizer. Use [OnDeserialized] + File.Delete.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
-            using System.Diagnostics;
             using System.Runtime.Serialization;
             namespace test;
             [Serializable]
-            public class MyClass : ISerializable
+            public class MyClass
             {
-                protected MyClass(SerializationInfo info, StreamingContext context)
+                [OnDeserialized]
+                internal void OnDeserializedMethod(StreamingContext context)
                 {
-                    Process.Start("cmd.exe");
+                    File.Delete("data.bin");
                 }
-                public void GetObjectData(SerializationInfo info, StreamingContext context) { }
             }
             public static class Program { public static int Main() => 0; }
             """);
