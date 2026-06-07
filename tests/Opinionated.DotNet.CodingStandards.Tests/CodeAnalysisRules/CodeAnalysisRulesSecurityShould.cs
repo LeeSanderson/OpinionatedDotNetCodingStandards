@@ -1469,4 +1469,31 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2322").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2326", "Do not use TypeNameHandling values other than None",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2326")]
+    public async Task ProhibitNonNoneTypeNameHandling()
+    {
+        // CA2326 (JsonNetTypeNameHandling) reports on a field reference to Newtonsoft.Json.TypeNameHandling
+        // whose field name is not "None" (here .All). Newtonsoft.Json resolves from nuget.org (already used
+        // elsewhere in the suite) so the analyzer's NewtonsoftJsonTypeNameHandling type guard is satisfied.
+        // Disable the package's default Newtonsoft ban (RS0030) so CA2326 is the diagnostic under test.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static Newtonsoft.Json.TypeNameHandling Handling = Newtonsoft.Json.TypeNameHandling.All;
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2326").ShouldBeTrue();
+    }
 }
