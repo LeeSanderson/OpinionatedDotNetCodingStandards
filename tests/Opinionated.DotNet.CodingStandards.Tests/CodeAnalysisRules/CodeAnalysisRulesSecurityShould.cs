@@ -1531,4 +1531,45 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2327").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2328", "Ensure that JsonSerializerSettings are secure",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2328")]
+    public async Task EnsureJsonSerializerSettingsAreSecure()
+    {
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        // TypeNameHandling.Auto is a flagged literal; SerializationBinder is assigned from a
+        // mutable static field of interface type, whose null-state the data-flow analysis can
+        // only resolve to MaybeNull -> MaybeFlagged -> CA2328 (the "maybe insecure" variant of CA2327).
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Newtonsoft.Json;
+            using Newtonsoft.Json.Serialization;
+            namespace test;
+            public static class Binders
+            {
+                public static ISerializationBinder? Binder;
+            }
+            public class ExampleClass
+            {
+                public object? Deserialize(string s)
+                {
+                    var settings = new JsonSerializerSettings();
+                    settings.TypeNameHandling = TypeNameHandling.Auto;
+                    settings.SerializationBinder = Binders.Binder;
+                    return JsonConvert.DeserializeObject<object>(s, settings);
+                }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2328").ShouldBeTrue();
+    }
 }
