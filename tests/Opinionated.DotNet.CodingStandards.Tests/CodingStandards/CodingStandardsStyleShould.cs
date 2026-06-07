@@ -992,10 +992,9 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasNote("IDE0079").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0080", "Remove unnecessary suppression operator",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0080; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080")]
     public async Task RemoveUnnecessaryNullForgivingOperator()
     {
         using var project = await CreateProjectBuilder();
@@ -1005,12 +1004,11 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             namespace test;
             public static class Program
             {
-                public static int Main()
-                {
-                    string s = "hello";
-                    _ = s!.Length;
-                    return 0;
-                }
+                // `o!` (null-forgiving operator) on the left of an `is` expression has no
+                // effect and is confusing -> IDE0080. Analyzer fires on SyntaxKind.IsExpression
+                // whose left operand is a SuppressNullableWarningExpression.
+                public static bool Check(object? o) => o! is string;
+                public static int Main() => 0;
             }
             """);
         var buildOutput = await project.BuildAndGetOutput();
