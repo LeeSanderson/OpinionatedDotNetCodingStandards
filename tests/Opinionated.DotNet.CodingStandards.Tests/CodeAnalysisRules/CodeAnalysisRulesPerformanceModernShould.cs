@@ -556,6 +556,45 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
     }
 
     [Fact]
+    [RuleDoc("CA1873", "Avoid potentially expensive logging",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873")]
+    public async Task AvoidPotentiallyExpensiveLogging()
+    {
+        // CA1873 ships at RuleLevel.IdeSuggestion and the package editorconfig pins
+        // dotnet_diagnostic.CA1873.severity = suggestion, so it surfaces as a SARIF "note"
+        // (TreatWarningsAsErrors only escalates warnings) -> assert HasNote, exactly like the
+        // adjacent suggestion-severity rules CA1871/CA1872/CA1874/CA1875.
+        // The analyzer (AvoidPotentiallyExpensiveCallWhenLoggingAnalyzer) bails in CompilationStart
+        // unless Microsoft.Extensions.Logging.ILogger resolves, so we add
+        // Microsoft.Extensions.Logging.Abstractions as a package reference (same pattern as the
+        // CA1727 test). It then fires on a logging call whose argument is an unguarded "expensive"
+        // operation (a method invocation here), not wrapped in an ILogger.IsEnabled check. CA1848
+        // (use LoggerMessage delegates) is an orthogonal rule that fires on the same call, so it is
+        // suppressed via NoWarn.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "CA1848")],
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            internal static class Program
+            {
+                internal static void DoLog(ILogger logger, string s)
+                {
+                    logger.LogInformation("Value: {Value}", Expensive(s));
+                }
+                private static string Expensive(string s) => s.ToUpperInvariant();
+                private static void Main() { }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1873").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA1826", "Do not use Enumerable methods on indexable collections",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826")]
     public async Task ProhibitEnumerableMethodsOnIndexableCollections()
