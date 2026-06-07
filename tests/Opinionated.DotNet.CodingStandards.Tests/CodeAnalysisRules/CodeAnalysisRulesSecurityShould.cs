@@ -556,6 +556,41 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     }
 
     [Fact]
+    [RuleDoc("CA5395", "Miss HttpVerb attribute for action methods",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5395")]
+    public async Task RequireHttpVerbAttributeOnControllerActions()
+    {
+        // CA5395 (MissHttpVerbAttributeRule) needs the REAL Microsoft.AspNetCore.Mvc assembly — shim types do not
+        // trigger it. 2.3.10 is the last standalone NuGet metapackage (3.0+ MVC is shared-framework-only).
+        // Its transitive graph pulls a vulnerable System.Security.Cryptography.Xml, so NuGetAudit=false + NoWarn
+        // NU1903/NU1902 keep restore green; CA1515/CA1822 silence incidental controller noise (the action must stay
+        // non-static, so CA1822 cannot be "fixed"). The analyzer reports at compilation end ONLY when the project
+        // also uses a [ValidateAntiForgeryToken]-style attribute (Save below), so a bare public action (Index) fires.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NuGetAudit", Value: "false"), (Name: "NoWarn", Value: "NU1903;NU1902;CA1515;CA1822")],
+            packageReferences: [(Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.AspNetCore.Mvc;
+            namespace test;
+            public class HomeController : Controller
+            {
+                [ValidateAntiForgeryToken]
+                public int Save() => 0;
+                public int Index() => 0;
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5395").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA5392", "Use DefaultDllImportSearchPaths attribute for P/Invokes",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5392")]
     public async Task RequireDefaultDllImportSearchPathsOnPInvoke()
