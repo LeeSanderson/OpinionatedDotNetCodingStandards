@@ -905,6 +905,42 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2355").ShouldBeTrue();
     }
 
+    [Fact]
+    [RuleDoc("CA2356", "Unsafe DataSet or DataTable type in web deserializable object graph",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2356")]
+    public async Task ProhibitDataSetInWebDeserializableObjectGraph()
+    {
+        // CA2356 fires on a method carrying [WebMethod] (System.Web.Services.WebMethodAttribute) or
+        // [OperationContract] whose parameter's object graph contains DataSet/DataTable. The analyzer
+        // resolves the trigger attribute by metadata NAME (GetOrCreateTypeByMetadataName) and matches
+        // it by symbol-equality, so a locally-declared System.Web.Services.WebMethodAttribute stub
+        // satisfies the gate without any web framework package. Under XmlSerializerOptions a public
+        // read-write DataTable property in the parameter graph is the insecure member.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Data;
+            namespace System.Web.Services
+            {
+                public sealed class WebMethodAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                public class Container { public DataTable? Table { get; set; } }
+                public class MyService
+                {
+                    [System.Web.Services.WebMethod]
+                    public void Process(Container container) { }
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2356").ShouldBeTrue();
+    }
+
     [Fact(Skip = "untestable")]
     [RuleDoc("CA3075", "Insecure DTD processing in XML",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075",
