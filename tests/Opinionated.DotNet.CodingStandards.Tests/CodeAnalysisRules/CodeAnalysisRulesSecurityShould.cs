@@ -2071,4 +2071,41 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5376").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5377", "Use Container Level Access Policy",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5377")]
+    public async Task RequireContainerLevelAccessPolicy()
+    {
+        // CA5377 fires when CloudBlobContainer.GetSharedAccessSignature is called
+        // without a stored (container-level) access policy identifier — the single-arg
+        // overload omits groupPolicyIdentifier, so its points-to NullState is Null.
+        // The analyzer resolves the legacy Microsoft.WindowsAzure.Storage namespace from
+        // the WindowsAzure.Storage 9.3.3 package, which restores and compiles on net10.0.
+        // NoWarn=NU1903 suppresses the transitive Newtonsoft.Json vulnerability warning
+        // that TreatWarningsAsErrors would otherwise turn into a build failure.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "NU1903")],
+            packageReferences: [(Name: "WindowsAzure.Storage", Version: "9.3.3")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            using Microsoft.WindowsAzure.Storage.Blob;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var policy = new SharedAccessBlobPolicy();
+                    var container = new CloudBlobContainer(new Uri("https://example.blob.core.windows.net/c"));
+                    _ = container.GetSharedAccessSignature(policy);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5377").ShouldBeTrue();
+    }
 }
