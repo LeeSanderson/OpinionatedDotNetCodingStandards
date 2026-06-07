@@ -1608,4 +1608,46 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2329").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2330", "Ensure that JsonSerializer has a secure configuration when deserializing",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2330")]
+    public async Task EnsureJsonSerializerHasSecureConfigurationWhenDeserializing()
+    {
+        // CA2330 (MaybeInsecureSerializer) fires when a Newtonsoft.Json JsonSerializer deserializes with
+        // TypeNameHandling != None while its SerializationBinder is only *maybe* set: TypeNameHandling.All is
+        // flagged and the binder comes from a Func<> whose return value the analyzer cannot prove non-null, so
+        // PropertySetAnalysis sees a mix of flagged + unknown and reports MaybeFlagged (CA2330) rather than the
+        // all-flagged CA2329. BanUseOfNewtonsoftJsonApis=false keeps the package's Newtonsoft ban (RS0030) out
+        // of the build output so only CA2330 surfaces.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            using Newtonsoft.Json;
+            using Newtonsoft.Json.Serialization;
+            namespace test;
+            public class Deserializer
+            {
+                public Func<ISerializationBinder>? BinderGetter { get; set; }
+                public T Deserialize<T>(JsonReader reader)
+                {
+                    var serializer = new JsonSerializer();
+                    serializer.TypeNameHandling = TypeNameHandling.All;
+                    serializer.SerializationBinder = BinderGetter!();
+                    return serializer.Deserialize<T>(reader)!;
+                }
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2330").ShouldBeTrue();
+    }
 }
