@@ -1228,4 +1228,43 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2305").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2310", "Do not use insecure deserializer NetDataContractSerializer",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2310")]
+    public async Task ProhibitNetDataContractSerializerUsage()
+    {
+        // The real NetDataContractSerializer was removed from .NET Core, but CA2310's analyzer
+        // (DoNotUseInsecureDeserializerMethodsBase) resolves its target purely by metadata name
+        // via GetOrCreateTypeByMetadataName("System.Runtime.Serialization.NetDataContractSerializer"),
+        // which matches a source-declared stub of the same fully-qualified name. The invocation
+        // guard (Instance.Type.DerivesFrom(stub), reflexive) + method name "Deserialize" then fires.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Runtime.Serialization
+            {
+                public class NetDataContractSerializer
+                {
+                    public object? Deserialize(System.IO.Stream stream) => null;
+                }
+            }
+            namespace test
+            {
+                public static class Program
+                {
+                    public static object? Run(System.IO.Stream stream)
+                    {
+                        var serializer = new System.Runtime.Serialization.NetDataContractSerializer();
+                        return serializer.Deserialize(stream);
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2310").ShouldBeTrue();
+    }
 }
