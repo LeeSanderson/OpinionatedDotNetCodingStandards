@@ -1788,4 +1788,37 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA3061").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA3147", "Mark Verb Handlers With Validate Antiforgery Token",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3147")]
+    public async Task MarkVerbHandlersWithValidateAntiForgeryToken()
+    {
+        // A System.Web.Mvc controller action marked [HttpPost] but missing [ValidateAntiForgeryToken]
+        // trips CA3147 (VerbsAndNoTokenRule). Microsoft.AspNet.Mvc ships System.Web.Mvc.dll and restores
+        // onto net10.0 via the .NETFramework compatibility fallback (NU1701), which the analyzer's symbol
+        // lookups (System.Web.Mvc.Controller / ActionResult) accept; NoWarn=NU1701 keeps that fallback
+        // warning from failing the build under MSBuildTreatWarningsAsErrors.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "NU1701")],
+            packageReferences: [(Name: "Microsoft.AspNet.Mvc", Version: "5.3.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Web.Mvc;
+            namespace test;
+            public class HomeController : Controller
+            {
+                [HttpPost]
+                public ActionResult Submit() => new EmptyResult();
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA3147").ShouldBeTrue();
+    }
 }

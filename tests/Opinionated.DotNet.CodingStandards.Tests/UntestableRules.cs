@@ -33,9 +33,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA2321", "Do not deserialize with JavaScriptSerializer using a SimpleTypeResolver",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321",
     Untestable = "CA2321's analyzer (DoNotUseInsecureDeserializerJavaScriptSerializerWithSimpleTypeResolver, Microsoft.NetCore.Analyzers.Security) registers its OperationKind.Invocation action inside a RegisterCompilationStartAction that returns early unless WellKnownTypeProvider.TryGetOrCreateTypeByMetadataName resolves all three of System.Web.Script.Serialization.JavaScriptSerializer, .JavaScriptTypeResolver, and .SimpleTypeResolver (WellKnownTypeNames.SystemWebScriptSerialization*). Those types live only in System.Web.Extensions.dll on .NET Framework (Applies-to monikers netframework-3.5..4.8.1; no .NET Core/.NET 5+/.NET Standard moniker) and were removed from .NET Core; on net10.0 they do not exist in any BCL or addable NuGet package, so the gate fails, no actions register, and source referencing the type would not even compile (CS0234). Source: src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Security/DoNotUseInsecureDeserializerJavascriptSerializerWithSimpleTypeResolver.cs.")]
-[RuleDoc("CA3147", "Mark Verb Handlers With Validate Antiforgery Token",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3147",
-    Untestable = "Requires ASP.NET MVC (System.Web.Mvc) controller action methods decorated with HTTP verb attributes; System.Web.Mvc is not available in .NET Core and ASP.NET Core MVC is not included in the simple build harness")]
 [RuleDoc("CA5363", "Do Not Disable Request Validation",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363",
     Untestable = "Fires on ASP.NET [ValidateInput(false)] attribute on MVC action methods; System.Web.Mvc is not available in .NET Core/5+")]
