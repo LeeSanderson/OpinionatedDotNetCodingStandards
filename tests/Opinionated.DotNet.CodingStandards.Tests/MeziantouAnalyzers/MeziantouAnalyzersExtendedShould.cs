@@ -637,28 +637,33 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         buildOutput.HasNote("MA0178").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("MA0054", "Embed the caught exception as innerException",
-        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0054.md",
-        Untestable = "MA0054 does not fire in the build harness for any catch-and-rethrow pattern; the analyzer's data-flow conditions are not met by single-project builds")]
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0054.md")]
     public async Task EmbedCaughtExceptionAsInnerException()
     {
         using var project = await CreateProjectBuilder();
+        // Throwing a NEW System.Exception from inside a catch block without passing the
+        // caught exception as innerException fires MA0054: System.Exception declares an
+        // (string, Exception) overload, so the analyzer's HasOverloadWithAdditionalParameterOfType guard is satisfied.
         await project.AddFile("Program.cs", """
-            using System;
             namespace test;
-            public class C
+
+            public static class Program
             {
-                public void M()
+                public static int Main()
                 {
-                    try { }
-                    catch (Exception ex)
+                    try
                     {
-                        throw new InvalidOperationException("Failed");
+                        return 0;
+                    }
+                    catch (System.Exception ex)
+                    {
+                        System.Console.WriteLine(ex.Message);
+                        throw new System.Exception("Failed");
                     }
                 }
             }
-            public static class Program { public static int Main() => 0; }
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
