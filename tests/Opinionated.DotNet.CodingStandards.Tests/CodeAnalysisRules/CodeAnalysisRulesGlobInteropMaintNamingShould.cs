@@ -704,4 +704,45 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
 
         buildOutput.HasNote("CA1516").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1727", "Use PascalCase for named placeholders",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727")]
+    public async Task RequirePascalCaseForLogMessagePlaceholders()
+    {
+        // CA1727 fires when a structured-logging message template contains a named
+        // placeholder whose first character is lower-case. LoggerMessageDefineAnalyzer
+        // registers its OperationKind.Invocation action only when ILogger, LoggerExtensions
+        // and LoggerMessage all resolve (all live in Microsoft.Extensions.Logging.Abstractions,
+        // added here as a PackageReference). For a LoggerExtensions call with a constant
+        // message and a single lower-cased placeholder ("{myValue}"), LogValuesFormatter
+        // parses ValueNames = ["myValue"] and the rule reports because char.IsLower(valueName[0])
+        // is true. One placeholder with exactly one argument keeps the arg count matched, so
+        // CA2017 does not also fire. CA1727 ships at RuleLevel.IdeHidden_BulkConfigurable
+        // (hidden), but the package editorconfig sets dotnet_diagnostic.CA1727.severity =
+        // warning, and TreatWarningsAsErrors=true promotes it to a SARIF error.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    Log(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+                    return 0;
+                }
+                private static void Log(ILogger logger)
+                {
+                    logger.LogInformation("Processed {myValue}", 42);
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1727").ShouldBeTrue();
+    }
 }
