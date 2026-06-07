@@ -1572,4 +1572,40 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2328").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2329", "Do not deserialize with JsonSerializer using an insecure configuration",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2329")]
+    public async Task DoNotDeserializeWithInsecurelyConfiguredJsonSerializer()
+    {
+        // A Newtonsoft.Json JsonSerializer with TypeNameHandling != None and a null
+        // SerializationBinder is "definitely insecure": both tracked properties are
+        // flagged-and-known, so the Deserialize(JsonReader) call reports CA2329.
+        // BanUseOfNewtonsoftJsonApis=false suppresses the unrelated RS0030 Newtonsoft ban.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Newtonsoft.Json;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var serializer = new JsonSerializer
+                    {
+                        TypeNameHandling = TypeNameHandling.Objects,
+                    };
+                    using var reader = new JsonTextReader(new StringReader("{}"));
+                    serializer.Deserialize(reader);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2329").ShouldBeTrue();
+    }
 }
