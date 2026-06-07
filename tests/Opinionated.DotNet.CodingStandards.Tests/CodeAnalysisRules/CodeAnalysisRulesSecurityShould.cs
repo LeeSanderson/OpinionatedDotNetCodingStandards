@@ -1035,10 +1035,9 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5381").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5384", "Do Not Use Digital Signature Algorithm (DSA)",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for DSA.Create() nor for DSA.SignData() calls; the abstract factory pattern for DSA appears to not trigger the diagnostic in this analyzer version")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384")]
     public async Task ProhibitDigitalSignatureAlgorithmUsage()
     {
         using var project = await CreateProjectBuilder();
@@ -1049,11 +1048,9 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
             namespace test;
             public static class Program
             {
-                public static byte[] SignData(byte[] data)
-                {
-                    using var dsa = DSA.Create();
-                    return dsa.SignData(data, HashAlgorithmName.SHA256);
-                }
+                // DoNotUseDSA's Return action fires: the returned value's type is DSA and
+                // DSA.GetBaseTypesAndThis() contains DSA, so CA5384 is reported on the return.
+                public static DSA CreateDsa() => DSA.Create();
                 public static int Main() => 0;
             }
             """);
