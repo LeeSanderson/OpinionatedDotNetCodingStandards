@@ -1208,13 +1208,26 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE2005").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE2006", "Blank line not allowed after arrow expression clause token",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2006; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006")]
     public async Task ProhibitBlankLineAfterArrowExpressionClauseToken()
     {
         using var project = await CreateProjectBuilder();
+
+        // IDE2006's analyzer (ArrowExpressionClausePlacementDiagnosticAnalyzer) returns early
+        // when AllowBlankLineAfterTokenInArrowExpressionClause is true:
+        //   if (option.Value || ShouldSkipAnalysis(...)) return;
+        // The package's CodeStyle.editorconfig ships that option as true (a global_level=-1
+        // config), so by default only IDE0055 fires. A local [*.cs] .editorconfig overrides the
+        // option back to false (file-scoped config wins over the package's global config), which
+        // re-enables IDE2006 so the blank line after => is reported.
+        await project.AddFile(
+            ".editorconfig",
+            """
+            [*.cs]
+            csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = false
+            """);
         await project.AddFile(
             "Program.cs",
             """
