@@ -1185,4 +1185,47 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5402").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2305", "Do not use insecure deserializer LosFormatter",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2305")]
+    public async Task ProhibitInsecureLosFormatterDeserialization()
+    {
+        // CA2305's analyzer (DoNotUseInsecureDeserializerLosFormatter) resolves its target via
+        // GetOrCreateTypeByMetadataName("System.Web.UI.LosFormatter") against the WHOLE compilation,
+        // then fires on any invocation whose receiver DerivesFrom that symbol and whose method
+        // MetadataName is "Deserialize" (isDataflowRule:false). System.Web.UI.LosFormatter does not
+        // exist in the .NET Core/5+ BCL and no NuGet package re-exposes it, but the metadata-name
+        // match resolves a type we declare in our OWN source, so a hand-rolled
+        // System.Web.UI.LosFormatter with a Deserialize call triggers CA2305 on net10.0.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Web.UI
+            {
+                public class LosFormatter
+                {
+                    public object? Deserialize(System.IO.Stream stream) => null;
+                }
+            }
+
+            namespace test
+            {
+                public static class Program
+                {
+                    public static object? Run(System.IO.Stream s)
+                    {
+                        var formatter = new System.Web.UI.LosFormatter();
+                        return formatter.Deserialize(s);
+                    }
+
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2305").ShouldBeTrue();
+    }
 }

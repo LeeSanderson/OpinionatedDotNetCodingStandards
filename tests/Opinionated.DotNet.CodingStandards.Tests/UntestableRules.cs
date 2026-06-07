@@ -30,9 +30,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA2258", "Providing a 'DynamicInterfaceCastableImplementation' interface in Visual Basic is unsupported",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2258",
     Untestable = "CA2258's analyzer (DynamicInterfaceCastableImplementationAnalyzer, Microsoft.NetCore.Analyzers.InteropServices) reports the diagnostic (DynamicInterfaceCastableImplementationUnsupportedRuleId = \"CA2258\") only inside `if (context.Compilation.Language == LanguageNames.VisualBasic) { context.ReportDiagnostic(...); return; }` within AnalyzeType; the C# code path never reaches that report (it continues to CA2256/CA2257 only). The test harness is C#-only — ProjectBuilder.AddCsprojFile always emits a Microsoft.NET.Sdk C# test.csproj and AddFile writes C# source — so context.Compilation.Language is always LanguageNames.CSharp and the VisualBasic branch is unreachable. There is no C# analogue diagnostic for the same DynamicInterfaceCastableImplementationAttribute misuse, so no indirect workaround exists. Source: src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/InteropServices/DynamicInterfaceCastableImplementation.cs (dotnet/roslyn-analyzers).")]
-[RuleDoc("CA2305", "Do not use insecure deserializer LosFormatter",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2305",
-    Untestable = "LosFormatter is in System.Web (ASP.NET classic); the type is not available in .NET Core/5+ and cannot be referenced in the simple build harness")]
 [RuleDoc("CA2310", "Do not use insecure deserializer NetDataContractSerializer",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2310",
     Untestable = "NetDataContractSerializer was removed from .NET Core; the type does not exist in .NET 5+ BCL and cannot be referenced in the test harness")]
