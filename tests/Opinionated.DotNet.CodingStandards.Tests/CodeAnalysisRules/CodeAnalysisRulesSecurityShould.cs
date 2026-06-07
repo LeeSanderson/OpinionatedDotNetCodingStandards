@@ -1267,4 +1267,48 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2310").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2311", "Do not deserialize without first setting NetDataContractSerializer.Binder",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2311")]
+    public async Task ProhibitNetDataContractSerializerDeserializeWithoutBinder()
+    {
+        // The real NetDataContractSerializer was removed from .NET Core, but CA2311's analyzer
+        // (DoNotUseInsecureDeserializerNetDataContractSerializerWithoutBinder) resolves its target
+        // purely by metadata name via TryGetOrCreateTypeByMetadataName(
+        // "System.Runtime.Serialization.NetDataContractSerializer"), which matches a source-declared
+        // stub of the same fully-qualified name (same approach as the sibling CA2310 test). CA2311
+        // (the "binder definitely not set" descriptor) fires when .Deserialize(...) is reached with
+        // the Binder property unset on all paths -> PropertySetAnalysis FlagIfNull result = Flagged.
+        // The stub therefore needs a settable SerializationBinder Binder property for the analyzer
+        // to evaluate.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Runtime.Serialization
+            {
+                public class NetDataContractSerializer
+                {
+                    public SerializationBinder? Binder { get; set; }
+                    public object? Deserialize(System.IO.Stream stream) => null;
+                }
+            }
+            namespace test
+            {
+                public static class Program
+                {
+                    public static object? Run(System.IO.Stream stream)
+                    {
+                        var serializer = new System.Runtime.Serialization.NetDataContractSerializer();
+                        return serializer.Deserialize(stream);
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2311").ShouldBeTrue();
+    }
 }
