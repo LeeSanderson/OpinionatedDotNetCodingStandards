@@ -2035,4 +2035,40 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5375").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5376", "Use SharedAccessProtocol HttpsOnly",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5376")]
+    public async Task UseSharedAccessProtocolHttpsOnly()
+    {
+        // CA5376 fires on a Microsoft.WindowsAzure.Storage.* GetSharedAccessSignature call
+        // (here CloudBlobContainer, not CloudStorageAccount) whose nullable SharedAccessProtocol
+        // "protocols" argument is a literal that is not HttpsOnly (HttpsOrHttp here).
+        // NoWarn suppresses the legacy package's NU1701 fallback + NU190x audit-as-errors so only CA5376 surfaces.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "$(NoWarn);NU1701;NU1900;NU1901;NU1902;NU1903;NU1904")],
+            packageReferences: [(Name: "WindowsAzure.Storage", Version: "9.3.3")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            using Microsoft.WindowsAzure.Storage;
+            using Microsoft.WindowsAzure.Storage.Blob;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var container = new CloudBlobContainer(new Uri("https://example.blob.core.windows.net/c"));
+                    var policy = new SharedAccessBlobPolicy();
+                    var sas = container.GetSharedAccessSignature(policy, null, SharedAccessProtocol.HttpsOrHttp, null);
+                    Console.WriteLine(sas);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5376").ShouldBeTrue();
+    }
 }
