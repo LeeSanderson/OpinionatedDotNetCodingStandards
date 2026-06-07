@@ -1208,6 +1208,34 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     }
 
     [Fact]
+    [RuleDoc("CA5374", "Do Not Use XslTransform",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5374")]
+    public async Task ProhibitXslTransformUsage()
+    {
+        // CA5374 reports any object creation of System.Xml.Xsl.XslTransform (analyzer registers an
+        // OperationKind.ObjectCreation action whose only gate is that the XslTransform type symbol
+        // resolves; it DOES resolve on net10.0 via System.Private.Xml, so `new XslTransform()` fires).
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Xml.Xsl;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    _ = new XslTransform();
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5374").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA5381", "Ensure Certificates Are Not Added To Root Certificate Store",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381")]
     public async Task EnsureCertificatesAreNotAddedToRootCertificateStore()
