@@ -2108,4 +2108,41 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5377").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5382", "Use Secure Cookies In ASP.NET Core",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382")]
+    public async Task ProhibitInsecureCookiesInAspNetCore()
+    {
+        // CA5382 (DefinitelyUseSecureCookiesASPNetCoreRule) fires immediately on an "Append" invocation
+        // whose ContainingType DIRECTLY implements Microsoft.AspNetCore.Http.IResponseCookies and whose
+        // parameter count is < 3 (the 2-arg Append(string, string) overload with no CookieOptions). The
+        // analyzer matches the concrete Microsoft.AspNetCore.Http.Internal.ResponseCookies class (public in
+        // the 2.x Microsoft.AspNetCore.Http package), NOT a value typed as the IResponseCookies interface
+        // itself (the guard is ContainingType.Interfaces.Contains, i.e. direct interfaces). Blank lines keep
+        // the file IDE0055-clean.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Http", Version: "2.3.10")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.AspNetCore.Http.Internal;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static void WriteCookie()
+                {
+                    var responseCookies = new ResponseCookies(null!, null!);
+                    responseCookies.Append("name", "value");
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5382").ShouldBeTrue();
+    }
 }

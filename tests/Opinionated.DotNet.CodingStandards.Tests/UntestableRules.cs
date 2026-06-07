@@ -33,9 +33,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA2321", "Do not deserialize with JavaScriptSerializer using a SimpleTypeResolver",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321",
     Untestable = "CA2321's analyzer (DoNotUseInsecureDeserializerJavaScriptSerializerWithSimpleTypeResolver, Microsoft.NetCore.Analyzers.Security) registers its OperationKind.Invocation action inside a RegisterCompilationStartAction that returns early unless WellKnownTypeProvider.TryGetOrCreateTypeByMetadataName resolves all three of System.Web.Script.Serialization.JavaScriptSerializer, .JavaScriptTypeResolver, and .SimpleTypeResolver (WellKnownTypeNames.SystemWebScriptSerialization*). Those types live only in System.Web.Extensions.dll on .NET Framework (Applies-to monikers netframework-3.5..4.8.1; no .NET Core/.NET 5+/.NET Standard moniker) and were removed from .NET Core; on net10.0 they do not exist in any BCL or addable NuGet package, so the gate fails, no actions register, and source referencing the type would not even compile (CS0234). Source: src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Security/DoNotUseInsecureDeserializerJavascriptSerializerWithSimpleTypeResolver.cs.")]
-[RuleDoc("CA5382", "Use Secure Cookies In ASP.NET Core",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382",
-    Untestable = "Fires when IResponseCookies.Append is called without setting Secure = true in the CookieOptions; requires Microsoft.AspNetCore.Http which is not included in the simple build harness")]
 [RuleDoc("CA5383", "Ensure Use Secure Cookies In ASP.NET Core",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383",
     Untestable = "Data-flow/taint analysis variant of CA5382 that tracks CookieOptions through variables; same ASP.NET Core dependency and taint-analysis constraint as CA5382")]
