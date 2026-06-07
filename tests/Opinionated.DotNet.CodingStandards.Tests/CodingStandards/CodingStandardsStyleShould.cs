@@ -1087,22 +1087,37 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE0280").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0304", "Simplify collection initialization",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0304",
-        Untestable = "In .NET 10 Roslyn, ImmutableArray<T>.Empty fires as IDE0301 (collection initialization) not IDE0304; the ImmutableArray-specific empty collection rule is subsumed by IDE0301 in the build analyzer")]
-    public async Task SimplifyEmptyImmutableArrayCollection()
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0304")]
+    public async Task SimplifyBuilderCollectionInitialization()
     {
-        using var project = await CreateProjectBuilder();
+        // IDE0304 ("Use collection expression for builder") fires on the ImmutableArray builder
+        // pattern: CreateBuilder<T>() ... Add(...) ... a local assigned from ToImmutable(). The
+        // 'using' import keeps the factory receiver a simple name (the analyzer skips qualified
+        // receivers), and the explicit-typed result local gives the analyzer a collection-expression
+        // target (a 'var' result does not fire). The explicit type trips IDE0007 'use var', so that
+        // companion rule is suppressed via NoWarn to isolate IDE0304.
+        using var project = await CreateProjectBuilder(properties: [
+            (Name: "NoWarn", Value: "IDE0007;IDE0008"),
+        ]);
         await project.AddFile(
             "Program.cs",
             """
             using System.Collections.Immutable;
+
             namespace test;
+
             public static class Program
             {
-                public static ImmutableArray<int> GetEmpty() => ImmutableArray<int>.Empty;
-                public static int Main() => 0;
+                public static int Main()
+                {
+                    var builder = ImmutableArray.CreateBuilder<int>();
+                    builder.Add(1);
+                    builder.Add(2);
+                    ImmutableArray<int> result = builder.ToImmutable();
+                    return result.Length;
+                }
             }
             """);
         var buildOutput = await project.BuildAndGetOutput();
