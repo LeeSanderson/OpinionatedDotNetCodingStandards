@@ -823,12 +823,13 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasNote("IDE0066").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0030", "Use coalesce expression",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0030",
-        Untestable = "In .NET 10 Roslyn the build-time analyzer does not fire IDE0030 for nullable value type coalesce patterns; IDE0055 fires instead and IDE0030 is absent from SARIF output even when IDE0055 is suppressed. IDE0031 has the same symptom")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0030")]
     public async Task UseCoalesceExpressionForNullableValueType()
     {
+        // IDE0030's analyzer (AbstractUseCoalesceExpressionForNullableTernaryConditionalCheckDiagnosticAnalyzer)
+        // fires only on the exact shape "!x.HasValue ? y : x.Value" for a Nullable<T>, NOT on a "x != null" comparison.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
@@ -836,7 +837,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             namespace test;
             public static class Program
             {
-                public static int GetValue(int? x) => x != null ? x.Value : 0;
+                public static int GetValue(int? x) => !x.HasValue ? 0 : x.Value;
                 public static int Main() => 0;
             }
             """);
