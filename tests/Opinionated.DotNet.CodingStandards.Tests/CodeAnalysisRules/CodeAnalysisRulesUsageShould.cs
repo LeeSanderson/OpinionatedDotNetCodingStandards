@@ -757,6 +757,46 @@ public class CodeAnalysisRulesUsageShould(PackageFixture fixture, ITestOutputHel
     }
 
     [Fact]
+    [RuleDoc("CA2253", "Named placeholders should not be numeric values",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2253")]
+    public async Task ProhibitNumericLogMessagePlaceholders()
+    {
+        // CA2253 (LoggerMessageDefineAnalyzer) registers its OperationKind.Invocation action
+        // only when ILogger, LoggerExtensions and LoggerMessage all resolve - all three live in
+        // Microsoft.Extensions.Logging.Abstractions, which the harness CAN add as a PackageReference
+        // (same approach already proven by the CA1727 test). For a LoggerExtensions call with a
+        // constant template containing a numeric placeholder ("{0}"), LogValuesFormatter parses
+        // ValueNames = ["0"] and the rule reports because int.TryParse("0", out _) succeeds. One
+        // placeholder + one argument keeps the arg count matched (no CA2017), and "0" is not a
+        // lower-cased name so CA1727 does not fire. CA2253 ships at Info but the package editorconfig
+        // sets dotnet_diagnostic.CA2253.severity = warning, so TreatWarningsAsErrors surfaces it as
+        // a SARIF error.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    Log(Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+                    return 0;
+                }
+                private static void Log(ILogger logger)
+                {
+                    logger.LogInformation("Processed {0}", 42);
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2253").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2255", "The 'ModuleInitializer' attribute should not be used in libraries",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2255")]
     public async Task ProhibitModuleInitializerInLibraries()
