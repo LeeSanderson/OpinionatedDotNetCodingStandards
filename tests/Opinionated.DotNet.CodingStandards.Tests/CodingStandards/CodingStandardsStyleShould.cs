@@ -1150,12 +1150,13 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE1006").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE2002", "Consecutive braces must not have blank line between them",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2002",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2002; the blank-line-between-braces pattern also triggers CS0161 (not all code paths return a value) in methods with empty bodies")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2002")]
     public async Task ProhibitBlankLineBetweenConsecutiveBraces()
     {
+        // The inner if-block's '}' and the method's '}' are two consecutive
+        // closing braces separated by a blank line — the exact shape IDE2002 reports.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
@@ -1167,9 +1168,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 {
                     if (true)
                     {
-                        return;
-
                     }
+
                 }
                 public static int Main() => 0;
             }
