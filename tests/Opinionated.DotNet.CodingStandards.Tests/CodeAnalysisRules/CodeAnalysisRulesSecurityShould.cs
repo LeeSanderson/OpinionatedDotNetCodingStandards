@@ -967,17 +967,20 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5367").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5373", "Do not use obsolete key derivation function",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373",
-        Untestable = "PasswordDeriveBytes is marked [Obsolete(SYSLIB0041)] in .NET 9+; SYSLIB0041 fires as a build error but CA5373 does not appear alongside it in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x — the SYSLIB deprecation supersedes the CA diagnostic")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5373")]
     public async Task ProhibitObsoleteKeyDerivationFunction()
     {
-        using var project = await CreateProjectBuilder();
+        // CA5373's analyzer (DoNotUseObsoleteKDFAlgorithm) skips constructors and fires on ANY method
+        // invocation whose receiver type is PasswordDeriveBytes; pdb.GetBytes(32) is such an invocation.
+        // PasswordDeriveBytes carries [Obsolete(SYSLIB0041)] (.NET 9+), which under TreatWarningsAsErrors
+        // would fail the build first, so SYSLIB0041 is suppressed via the MSBuild <NoWarn> property
+        // (an inline #pragma does NOT suppress it) to let CA5373 surface in the SARIF.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0041")]);
         await project.AddFile(
             "Program.cs",
             """
-            #pragma warning disable SYSLIB0041
             using System.Security.Cryptography;
             namespace test;
             public static class Program
@@ -989,7 +992,6 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
                 }
                 public static int Main() => 0;
             }
-            #pragma warning restore SYSLIB0041
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
