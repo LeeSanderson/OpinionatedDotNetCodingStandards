@@ -1362,4 +1362,47 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2311").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2315", "Do not use insecure deserializer ObjectStateFormatter",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2315")]
+    public async Task ProhibitObjectStateFormatterUsage()
+    {
+        // CA2315's analyzer (DoNotUseInsecureDeserializerObjectStateFormatter) resolves its target type
+        // via WellKnownTypeProvider.GetOrCreateTypeByMetadataName("System.Web.UI.ObjectStateFormatter"),
+        // which probes Compilation.Assembly FIRST -- so a SOURCE-DECLARED type with that exact metadata
+        // name resolves even though System.Web.dll does not exist on net10.0. The report predicate is
+        // Instance.Type.DerivesFrom(thatSymbol) (DerivesFrom is reflexive) && TargetMethod.MetadataName
+        // == "Deserialize". So a hand-declared System.Web.UI.ObjectStateFormatter with a Deserialize
+        // method, invoked on an instance, fires CA2315. The package editorconfig sets
+        // dotnet_diagnostic.CA2315.severity = warning, overriding the rule's Disabled default.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Web.UI
+            {
+                public sealed class ObjectStateFormatter
+                {
+                    public object? Deserialize(System.IO.Stream s) => null;
+                    public object? Deserialize(string s) => null;
+                }
+            }
+            namespace test
+            {
+                public static class Program
+                {
+                    public static object? Deserialize(System.IO.Stream s)
+                    {
+                        var formatter = new System.Web.UI.ObjectStateFormatter();
+                        return formatter.Deserialize(s);
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2315").ShouldBeTrue();
+    }
 }
