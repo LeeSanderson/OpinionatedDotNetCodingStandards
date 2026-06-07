@@ -2365,4 +2365,35 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5404").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5405", "Do not always skip token validation in delegates",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5405")]
+    public async Task ProhibitAlwaysSkippingTokenValidationInDelegates()
+    {
+        // CA5405 fires on a DelegateCreation whose type is the Microsoft.IdentityModel.Tokens
+        // AudienceValidator delegate when the assigned lambda always returns the constant true,
+        // disabling audience validation. Microsoft.IdentityModel.Tokens is added as a package
+        // reference so the analyzer's required types resolve.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.IdentityModel.Tokens", Version: "8.16.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.IdentityModel.Tokens;
+            namespace test;
+            public static class Program
+            {
+                public static void Configure()
+                {
+                    var parameters = new TokenValidationParameters();
+                    parameters.AudienceValidator = (audiences, token, tvp) => { return true; };
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5405").ShouldBeTrue();
+    }
 }
