@@ -2,7 +2,7 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 
 [RuleDoc("IDE0001", "Simplify name",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0001",
-    Untestable = "IDE-only; not emitted by build analysis")]
+    Untestable = "IDE0001 (SimplifyNames) is registered with EnforceOnBuild.Never in Roslyn's EnforceOnBuildValues.cs (`public const EnforceOnBuild SimplifyNames = /*IDE0001*/ EnforceOnBuild.Never;`, preceded by the comment \"TODO: Allow enforcing simplify names and related diagnostics on build once we validate their performance charactericstics.\"). The EnforceOnBuild enum documents Never as \"an IDE-only diagnostic that cannot be enforced on build\", so the descriptor is excluded from the command-line/build analyzer set and IDE0001 never appears in MSBuild SARIF output - even though this package sets dotnet_diagnostic.IDE0001.severity = warning, EnforceCodeStyleInBuild=true, and TreatWarningsAsErrors=true. Confirmed by dotnet/roslyn issue #77120 (which names IDE0001 and IDE0049 as affected) and by the same EnforceOnBuild.Never gating IDE0002/IDE0003. Source: src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs and EnforceOnBuild.cs (dotnet/roslyn).")]
 [RuleDoc("IDE0002", "Simplify member access",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0002",
     Untestable = "IDE-only; not emitted by build analysis")]
