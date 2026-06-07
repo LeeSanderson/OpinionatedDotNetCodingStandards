@@ -736,6 +736,57 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     }
 
     [Fact]
+    [RuleDoc("CA2312", "Ensure NetDataContractSerializer.Binder is set before deserializing",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2312")]
+    public async Task EnsureNetDataContractSerializerBinderIsSetBeforeDeserialize()
+    {
+        // CA2312 (RealBinderMaybeNotSetDescriptor) is the NetDataContractSerializer analogue of CA2302
+        // (BinaryFormatter): PropertySetAnalysis cannot prove Binder is non-null on ALL paths because
+        // here a NON-NULL SerializationBinder is assigned only on one branch -> MaybeFlagged -> CA2312.
+        // NetDataContractSerializer was not ported to .NET Core/5+, but the analyzer's
+        // TryGetOrCreateTypeByMetadataName("System.Runtime.Serialization.NetDataContractSerializer")
+        // guard matches PURELY by metadata name and is assembly-agnostic, so declaring a stand-in type
+        // with that exact full name (plus a Deserialize method and a settable Binder) in source makes the
+        // analyzer register its operation actions and fire. No external package or NoWarn is required.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.IO;
+            using System.Runtime.Serialization;
+            namespace System.Runtime.Serialization
+            {
+                public sealed class NetDataContractSerializer
+                {
+                    public SerializationBinder? Binder { get; set; }
+                    public object? Deserialize(Stream stream) => null;
+                }
+            }
+            namespace test
+            {
+                public sealed class MyBinder : SerializationBinder
+                {
+                    public override Type? BindToType(string assemblyName, string typeName) => null;
+                }
+                public static class Program
+                {
+                    public static object? Deserialize(Stream s, bool useBinder)
+                    {
+                        var serializer = new NetDataContractSerializer();
+                        if (useBinder)
+                            serializer.Binder = new MyBinder();
+                        return serializer.Deserialize(s);
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2312").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2350", "Do not use DataTable.ReadXml() with untrusted data",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350")]
     public async Task ProhibitDataTableReadXmlWithUntrustedData()
