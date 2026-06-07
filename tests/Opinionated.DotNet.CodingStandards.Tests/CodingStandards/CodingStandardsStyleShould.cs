@@ -898,25 +898,42 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE0049").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0070", "Use 'System.HashCode'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070",
-        Untestable = "In .NET 10 Roslyn build analysis, IDE0070 emits IDE0055 at the containing type declaration instead of its own diagnostic ID; confirmed by control/violation probes: the XOR GetHashCode pattern triggers IDE0055 across every file in the compilation, and replacing it with HashCode.Combine removes IDE0055 entirely. The rule uses the formatter as its build-mode enforcement mechanism.")]
-    public async Task UseSystemHashCodeInsteadOfXorGetHashCode()
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070")]
+    public async Task UseSystemHashCodeInsteadOfManualHashCodeAccumulator()
     {
         using var project = await CreateProjectBuilder();
+
+        // IDE0070 fires only on the VS-generated multi-statement accumulator GetHashCode
+        // (HashCodeAnalyzer requires an IBlockOperation body with statements.Length >= 3),
+        // NOT on an expression-bodied `=> X ^ Y`. It is severity=suggestion so it surfaces as a SARIF note.
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
+
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+
             public class Point
             {
                 public int X { get; set; }
+
                 public int Y { get; set; }
-                public override bool Equals(object? obj) => obj is Point p && X == p.X && Y == p.Y;
-                public override int GetHashCode() => X ^ Y;
+
+                public override bool Equals(object? obj) => obj is Point other && X == other.X && Y == other.Y;
+
+                public override int GetHashCode()
+                {
+                    var hashCode = -1671106492;
+                    hashCode = (hashCode * -1521134295) + X.GetHashCode();
+                    hashCode = (hashCode * -1521134295) + Y.GetHashCode();
+                    return hashCode;
+                }
             }
-            public static class Program { public static int Main() => 0; }
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
