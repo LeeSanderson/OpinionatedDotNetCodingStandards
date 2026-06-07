@@ -1100,6 +1100,57 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     }
 
     [Fact]
+    [RuleDoc("CA5363", "Do Not Disable Request Validation",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363")]
+    public async Task ProhibitDisablingRequestValidation()
+    {
+        // CA5363's analyzer (DoNotDisableRequestValidation) gates on
+        // Compilation.TryGetOrCreateTypeByMetadataName("System.Web.Mvc.ValidateInputAttribute").
+        // That lookup resolves a type with that metadata name from ANY source visible to the
+        // compilation, INCLUDING one declared in the project's own source - the same self-defined
+        // removed-from-.NET-Core-type pattern used by other rules in this suite. We declare
+        // System.Web.Mvc.ValidateInputAttribute here and apply [ValidateInput(false)] to a method;
+        // the report predicate fires because the single primitive constructor argument is false.
+        // The rule's default severity is Hidden, but the bundled package .editorconfig raises it to
+        // warning (dotnet_diagnostic.CA5363.severity = warning), so it surfaces as a SARIF error.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Web.Mvc
+            {
+                [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false, Inherited = true)]
+                public sealed class ValidateInputAttribute : Attribute
+                {
+                    public ValidateInputAttribute(bool enableValidation)
+                    {
+                        EnableValidation = enableValidation;
+                    }
+
+                    public bool EnableValidation { get; }
+                }
+            }
+
+            namespace test
+            {
+                public class HomeController
+                {
+                    [System.Web.Mvc.ValidateInput(false)]
+                    public int Index() => 0;
+                }
+
+                public static class Program
+                {
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5363").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA5367", "Do Not Serialize Types With Pointer Fields",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367")]
     public async Task ProhibitSerializingTypesWithPointerFields()
