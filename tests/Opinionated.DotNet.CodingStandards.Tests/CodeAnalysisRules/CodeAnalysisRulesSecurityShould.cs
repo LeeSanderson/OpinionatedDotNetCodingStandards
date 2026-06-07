@@ -787,28 +787,33 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2351").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2354", "Unsafe DataSet or DataTable in deserialized object graph can be vulnerable to remote code execution attacks",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354",
-        Untestable = "Data-flow analysis rule: fires when a DataSet/DataTable type appears in the deserialization graph of a call to a generic deserialization API; requires inter-procedural type-graph analysis not triggerable from a single-project build harness")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2354")]
     public async Task ProhibitDataSetInDeserializedObjectGraph()
     {
-        using var project = await CreateProjectBuilder();
+        // CA2354 fires on an IFormatter-style deserialization CALL whose result is cast to a type
+        // whose [Serializable] object graph contains DataSet/DataTable. On net10 the only available
+        // matching serializer is BinaryFormatter, whose Deserialize is [Obsolete(SYSLIB0011)] as an
+        // error, so suppress SYSLIB0011 at MSBuild scope (same approach as CA2300, issue 034).
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0011")]);
         await project.AddFile(
             "Program.cs",
             """
             using System.Data;
-            using System.IO;
-            using System.Runtime.Serialization;
+            using System.Runtime.Serialization.Formatters.Binary;
             namespace test;
-            [DataContract]
-            public class Container { [DataMember] public DataSet? Data { get; set; } }
+            [Serializable]
+            public class MyData
+            {
+                public DataSet Data = new();
+            }
             public static class Program
             {
-                public static object? Deserialize(Stream s)
+                public static MyData Deserialize(Stream s)
                 {
-                    var ser = new DataContractSerializer(typeof(Container));
-                    return ser.ReadObject(s);
+                    var formatter = new BinaryFormatter();
+                    return (MyData)formatter.Deserialize(s);
                 }
                 public static int Main() => 0;
             }
