@@ -358,6 +358,39 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
     }
 
     [Fact]
+    [RuleDoc("CA2023", "Invalid braces in message template",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023")]
+    public async Task ProhibitInvalidBracesInLogMessageTemplate()
+    {
+        // CA2023 fires from LoggerMessageDefineAnalyzer (registered on OperationKind.Invocation) on an
+        // ILogger LoggerExtensions call whose constant message-template literal has an unmatched opening
+        // brace ("{Name with value"). The analyzer only registers when the Microsoft.Extensions.Logging
+        // ILogger/LoggerExtensions/LoggerMessage types resolve, so the abstractions package is referenced.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static void LogData(ILogger logger, string name)
+                {
+                    logger.LogInformation("Processing {Name with value", name);
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2023").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2020", "Prevent behavioral change caused by built-in operators of IntPtr and UIntPtr",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020")]
     public async Task PreventBehavioralChangeFromIntPtrOperators()
