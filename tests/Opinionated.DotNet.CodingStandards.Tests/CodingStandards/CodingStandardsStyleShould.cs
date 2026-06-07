@@ -1088,29 +1088,6 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     }
 
     [Fact(Skip = "untestable")]
-    [RuleDoc("IDE0302", "Simplify collection initialization",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0302",
-        Untestable = "In .NET 10 Roslyn, empty collection factory methods (Array.Empty, Enumerable.Empty, ImmutableArray<T>.Empty) fire as IDE0301 (collection initialization) not IDE0302; the empty-specific rule is subsumed by IDE0301 in the build analyzer")]
-    public async Task SimplifyEmptyCollectionWithArrayEmpty()
-    {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
-            "Program.cs",
-            """
-            using System;
-            namespace test;
-            public static class Program
-            {
-                public static int[] GetEmpty() => Array.Empty<int>();
-                public static int Main() => 0;
-            }
-            """);
-        var buildOutput = await project.BuildAndGetOutput();
-
-        buildOutput.HasNote("IDE0302").ShouldBeTrue();
-    }
-
-    [Fact(Skip = "untestable")]
     [RuleDoc("IDE0304", "Simplify collection initialization",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0304",
         Untestable = "In .NET 10 Roslyn, ImmutableArray<T>.Empty fires as IDE0301 (collection initialization) not IDE0304; the ImmutableArray-specific empty collection rule is subsumed by IDE0301 in the build analyzer")]

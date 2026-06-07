@@ -478,6 +478,37 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
     }
 
     [Fact]
+    [RuleDoc("IDE0302", "Simplify collection initialization",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0302")]
+    public async Task RequireCollectionExpressionForStackAlloc()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Sum()
+                {
+                    // IDE0302 fires on a stackalloc array-creation expression with an
+                    // initializer assigned to a Span<int>; net10.0 supports InlineArrayTypes
+                    // so the analyzer registers and the collection expression is suggested.
+                    System.Span<int> numbers = stackalloc int[] { 1, 2, 3 };
+                    var total = 0;
+                    foreach (var n in numbers)
+                        total += n;
+                    return total;
+                }
+                public static int Main() => Sum();
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0302").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("IDE0303", "Simplify collection initialization",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0303")]
     public async Task RequireCollectionExpressionForImmutableArrayCreate()
