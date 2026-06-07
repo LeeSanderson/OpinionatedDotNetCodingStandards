@@ -1914,4 +1914,32 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5365").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5368", "Set ViewStateUserKey For Classes Derived From Page",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5368")]
+    public async Task RequireViewStateUserKeyForPageDerivedClasses()
+    {
+        // CA5368's analyzer bails unless System.Web.UI.Page resolves. WebFormsForCore.Web
+        // (a net10.0-compatible port of the System.Web libraries on nuget.org) re-exposes the
+        // type at its original metadata name, so the type-resolution gate passes and the rule
+        // fires on a Page-derived class that never sets ViewStateUserKey in OnInit/Page_Init.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "WebFormsForCore.Web", Version: "1.5.5")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public class MyPage : System.Web.UI.Page
+            {
+            }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5368").ShouldBeTrue();
+    }
 }
