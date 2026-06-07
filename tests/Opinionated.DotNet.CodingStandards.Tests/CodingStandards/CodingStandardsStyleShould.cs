@@ -1062,25 +1062,23 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasNote("IDE0260").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0280", "Use 'nameof'",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0280",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0280; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0280")]
     public async Task UseNameofInsteadOfStringLiteral()
     {
+        // IDE0280 fires on a string-literal parameter name inside a nullable-analysis attribute
+        // (here NotNullIfNotNull) when a parameter of that name is in scope - the fix is nameof(input).
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
-            using System;
+            using System.Diagnostics.CodeAnalysis;
             namespace test;
             public static class Program
             {
-                public static void ValidateValue(string value)
-                {
-                    if (value == null)
-                        throw new ArgumentNullException("value");
-                }
+                [return: NotNullIfNotNull("input")]
+                public static string? Echo(string? input) => input;
                 public static int Main() => 0;
             }
             """);
