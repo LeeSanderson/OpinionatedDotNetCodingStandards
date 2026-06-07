@@ -1872,4 +1872,46 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA3147").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5365", "Do Not Disable HTTP Header Checking",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5365")]
+    public async Task ProhibitDisablingHttpHeaderChecking()
+    {
+        // CA5365's analyzer (DoNotDisableHTTPHeaderChecking) matches purely by metadata name:
+        // it looks up "System.Web.Configuration.HttpRuntimeSection" via GetOrCreateTypeByMetadataName
+        // and fires on any SimpleAssignment whose target is a property named "EnableHeaderChecking"
+        // on that type, assigned the constant false. The real type lives in the .NET-Framework-only
+        // System.Web.dll, but the analyzer never requires the *real* type - only one with that exact
+        // metadata name. A hand-rolled stand-in (declared internal so it dodges public-API rules)
+        // satisfies GetOrCreateTypeByMetadataName, and ContainingType.Equals holds because it is the
+        // same source symbol on both sides.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Web.Configuration
+            {
+                internal sealed class HttpRuntimeSection
+                {
+                    public bool EnableHeaderChecking { get; set; }
+                }
+            }
+            namespace test
+            {
+                public static class Program
+                {
+                    public static void Configure()
+                    {
+                        var section = new System.Web.Configuration.HttpRuntimeSection();
+                        section.EnableHeaderChecking = false;
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5365").ShouldBeTrue();
+    }
 }
