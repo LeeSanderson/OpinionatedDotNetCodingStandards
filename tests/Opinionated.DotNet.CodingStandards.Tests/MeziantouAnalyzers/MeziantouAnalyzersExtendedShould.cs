@@ -693,19 +693,17 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         buildOutput.HasNote("MA0070").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
-        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md",
-        Untestable = "Diagnostic ID is registered in the Meziantou.Analyzer 2.0.286 editorconfig but the analyzer implementation is absent in this version; the rule never fires")]
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md")]
     public async Task ShouldNotCallGetTypeOnTypeInstance()
     {
         using var project = await CreateProjectBuilder();
         await project.AddFile("Program.cs", """
-            using System;
             namespace test;
             public class C
             {
-                public Type GetActualType(Type t) => t.GetType();
+                public System.Type Force(System.Type t) => ((object)t).GetType();
             }
             public static class Program { public static int Main() => 0; }
             """);
