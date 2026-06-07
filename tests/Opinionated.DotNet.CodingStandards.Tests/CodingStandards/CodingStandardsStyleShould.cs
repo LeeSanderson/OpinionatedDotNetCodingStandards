@@ -1179,13 +1179,16 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE2002").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE2005", "Blank line not allowed after conditional expression token",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE2005; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005")]
     public async Task ProhibitBlankLineAfterConditionalExpressionToken()
     {
         using var project = await CreateProjectBuilder();
+        // IDE2005 fires only when BOTH the '?' and ':' conditional-expression tokens sit at
+        // the end of their line (the analyzer's IsOk guard returns early if either token is
+        // followed inline by the next token). Splitting both tokens onto their own lines makes
+        // IsOk(QuestionToken) and IsOk(ColonToken) both false, so the diagnostic is reported.
         await project.AddFile(
             "Program.cs",
             """
@@ -1193,9 +1196,11 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             public static class Program
             {
                 static bool Cond => true;
-                public static int Main() => Cond ?
-
-                    1 : 0;
+                public static int Main() => Cond
+                    ?
+                    1
+                    :
+                    0;
             }
             """);
         var buildOutput = await project.BuildAndGetOutput();
