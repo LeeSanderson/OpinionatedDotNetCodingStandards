@@ -1016,10 +1016,9 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE0080").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0110", "Remove unnecessary discard",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0110; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110")]
     public async Task RemoveUnnecessaryDiscardPattern()
     {
         using var project = await CreateProjectBuilder();
@@ -1029,7 +1028,9 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             namespace test;
             public static class Program
             {
-                public static bool IsAny(object? o) => o is _;
+                // 'int _' is an unnecessary discard designation; the discard '_' adds
+                // nothing over the plain type pattern 'int', so IDE0110 flags it.
+                public static bool IsInt(object o) => o is int _;
                 public static int Main() => 0;
             }
             """);
