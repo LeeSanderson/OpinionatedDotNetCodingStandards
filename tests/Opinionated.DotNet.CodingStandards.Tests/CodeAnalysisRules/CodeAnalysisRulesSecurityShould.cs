@@ -823,18 +823,19 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2354").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2355", "Unsafe DataSet or DataTable type found in deserializable object graph",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355",
-        Untestable = "Data-flow analysis rule: fires when DataSet/DataTable appears in a potentially-deserialized type hierarchy; same inter-procedural type-graph constraint as CA2354")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2355")]
     public async Task ProhibitDataTableInDeserializableTypeHierarchy()
     {
+        // CA2355 fires on the new XmlSerializer(typeof(T)) object-creation when T's object graph
+        // contains DataSet/DataTable (isDataflowRule:false). The only blocker was a redundant
+        // using System.IO; (System.IO is a global implicit using) which emitted IDE0005/IDE0055.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
             using System.Data;
-            using System.IO;
             using System.Xml.Serialization;
             namespace test;
             public class Container { public DataTable? Table { get; set; } }
