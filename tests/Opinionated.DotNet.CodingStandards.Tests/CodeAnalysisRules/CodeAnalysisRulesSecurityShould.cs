@@ -998,24 +998,33 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5373").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5381", "Ensure Certificates Are Not Added To Root Certificate Store",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381",
-        Untestable = "Data-flow/taint analysis variant of CA5380: fires when a certificate is added to a store whose StoreName comes through a variable rather than a constant; the build harness cannot trigger inter-procedural taint analysis tracing the store name through assignments")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381")]
     public async Task EnsureCertificatesAreNotAddedToRootCertificateStore()
     {
+        // CA5381 (MaybeInstallRootCertRule) fires when the X509Store name is a statically-known
+        // MIX of literals where some equal StoreName.Root: ValueContentAnalysis sees {Root, My}
+        // -> EvaluateLiteralValues returns MaybeFlagged (some-but-not-all-bad). Pure intra-procedural.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
+            using System;
             using System.Security.Cryptography.X509Certificates;
             namespace test;
             public static class Program
             {
-                public static void AddCertificate(X509Certificate2 cert, StoreName storeName)
+                public static void AddCertificate()
                 {
-                    var store = new X509Store(storeName, StoreLocation.LocalMachine);
+                    var storeName = StoreName.Root;
+                    if (new Random().Next(6) == 4)
+                    {
+                        storeName = StoreName.My;
+                    }
+                    using var store = new X509Store(storeName, StoreLocation.CurrentUser);
                     store.Open(OpenFlags.ReadWrite);
+                    var cert = X509CertificateLoader.LoadCertificate(new byte[] { 0x30 });
                     store.Add(cert);
                 }
                 public static int Main() => 0;
