@@ -299,6 +299,52 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
     }
 
     [Fact]
+    [RuleDoc("CA1828", "Do not use CountAsync() or LongCountAsync() when AnyAsync() can be used",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1828")]
+    public async Task RequireAnyAsyncOverCountAsync()
+    {
+        using var project = await CreateProjectBuilder();
+        // CA1828 (UseCountProperlyAnalyzer) resolves the async-count type purely by metadata name
+        // via GetOrCreateTypeByMetadataName("System.Data.Entity.QueryableExtensions") /
+        // ("Microsoft.EntityFrameworkCore.EntityFrameworkQueryableExtensions"); no real EF Core
+        // assembly is required. Declaring a stub QueryableExtensions with CountAsync/AnyAsync on
+        // IQueryable<T> (exactly as the analyzer's own unit tests do) makes the type resolve, so
+        // an awaited CountAsync() compared to a literal (here `== 0`) fires CA1828. The earlier
+        // "needs the full EF Core package" note was a wrong probe.
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace System.Data.Entity
+            {
+                public static class QueryableExtensions
+                {
+                    public static System.Threading.Tasks.Task<int> CountAsync<T>(this System.Linq.IQueryable<T> source)
+                        => throw new System.NotImplementedException();
+                    public static System.Threading.Tasks.Task<bool> AnyAsync<T>(this System.Linq.IQueryable<T> source)
+                        => throw new System.NotImplementedException();
+                }
+            }
+            namespace test
+            {
+                using System.Data.Entity;
+                public static class Program
+                {
+                    private static System.Linq.IQueryable<string> GetData()
+                        => throw new System.NotImplementedException();
+                    public static async System.Threading.Tasks.Task Check()
+                    {
+                        _ = await GetData().CountAsync() == 0;
+                    }
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1828").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA1830", "Prefer strongly-typed Append and Insert method overloads on StringBuilder",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1830")]
     public async Task RequireStronglyTypedStringBuilderOverloads()
