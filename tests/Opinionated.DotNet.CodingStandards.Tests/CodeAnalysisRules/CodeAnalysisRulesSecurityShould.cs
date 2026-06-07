@@ -1151,24 +1151,32 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5388").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5402", "Use CreateEncryptor with the default IV",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for the parameterless Aes.CreateEncryptor() overload; unlike the sibling rule CA5401 (which fires for the 2-argument overload), CA5402 produces no diagnostic even when the encryptor is actively used")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5402")]
     public async Task UseCreateEncryptorWithDefaultIv()
     {
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
             """
+            using System;
             using System.Security.Cryptography;
             namespace test;
             public static class Program
             {
-                public static ICryptoTransform CreateEncryptor()
+                // Conditionally setting IV makes the property-set state MaybeFlagged
+                // (set on one path, unset on the other), which the parameterless
+                // CreateEncryptor() data-flow rule reports as CA5402 (the "maybe" variant of CA5401).
+                public static void Encrypt(byte[] rgbIV)
                 {
-                    using var aes = Aes.Create();
-                    return aes.CreateEncryptor();
+                    using var aes = new AesCng();
+                    if (new Random().Next(6) == 4)
+                    {
+                        aes.IV = rgbIV;
+                    }
+
+                    aes.CreateEncryptor();
                 }
                 public static int Main() => 0;
             }
