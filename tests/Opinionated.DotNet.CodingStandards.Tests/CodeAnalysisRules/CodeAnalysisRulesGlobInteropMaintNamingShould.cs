@@ -637,4 +637,46 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
 
         buildOutput.HasError("CA1420").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1421", "This method uses runtime marshalling even when the 'DisableRuntimeMarshallingAttribute' is applied",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1421")]
+    public async Task ReportRuntimeMarshallingWhenDisableRuntimeMarshallingIsApplied()
+    {
+        // CA1421 fires when a Marshal runtime-marshalling API (OffsetOf/SizeOf/StructureToPtr/PtrToStructure)
+        // is called while [assembly: DisableRuntimeMarshalling] is applied. The analyzer
+        // (DisabledRuntimeMarshallingAssemblyAnalyzer in roslyn-analyzers) registers an OperationAction on
+        // OperationKind.Invocation and reports when invocation.TargetMethod.ConstructedFrom is in the
+        // collected Marshal method set; Marshal.OffsetOf is always reported (its transform-equivalent arm is
+        // "OffsetOf" => false). No P/Invoke is involved, so the assembly attribute breaks nothing else in the
+        // isolated single-file project. CA1421 ships at RuleLevel.IdeSuggestion, but the package editorconfig
+        // sets dotnet_diagnostic.CA1421.severity = warning, and TreatWarningsAsErrors=true promotes it to an
+        // error in SARIF -> HasError.
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Runtime.CompilerServices;
+            using System.Runtime.InteropServices;
+
+            [assembly: DisableRuntimeMarshalling]
+
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    nint offset = Marshal.OffsetOf(typeof(ValueType), "field");
+                    return (int)offset;
+                }
+            }
+            public struct ValueType
+            {
+                public int field;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1421").ShouldBeTrue();
+    }
 }
