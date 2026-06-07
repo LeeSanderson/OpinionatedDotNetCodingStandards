@@ -2334,4 +2334,35 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5396").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5404", "Do not disable token validation checks",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5404")]
+    public async Task ProhibitDisablingTokenValidationChecks()
+    {
+        // CA5404 fires on a constant-false assignment to one of ValidateAudience/ValidateIssuer/
+        // ValidateLifetime/RequireExpirationTime on Microsoft.IdentityModel.Tokens.TokenValidationParameters.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.IdentityModel.Tokens", Version: "8.13.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.IdentityModel.Tokens;
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var parameters = new TokenValidationParameters
+                    {
+                        ValidateAudience = false,
+                    };
+                    return parameters.ValidateAudience ? 1 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5404").ShouldBeTrue();
+    }
 }
