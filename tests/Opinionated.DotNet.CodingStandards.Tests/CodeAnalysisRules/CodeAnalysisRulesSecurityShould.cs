@@ -2145,4 +2145,54 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5382").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5383", "Ensure Use Secure Cookies In ASP.NET Core",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383")]
+    public async Task EnsureSecureCookiesInAspNetCore()
+    {
+        // CA5383 (MaybeUseSecureCookiesASPNetCore) is the data-flow "maybe" sibling of CA5382:
+        // it fires when PropertySetAnalysis cannot prove CookieOptions.Secure is true on every
+        // path into the ResponseCookies.Append "options" sink. Setting Secure = true on one branch
+        // and Secure = false on the other merges to HazardousUsageEvaluationResult.MaybeFlagged ->
+        // CA5383 (a definite false on all paths would be Flagged -> CA5382). The analyzer's
+        // IResponseCookies gate and its concrete Microsoft.AspNetCore.Http.Internal.ResponseCookies
+        // sink resolve from the standalone Microsoft.AspNetCore.Http 2.3.10 package (same package
+        // the CA5382 test references), which is addable as a PackageReference on net10.0. The two
+        // ASP.NET Core usings are not implicit global usings, so they are not redundant.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Http", Version: "2.3.10")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.AspNetCore.Http;
+            using Microsoft.AspNetCore.Http.Internal;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static void WriteCookie(bool flag)
+                {
+                    var responseCookies = new ResponseCookies(null!, null!);
+                    var options = new CookieOptions();
+                    if (flag)
+                    {
+                        options.Secure = true;
+                    }
+                    else
+                    {
+                        options.Secure = false;
+                    }
+
+                    responseCookies.Append("name", "value", options);
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5383").ShouldBeTrue();
+    }
 }
