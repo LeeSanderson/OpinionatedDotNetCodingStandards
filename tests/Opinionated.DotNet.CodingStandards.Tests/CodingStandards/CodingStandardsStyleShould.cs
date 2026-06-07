@@ -940,10 +940,9 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasNote("IDE0070").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0074", "Use compound assignment",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0074",
-        Untestable = "In .NET 10 Roslyn, x = x ?? y (null-coalescing compound assignment) fires as IDE0054 (general compound assignment) not IDE0074; the two rules share the same diagnostic trigger in this analyzer version")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0074")]
     public async Task UseNullCoalescingCompoundAssignment()
     {
         using var project = await CreateProjectBuilder();
@@ -953,10 +952,14 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             namespace test;
             public static class Program
             {
-                public static string GetOrDefault(string? value)
+                private static string? _cache;
+                public static string GetOrInit(string value)
                 {
-                    value = value ?? "default";
-                    return value;
+                    // `x ?? (x = y)` is IDE0074's actual trigger (-> `x ??= y`);
+                    // the analyzer registers on SyntaxKind.CoalesceExpression and
+                    // requires the coalesce's right to be a parenthesized simple
+                    // assignment whose left equals the coalesce's left.
+                    return _cache ?? (_cache = value);
                 }
                 public static int Main() => 0;
             }
