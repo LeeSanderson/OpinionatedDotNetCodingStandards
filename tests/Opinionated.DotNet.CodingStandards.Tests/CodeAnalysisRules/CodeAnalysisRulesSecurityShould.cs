@@ -1757,4 +1757,35 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2330").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA3061", "Do Not Add Schema By URL",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3061")]
+    public async Task ProhibitAddingSchemaByUrl()
+    {
+        // CA3061 fires on XmlSchemaCollection.Add(...) where the method is named "Add", has more than
+        // one parameter, and the SECOND parameter is a System.String (the Add(string ns, string url)
+        // overload that loads a schema from a URL). XmlSchemaCollection still exists on net10.0 (in
+        // System.Private.Xml) but is [Obsolete] -> CS0618, which TreatWarningsAsErrors promotes to an
+        // error; suppress CS0618 at MSBuild scope so the CA3061 diagnostic can surface (same NoWarn
+        // approach as the BinaryFormatter SYSLIB0011 tests).
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "CS0618")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Xml.Schema;
+            namespace test;
+            public static class Program
+            {
+                public static void LoadSchema(XmlSchemaCollection schemas)
+                {
+                    schemas.Add("urn:ns", "http://example.com/schema.xsd");
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA3061").ShouldBeTrue();
+    }
 }
