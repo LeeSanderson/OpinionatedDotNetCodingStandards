@@ -1114,10 +1114,9 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5387").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5388", "Ensure Sufficient Iteration Count When Using Weak Key Derivation Function",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388",
-        Untestable = "Data-flow/taint analysis variant of CA5387: fires when the iteration count passed to Rfc2898DeriveBytes comes from a variable rather than a literal and cannot be proven to exceed the threshold; requires inter-procedural taint analysis not triggerable from a single-project build harness")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5388")]
     public async Task EnsureSufficientIterationCountInKeyDerivation()
     {
         using var project = await CreateProjectBuilder();
@@ -1126,14 +1125,23 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
             """
             #pragma warning disable SYSLIB0060
             using System.Security.Cryptography;
+
             namespace test;
+
             public static class Program
             {
-                public static byte[] DeriveKey(string password, byte[] salt, int iterations)
+                // CA5388 (MaybeFlagged) needs the iteration count to be a non-literal whose
+                // value set still contains a known-bad literal (< 100000). The conditional
+                // local mixes the bad literal 1 with an unknown parameter, giving
+                // NonLiteralState.Maybe + a bad literal -> MaybeFlagged -> CA5388
+                // (a bare parameter alone yields Unknown and does NOT fire).
+                public static byte[] DeriveKey(string password, byte[] salt, bool fast, int external)
                 {
+                    var iterations = fast ? 1 : external;
                     using var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256);
                     return pbkdf2.GetBytes(32);
                 }
+
                 public static int Main() => 0;
             }
             #pragma warning restore SYSLIB0060
