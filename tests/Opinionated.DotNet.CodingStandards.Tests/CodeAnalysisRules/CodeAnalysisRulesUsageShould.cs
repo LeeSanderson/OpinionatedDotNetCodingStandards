@@ -61,6 +61,35 @@ public class CodeAnalysisRulesUsageShould(PackageFixture fixture, ITestOutputHel
     }
 
     [Fact]
+    [RuleDoc("CA2254", "Template should be a static expression",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2254")]
+    public async Task RequireStaticExpressionForLogMessageTemplate()
+    {
+        // Microsoft.Extensions.Logging.Abstractions supplies ILogger/LoggerExtensions so the analyzer registers.
+        // CA2254 fires: the message template is a non-constant variable, so the LoggerExtensions.LogInformation
+        // call has no static template text (TryGetFormatText returns null with usingLoggerExtensionsTypes == true).
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static void Log(ILogger logger, string message)
+                {
+                    logger.LogInformation(message);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2254").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2119", "Seal methods that satisfy private interfaces",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119")]
     public async Task RequireSealedMethodsForPrivateInterfaces()
