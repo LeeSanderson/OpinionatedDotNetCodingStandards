@@ -857,7 +857,7 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     [Fact(Skip = "untestable")]
     [RuleDoc("CA3075", "Insecure DTD processing in XML",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3075",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for XmlReaderSettings { DtdProcessing = DtdProcessing.Parse } + XmlReader.Create patterns; the XmlTextReader approach requires System.Xml.XmlTextReader which is not in .NET 10")]
+        Untestable = "CA3075's analyzer (DoNotUseInsecureDtdProcessingAnalyzer, in Microsoft.NetFramework.Analyzers) is hard-gated to .NET Framework targets: it registers its operation actions only when SecurityDiagnosticHelpers.GetDotNetFrameworkVersion(compilation) != null, and that helper returns null unless System.String resolves to an assembly named 'mscorlib' (ordinal compare in IsTypeDeclaredInExpectedAssembly). On the net10.0 harness System.String lives in System.Private.CoreLib (mscorlib is only a type-forwarding facade), so no actions are ever registered and NO XML pattern (XmlReaderSettings, XmlDocument+XmlResolver, XmlTextReader, XPathDocument, ...) can fire CA3075. Confirmed by the analyzer's own unit tests, which all target net472. Sources: dotnet/roslyn-analyzers Microsoft.NetFramework.Analyzers/DoNotUseInsecureDtdProcessing.cs (CompilationStart gate) and Helpers/SecurityDiagnosticHelpers.cs (GetDotNetFrameworkVersion / IsTypeDeclaredInExpectedAssembly).")]
     public async Task ProhibitInsecureDtdProcessingInXml()
     {
         using var project = await CreateProjectBuilder();
