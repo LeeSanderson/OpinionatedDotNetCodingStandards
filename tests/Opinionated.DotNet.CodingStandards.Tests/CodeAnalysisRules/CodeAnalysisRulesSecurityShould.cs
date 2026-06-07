@@ -668,18 +668,18 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2300").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2301", "Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301",
-        Untestable = "BinaryFormatter is marked [Obsolete(SYSLIB0011)] in .NET 9+; same SYSLIB0011/TreatWarningsAsErrors constraint as CA2300; cannot be tested without suppressing SYSLIB0011 globally")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301")]
     public async Task ProhibitBinaryFormatterDeserializeWithoutBinder()
     {
-        using var project = await CreateProjectBuilder();
+        // BinaryFormatter is [Obsolete(SYSLIB0011)] as error; suppress that at MSBuild scope via NoWarn
+        // so the CA2301 security diagnostic can surface instead of the obsoletion error preempting the build.
+        // CA2301 (BinderDefinitelyNotSet) fires because the Binder property is never set before Deserialize.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0011")]);
         await project.AddFile(
             "Program.cs",
             """
-            #pragma warning disable SYSLIB0011
-            using System.IO;
             using System.Runtime.Serialization.Formatters.Binary;
             namespace test;
             public static class Program
@@ -691,7 +691,6 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
                 }
                 public static int Main() => 0;
             }
-            #pragma warning restore SYSLIB0011
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
