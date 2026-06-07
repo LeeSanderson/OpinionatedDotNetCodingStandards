@@ -941,17 +941,19 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5360").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5367", "Do Not Serialize Types With Pointer Fields",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367",
-        Untestable = "CA5367 does not fire in NetAnalyzers 10.0.x build analysis for [Serializable] types with unsafe pointer fields; exhaustive probing with AllowUnsafeBlocks=true and a [Serializable] class containing int* fields confirmed the diagnostic is absent from SARIF output")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5367")]
     public async Task ProhibitSerializingTypesWithPointerFields()
     {
+        // CA5367 reports a [Serializable] type with a non-static, non-[NonSerialized] pointer field
+        // (PointedAtType is a struct or pointer). int* qualifies. The only confounder was a redundant
+        // using System; ([Serializable] resolves via the implicit global using). AllowUnsafeBlocks is
+        // required to compile the int* field.
         using var project = await CreateProjectBuilder(properties: [(Name: "AllowUnsafeBlocks", Value: "true")]);
         await project.AddFile(
             "Program.cs",
             """
-            using System;
             namespace test;
             [Serializable]
             public unsafe class UnsafeData
