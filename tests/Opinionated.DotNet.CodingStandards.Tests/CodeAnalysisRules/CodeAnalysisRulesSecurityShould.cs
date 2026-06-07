@@ -1405,4 +1405,68 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2315").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2322", "Ensure JavaScriptSerializer is not initialized with SimpleTypeResolver before deserializing",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2322")]
+    public async Task EnsureJavaScriptSerializerNotInitializedWithSimpleTypeResolver()
+    {
+        // CA2322 is a PropertySetAnalysis dataflow rule whose analyzer
+        // (DoNotUseInsecureDeserializerJavaScriptSerializerWithSimpleTypeResolver) only registers its
+        // actions if WellKnownTypeProvider can resolve System.Web.Script.Serialization.JavaScriptSerializer,
+        // JavaScriptTypeResolver and SimpleTypeResolver by metadata name. TryGetOrCreateTypeByMetadataName
+        // resolves against the WHOLE compilation, checking the SOURCE assembly first
+        // (WellKnownTypeProvider.cs: Compilation.Assembly.GetTypeByMetadataName), so DECLARING those three
+        // types in this file satisfies the guard even though they were removed from .NET Core. CA2322
+        // (MaybeFlagged) fires rather than CA2321 (Flagged) because the resolver flows in as a method
+        // parameter of static type JavaScriptTypeResolver => Unknown PointsTo => MaybeFlagged.
+        // IDE0130/SA1649/IDE0065 are unrelated style diagnostics from the System.* shim namespace and are
+        // NoWarn'd so they do not clutter the build; the CA2322 assertion is unaffected.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "IDE0130;SA1649;IDE0065")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Web.Script.Serialization;
+
+            namespace System.Web.Script.Serialization
+            {
+                public abstract class JavaScriptTypeResolver
+                {
+                    public abstract Type ResolveType(string id);
+                    public abstract string ResolveTypeId(Type type);
+                }
+
+                public class SimpleTypeResolver : JavaScriptTypeResolver
+                {
+                    public override Type ResolveType(string id) => typeof(object);
+                    public override string ResolveTypeId(Type type) => string.Empty;
+                }
+
+                public class JavaScriptSerializer
+                {
+                    public JavaScriptSerializer() { }
+                    public JavaScriptSerializer(JavaScriptTypeResolver resolver) { }
+                    public object Deserialize(string input, Type targetType) => new object();
+                    public object DeserializeObject(string input) => new object();
+                }
+            }
+
+            namespace test
+            {
+                public static class Program
+                {
+                    public static object Run(JavaScriptTypeResolver resolver, string input)
+                    {
+                        var serializer = new JavaScriptSerializer(resolver);
+                        return serializer.Deserialize(input, typeof(object));
+                    }
+
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2322").ShouldBeTrue();
+    }
 }
