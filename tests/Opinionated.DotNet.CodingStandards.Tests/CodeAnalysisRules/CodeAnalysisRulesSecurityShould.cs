@@ -761,10 +761,9 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2350").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2351", "Do not use DataSet.ReadXml() with untrusted data",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351",
-        Untestable = "Data-flow/taint analysis rule: fires only when untrusted input reaches DataSet.ReadXml(); same taint-analysis constraint as CA2350")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2351")]
     public async Task ProhibitDataSetReadXmlWithUntrustedData()
     {
         using var project = await CreateProjectBuilder();
