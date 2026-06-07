@@ -679,4 +679,29 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
 
         buildOutput.HasError("CA1421").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1516", "Use cross-platform intrinsics",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516")]
+    public async Task ProhibitPlatformSpecificIntrinsics()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Runtime.Intrinsics;
+            using System.Runtime.Intrinsics.X86;
+            namespace test;
+            public static class Program
+            {
+                // Sse2.Add(Vector128<byte>, Vector128<byte>) is an x86-specific intrinsic with a
+                // cross-platform equivalent (x + y), so CA1516 fires (severity=suggestion -> SARIF note).
+                private static Vector128<byte> Add(Vector128<byte> x, Vector128<byte> y) => Sse2.Add(x, y);
+                public static int Main() => Add(default, default) == default ? 0 : 1;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("CA1516").ShouldBeTrue();
+    }
 }
