@@ -32,6 +32,35 @@ public class CodeAnalysisRulesUsageShould(PackageFixture fixture, ITestOutputHel
     }
 
     [Fact]
+    [RuleDoc("CA2017", "Parameter count mismatch",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017")]
+    public async Task RequireMatchingLogMessageParameterCount()
+    {
+        // Microsoft.Extensions.Logging.Abstractions supplies ILogger/LoggerExtensions so the analyzer registers.
+        // The message template has two named placeholders ({Name}, {Time}) but only one argument is supplied,
+        // so paramsCount (1) != ValueNames.Count (2) and CA2017 fires.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static void Log(ILogger logger)
+                {
+                    logger.LogInformation("User {Name} logged in at {Time}", "Alice");
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2017").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2119", "Seal methods that satisfy private interfaces",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119")]
     public async Task RequireSealedMethodsForPrivateInterfaces()
