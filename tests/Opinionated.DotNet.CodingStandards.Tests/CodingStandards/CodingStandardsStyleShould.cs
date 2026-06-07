@@ -1125,12 +1125,15 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasNote("IDE0304").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE1006", "Naming Styles",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1006",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE1006; also, CS0708 (member cannot be declared static in a non-static class) preempts the instance field violation pattern in a static class")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1006")]
     public async Task RequireUnderscorePrefixForPrivateFields()
     {
+        // The package's naming config requires private fields to use the _camelCase style
+        // (dotnet_naming_style.camel_case_underscore_prefix.required_prefix = _). A private
+        // field with no underscore prefix triggers IDE1006 ("Missing prefix: '_'"), which is
+        // build-enforced (EnforceOnBuild.Recommended) at warning severity -> SARIF error.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
