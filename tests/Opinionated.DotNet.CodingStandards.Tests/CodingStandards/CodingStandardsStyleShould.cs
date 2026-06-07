@@ -846,20 +846,28 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE0030").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0031", "Use null propagation",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031",
-        Untestable = "Formatter-backed rule: emits IDE0055 ('Fix formatting') in build SARIF instead of its own diagnostic ID IDE0031; the enforcement mechanism goes through the Roslyn formatter rather than the analyzer pipeline")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031")]
     public async Task UseNullPropagation()
     {
         using var project = await CreateProjectBuilder();
+        // Non-null branch must be a property/field access on a reference-typed nullable
+        // receiver: the analyzer explicitly bails when the accessed member is a method
+        // symbol (`x == null ? x : x.M` cannot become `x?.M`), so a method-call branch
+        // never fires IDE0031. A property access (node.Value) is convertible to node?.Value
+        // and triggers "Null check can be simplified".
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
             public static class Program
             {
-                public static string? GetUpper(string? s) => s != null ? s.ToUpper() : null;
+                public sealed class Node
+                {
+                    public string Value { get; set; } = "";
+                }
+                public static string? GetValue(Node? node) => node != null ? node.Value : null;
                 public static int Main() => 0;
             }
             """);
