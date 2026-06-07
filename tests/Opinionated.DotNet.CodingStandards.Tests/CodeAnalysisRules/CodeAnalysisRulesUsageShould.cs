@@ -482,6 +482,37 @@ public class CodeAnalysisRulesUsageShould(PackageFixture fixture, ITestOutputHel
     }
 
     [Fact]
+    [RuleDoc("CA2243", "Attribute string literals should parse correctly",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243")]
+    public async Task RequireAttributeStringLiteralsToParseCorrectly()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            // CA2243 matches any attribute argument whose parameter name contains the word
+            // "url"/"uri"/"urn"/"guid" and is of type string; a custom attribute is not
+            // compiler-validated, so the malformed URI literal fires the analyzer (not a CS error).
+            [AttributeUsage(AttributeTargets.Class)]
+            public sealed class EndpointAttribute(string url) : Attribute
+            {
+                public string Url { get; } = url;
+            }
+            [Endpoint("http://not a valid uri")]
+            public sealed class Service { }
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2243").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2244", "Do not duplicate indexed element initializations",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2244")]
     public async Task ProhibitDuplicateIndexedElementInitializations()
