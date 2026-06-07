@@ -487,6 +487,75 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
     }
 
     [Fact]
+    [RuleDoc("CA5391", "Use antiforgery tokens in ASP.NET Core MVC controllers",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5391")]
+    public async Task RequireAntiforgeryTokensOnMvcControllerActions()
+    {
+        // The hand-written ASP.NET Core MVC stub types trip unrelated style/quality analyzers
+        // (IDE0130 namespace-vs-folder, CA1018/CA1813 attribute shape, SA1649 file name); suppress
+        // those at MSBuild scope so the build reaches SARIF emission and CA5391 can surface on its own.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "IDE0130;CA1018;CA1813;SA1649")]);
+        // CA5391 resolves its ASP.NET Core MVC types purely by metadata name (TryGetOrCreateTypeByMetadataName),
+        // so local stub types in the exact namespaces satisfy the analyzer without the real assembly.
+        // The CompilationStart guard requires ALL FOUR HttpVerb attributes (Post/Put/Delete/Patch) to resolve
+        // (it returns early if httpVerbAttributeTypeSymbolsAbleToModify.Length != the expected count), so all
+        // four stubs are declared. The [ValidateAntiForgeryToken] on Save() flips the compilation-level
+        // "uses antiforgery" signal; the unprotected [HttpPost] Delete() action then fires CA5391.
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace Microsoft.AspNetCore.Mvc.Filters
+            {
+                public class FilterCollection { }
+                public interface IFilterMetadata { }
+                public interface IAuthorizationFilter { }
+                public interface IAsyncAuthorizationFilter { }
+                public class AuthorizationFilterContext { }
+            }
+            namespace Microsoft.AspNetCore.Antiforgery
+            {
+                public interface IAntiforgery { }
+            }
+            namespace Microsoft.AspNetCore.Mvc.Routing
+            {
+                public class HttpMethodAttribute : System.Attribute { }
+            }
+            namespace Microsoft.AspNetCore.Mvc
+            {
+                public class ControllerBase { }
+                public class Controller : ControllerBase { }
+                public sealed class NonActionAttribute : System.Attribute { }
+                public sealed class HttpPostAttribute : Routing.HttpMethodAttribute { }
+                public sealed class HttpPutAttribute : Routing.HttpMethodAttribute { }
+                public sealed class HttpDeleteAttribute : Routing.HttpMethodAttribute { }
+                public sealed class HttpPatchAttribute : Routing.HttpMethodAttribute { }
+                public sealed class ValidateAntiForgeryTokenAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                public class HomeController : Microsoft.AspNetCore.Mvc.Controller
+                {
+                    [Microsoft.AspNetCore.Mvc.HttpPost]
+                    [Microsoft.AspNetCore.Mvc.ValidateAntiForgeryToken]
+                    public int Save() => 0;
+
+                    [Microsoft.AspNetCore.Mvc.HttpPost]
+                    public int Delete() => 0;
+                }
+
+                public static class Program
+                {
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5391").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA5392", "Use DefaultDllImportSearchPaths attribute for P/Invokes",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5392")]
     public async Task RequireDefaultDllImportSearchPathsOnPInvoke()
