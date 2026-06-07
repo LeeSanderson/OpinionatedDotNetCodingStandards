@@ -670,13 +670,15 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         buildOutput.HasError("MA0054").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("MA0070", "Obsolete attributes should include explanations",
-        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md",
-        Untestable = "CA1041 covers the same null/empty ObsoleteAttribute message condition and fires instead of MA0070 in this harness")]
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md")]
     public async Task ObsoleteAttributesShouldIncludeExplanations()
     {
         using var project = await CreateProjectBuilder();
+        // [System.Obsolete] with no constructor argument => ConstructorArguments.Length == 0,
+        // which is exactly what ObsoleteAttributesShouldIncludeExplanationsAnalyzer reports.
+        // MA0070 ships with default severity Info, so it surfaces in SARIF as level "note" (not "error").
         await project.AddFile("Program.cs", """
             namespace test;
             public class C
