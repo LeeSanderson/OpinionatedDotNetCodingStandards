@@ -1496,4 +1496,39 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA2326").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2327", "Do not use insecure JsonSerializerSettings",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2327")]
+    public async Task ProhibitInsecureJsonSerializerSettings()
+    {
+        // CA2327 (RuleLevel.Disabled by default) is force-enabled to warning by the package's
+        // NetAnalyzers editorconfig. Its analyzer returns early unless the three Newtonsoft.Json
+        // WellKnownTypeNames (JsonSerializerSettings, JsonSerializer, JsonConvert) resolve, so the
+        // Newtonsoft.Json package reference is required. The rule fires when a JsonSerializerSettings
+        // with TypeNameHandling != None and a null SerializationBinder reaches a JsonConvert method
+        // that takes settings (HazardousIfAllFlaggedAndAtLeastOneKnown -> Flagged = definite CA2327).
+        // BanUseOfNewtonsoftJsonApis is turned off so the package's RS0030 ban does not add noise.
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "BanUseOfNewtonsoftJsonApis", Value: "false")],
+            packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Newtonsoft.Json;
+            namespace test;
+            public static class Program
+            {
+                public static object? Deserialize(string s)
+                {
+                    var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto };
+                    return JsonConvert.DeserializeObject<object>(s, settings);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA2327").ShouldBeTrue();
+    }
 }
