@@ -1059,13 +1059,15 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA5384").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA5385", "Use Rivest-Shamir-Adleman (RSA) Algorithm With Sufficient Key Size",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385",
-        Untestable = "Rule does not fire in Microsoft.CodeAnalysis.NetAnalyzers 10.0.x for RSA.Create(int) nor for RSA.Create() + KeySize assignment patterns; the abstract factory and property setter approaches do not trigger the key-size diagnostic")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5385")]
     public async Task RequireSufficientRsaKeySize()
     {
         using var project = await CreateProjectBuilder();
+        // CA5385's ObjectCreation handler fires on an RSA-derived constructor taking a single
+        // int key-size argument < 2048. RSACryptoServiceProvider(512) hits that branch exactly.
+        // (RSA.Create(512) does NOT fire: the analyzer has no AsymmetricAlgorithm.Create(int) branch.)
         await project.AddFile(
             "Program.cs",
             """
@@ -1073,7 +1075,7 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
             namespace test;
             public static class Program
             {
-                public static RSA CreateWeakRsaKey() => RSA.Create(512);
+                public static RSACryptoServiceProvider CreateWeakRsaKey() => new RSACryptoServiceProvider(512);
                 public static int Main() => 0;
             }
             """);
