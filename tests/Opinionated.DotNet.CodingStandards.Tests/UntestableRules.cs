@@ -33,9 +33,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 [RuleDoc("CA2321", "Do not deserialize with JavaScriptSerializer using a SimpleTypeResolver",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2321",
     Untestable = "CA2321's analyzer (DoNotUseInsecureDeserializerJavaScriptSerializerWithSimpleTypeResolver, Microsoft.NetCore.Analyzers.Security) registers its OperationKind.Invocation action inside a RegisterCompilationStartAction that returns early unless WellKnownTypeProvider.TryGetOrCreateTypeByMetadataName resolves all three of System.Web.Script.Serialization.JavaScriptSerializer, .JavaScriptTypeResolver, and .SimpleTypeResolver (WellKnownTypeNames.SystemWebScriptSerialization*). Those types live only in System.Web.Extensions.dll on .NET Framework (Applies-to monikers netframework-3.5..4.8.1; no .NET Core/.NET 5+/.NET Standard moniker) and were removed from .NET Core; on net10.0 they do not exist in any BCL or addable NuGet package, so the gate fails, no actions register, and source referencing the type would not even compile (CS0234). Source: src/NetAnalyzers/Core/Microsoft.NetCore.Analyzers/Security/DoNotUseInsecureDeserializerJavascriptSerializerWithSimpleTypeResolver.cs.")]
-[RuleDoc("CA5375", "Do Not Use Account Shared Access Signature",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5375",
-    Untestable = "Fires on Azure Storage SDK (WindowsAzure.Storage / Azure.Storage.Blobs) CloudStorageAccount.GetSharedAccessSignature calls; the Azure Storage SDK is not included in the simple build harness")]
 [RuleDoc("CA5376", "Use SharedAccessProtocol HttpsOnly",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5376",
     Untestable = "Fires when Azure Storage SDK SharedAccessPolicy uses HTTP instead of HTTPS-only; the Azure Storage SDK is not included in the simple build harness")]

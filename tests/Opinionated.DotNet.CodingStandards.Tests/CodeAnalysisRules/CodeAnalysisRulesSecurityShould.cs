@@ -2000,4 +2000,39 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5370").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5375", "Do Not Use Account Shared Access Signature",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5375")]
+    public async Task ProhibitAccountSharedAccessSignature()
+    {
+        // CA5375 fires on any invocation whose method name is "GetSharedAccessSignature" and whose
+        // containing type is Microsoft.WindowsAzure.Storage.CloudStorageAccount (no dataflow, no arg
+        // constraints). That metadata type only exists in the classic (deprecated but still
+        // nuget.org-restorable) WindowsAzure.Storage package; the newer Microsoft.Azure.Storage.* /
+        // Azure.Storage.Blobs packages use a different namespace the analyzer does not match.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "WindowsAzure.Storage", Version: "9.3.3")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using Microsoft.WindowsAzure.Storage;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static string CreateSas(CloudStorageAccount account)
+                {
+                    var policy = new SharedAccessAccountPolicy();
+                    return account.GetSharedAccessSignature(policy);
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5375").ShouldBeTrue();
+    }
 }
