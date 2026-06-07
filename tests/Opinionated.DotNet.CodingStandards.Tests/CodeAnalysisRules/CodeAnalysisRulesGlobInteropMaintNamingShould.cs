@@ -604,4 +604,37 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         // dotnet/roslyn-analyzers (HasPossiblyMeaningfulAdditionalArguments).
         buildOutput.HasError("CA1511").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1420", "Property, type, or attribute requires runtime marshalling",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1420")]
+    public async Task RejectRuntimeMarshallingFeaturesWhenMarshallingDisabled()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Runtime.CompilerServices;
+            using System.Runtime.InteropServices;
+
+            [assembly: DisableRuntimeMarshalling]
+
+            namespace test;
+
+            internal static class Program
+            {
+                // CA1420 fires because the assembly carries [assembly: DisableRuntimeMarshalling]
+                // and this P/Invoke sets SetLastError = true, a feature that needs runtime marshalling.
+                // The analyzer (DisabledRuntimeMarshallingAssemblyAnalyzer.AnalyzeMethod) checks
+                // method.GetDllImportData().SetLastError and reports CA1420.
+                [DllImport("NativeLibrary", SetLastError = true)]
+                private static extern void MyMethod();
+
+                private static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1420").ShouldBeTrue();
+    }
 }
