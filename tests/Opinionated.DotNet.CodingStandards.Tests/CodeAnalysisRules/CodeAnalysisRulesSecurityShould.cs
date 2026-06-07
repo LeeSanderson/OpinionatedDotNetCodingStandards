@@ -735,10 +735,9 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2302").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2350", "Do not use DataTable.ReadXml() with untrusted data",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350",
-        Untestable = "Data-flow/taint analysis rule: fires only when untrusted input (method parameter, user-controlled source) reaches DataTable.ReadXml(); the build harness cannot trigger inter-procedural taint analysis without a full program analysis configuration")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2350")]
     public async Task ProhibitDataTableReadXmlWithUntrustedData()
     {
         using var project = await CreateProjectBuilder();
