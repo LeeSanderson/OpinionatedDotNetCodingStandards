@@ -463,19 +463,23 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
         buildOutput.HasNote("MA0079").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("MA0023", "Add RegexOptions.ExplicitCapture",
-        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0023.md",
-        Untestable = "SYSLIB1045 fires for all runtime Regex construction and appears to suppress MA0023 in Meziantou.Analyzer 2.0.286")]
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0023.md")]
     public async Task RequireExplicitCaptureInRegex()
     {
         using var project = await CreateProjectBuilder();
+        // MA0023 fires only when a RegexOptions argument is physically present and lacks
+        // ExplicitCapture/ECMAScript while the pattern has an unnamed capturing group "([a-z]+)".
+        // (No RegexOptions argument => the analyzer skips the report entirely, which is why the
+        // earlier "new Regex(\"(foo)bar\")" probe never fired.) Configured severity is suggestion
+        // => surfaces as SARIF "note".
         await project.AddFile("Program.cs", """
             using System.Text.RegularExpressions;
             namespace test;
             public class C
             {
-                public bool M(string input) => new Regex("(foo)bar").IsMatch(input);
+                public bool M(string input) => new Regex("([a-z]+)", RegexOptions.None).IsMatch(input);
             }
             public static class Program { public static int Main() => 0; }
             """);
