@@ -697,32 +697,38 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         buildOutput.HasError("CA2301").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("CA2302", "Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302",
-        Untestable = "Data-flow/taint analysis variant of CA2301 that also requires tracking Binder assignment across statements; the underlying BinaryFormatter is additionally blocked by SYSLIB0011 as described in CA2300")]
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302")]
     public async Task EnsureBinaryFormatterBinderIsSetBeforeDeserialize()
     {
-        using var project = await CreateProjectBuilder();
+        // CA2302 (RealBinderMaybeNotSetDescriptor) fires when PropertySetAnalysis cannot prove
+        // BinaryFormatter.Binder is non-null on ALL paths: here Binder is assigned a NON-NULL
+        // SerializationBinder only on one branch, so the result is MaybeFlagged -> CA2302
+        // (assigning null instead would be Flagged -> CA2301). BinaryFormatter is
+        // [Obsolete(SYSLIB0011)] as an error on net10.0, so NoWarn that at MSBuild scope.
+        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0011")]);
         await project.AddFile(
             "Program.cs",
             """
-            #pragma warning disable SYSLIB0011
-            using System.IO;
+            using System.Runtime.Serialization;
             using System.Runtime.Serialization.Formatters.Binary;
             namespace test;
+            public sealed class MyBinder : SerializationBinder
+            {
+                public override Type? BindToType(string assemblyName, string typeName) => null;
+            }
             public static class Program
             {
                 public static object? Deserialize(Stream s, bool useBinder)
                 {
                     var formatter = new BinaryFormatter();
                     if (useBinder)
-                        formatter.Binder = null;
+                        formatter.Binder = new MyBinder();
                     return formatter.Deserialize(s);
                 }
                 public static int Main() => 0;
             }
-            #pragma warning restore SYSLIB0011
             """);
         var buildOutput = await project.BuildAndGetOutput();
 
