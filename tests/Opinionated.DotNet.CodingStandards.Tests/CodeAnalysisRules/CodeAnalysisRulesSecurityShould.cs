@@ -2299,4 +2299,39 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("CA5383").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA5396", "Set HttpOnly to true for HttpCookie",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5396")]
+    public async Task SetHttpOnlyToTrueForHttpCookie()
+    {
+        // Microsoft.AspNetCore.SystemWebAdapters re-declares System.Web.HttpCookie (the exact
+        // metadata name the analyzer probes) with a settable bool HttpOnly, so assigning
+        // HttpOnly = false fires the analyzer's SimpleAssignment handler.
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.AspNetCore.SystemWebAdapters", Version: "2.3.0")]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            using System.Web;
+            namespace test;
+            public static class Program
+            {
+                public static HttpCookie CreateInsecureCookie()
+                {
+                    var cookie = new HttpCookie("auth");
+                    cookie.HttpOnly = false;
+                    return cookie;
+                }
+                public static int Main()
+                {
+                    _ = CreateInsecureCookie();
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA5396").ShouldBeTrue();
+    }
 }
