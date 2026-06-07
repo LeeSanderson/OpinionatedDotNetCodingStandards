@@ -719,4 +719,33 @@ public class CodeAnalysisRulesDesignShould(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("CA1066").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1016", "Mark assemblies with assembly version",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1016")]
+    public async Task RequireAssemblyVersionAttribute()
+    {
+        // CA1016 (MarkAssembliesWithAttributesDiagnosticAnalyzer) fires at compilation end when no
+        // System.Reflection.AssemblyVersionAttribute is present on the assembly. The SDK normally
+        // auto-injects [assembly: AssemblyVersion] (GenerateAssemblyInfo=true by default), which
+        // suppresses the rule; setting GenerateAssemblyInfo=false removes that attribute so the
+        // assembly has no version attribute and CA1016 is reported. The package raises CA1016 to
+        // severity=warning, so it surfaces as a SARIF error under TreatWarningsAsErrors.
+        using var project = await CreateProjectBuilder(properties:
+        [
+            (Name: "GenerateAssemblyInfo", Value: "false"),
+        ]);
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1016").ShouldBeTrue();
+    }
 }
