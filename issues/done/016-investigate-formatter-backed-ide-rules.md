@@ -700,3 +700,30 @@ All four produce IDE0055 at `(2,1)` (the class declaration line), which is the c
   correctly worded and close this issue.
 - If a workaround is found (e.g. editorconfig override that causes the rule to emit its
   own ID): implement it and promote the rules to tested.
+
+## Resolution (closed 2026-06-07)
+
+This HITL umbrella investigation is **complete**. It was decomposed into the per-rule
+`investigate-*` issues (017–129), all of which are resolved, and every rule it tracked has
+reached a definitive outcome:
+
+- **Most rules were promoted to tested** once the true root cause was understood — the
+  "formatter-backed IDE0055" and "absent from SARIF" symptoms were largely *wrong probes*,
+  not dead rules. Examples: CA1826 (017), CA1061 (025), CA1511 (028), CA2354 (039),
+  CA2305 (097), CA2315 (101), plus the CA5xxx security family (124–128). The formatter-backed
+  IDE rules and the four CA-prefix rules (CA1061/CA1511/CA1826/CA1852) are no longer marked
+  untestable.
+- **The genuinely-untestable rules are now documented with sourced root causes** in
+  `UntestableRules.cs` (12 entries), each citing the exact Roslyn/roslyn-analyzers source
+  location and, where applicable, upstream issue **dotnet/roslyn#77120**. The confirmed
+  permanent mechanisms are: `EnforceOnBuild.Never` (IDE0001/0002/0003, EnableGenerateDocumentationFile),
+  VB-only `[DiagnosticAnalyzer(LanguageNames.VisualBasic)]` registration
+  (CA1047/CA2218/CA2224/CA2258), C#-compiler preemption (CA2226/CS0216), IDE-only Features-assembly
+  analyzers (IDE0038), VB-only language constructs (IDE0084), and .NET-Framework-only target types
+  (CA2321).
+
+**Acceptance criteria met:** root causes identified and linked to Roslyn source / GitHub issue
+(#77120); intentional-and-permanent cases have correctly-worded `Untestable` entries; workaround
+cases (real package references, source-declared stub types, LangVersion pins, meaningful messages)
+were implemented and the rules promoted. Full test suite green (407 passed, 0 failed, 4 intentional
+skips) with the coverage gate at 100%.
