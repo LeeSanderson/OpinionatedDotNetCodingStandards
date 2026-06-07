@@ -613,4 +613,36 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA1802").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1824", "Mark assemblies with NeutralResourcesLanguageAttribute",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1824")]
+    public async Task RequireNeutralResourcesLanguageAttribute()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        // A *.Designer.cs file carrying [GeneratedCode("...StronglyTypedResourceBuilder...", ...)]
+        // is what CA1824 treats as an embedded resource; with no [NeutralResourcesLanguage]
+        // assembly attribute present, the rule reports at compilation end.
+        await project.AddFile(
+            "Resources.Designer.cs",
+            """
+            namespace test;
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+            internal class Resource1
+            {
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("CA1824").ShouldBeTrue();
+    }
 }
