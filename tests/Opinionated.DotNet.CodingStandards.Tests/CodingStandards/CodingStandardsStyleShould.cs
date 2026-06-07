@@ -1039,20 +1039,21 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         buildOutput.HasError("IDE0110").ShouldBeTrue();
     }
 
-    [Fact(Skip = "untestable")]
+    [Fact]
     [RuleDoc("IDE0260", "Use pattern matching",
-        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0260",
-        Untestable = "In .NET 10 Roslyn build analysis, IDE0260 emits IDE0055 at the containing type declaration instead of its own diagnostic ID; confirmed by control/violation probes: 'obj as T != null' triggers IDE0055 while the equivalent 'obj is T' does not. The rule uses the formatter as its build-mode enforcement mechanism.")]
-    public async Task UsePatternMatchingInsteadOfAsNotNull()
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0260")]
+    public async Task UsePatternMatchingOverAsWithMemberAccess()
     {
         using var project = await CreateProjectBuilder();
+        // IDE0260 fires on `(expr as T)?.Member == constant` (as-cast + null-conditional
+        // member access compared to a non-null constant), convertible to `expr is T { Member: constant }`.
         await project.AddFile(
             "Program.cs",
             """
             namespace test;
             public static class Program
             {
-                public static bool IsString(object obj) => (obj as string) != null;
+                public static bool HasEmptyLength(object obj) => (obj as string)?.Length == 0;
                 public static int Main() => 0;
             }
             """);
