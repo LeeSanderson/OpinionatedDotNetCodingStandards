@@ -1243,4 +1243,51 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
 
         buildOutput.HasError("IDE2006").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("IDE0064", "Make struct fields writable",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0064")]
+    public async Task RequireStructFieldsToBeWritableWhenAssigningThis()
+    {
+        // IDE0064 (CSharpMakeStructFieldsWritableDiagnosticAnalyzer) fires when a struct has a
+        // readonly instance field AND a non-constructor member assigns to `this` (e.g.
+        // `this = new Counter(0)`). That assignment is legal C# (NOT the CS0191 the prior
+        // "untestable" reason claimed -- CS0191 is about assigning a readonly *field* outside
+        // its constructor, not about assigning `this`). The analyzer's trigger is:
+        //   - namedTypeSymbol.TypeKind == TypeKind.Struct
+        //   - a field matching { AssociatedSymbol: null, IsStatic: false, IsReadOnly: true }
+        //   - an OperationKind.SimpleAssignment whose Target is
+        //     IInstanceReferenceOperation { ReferenceKind: ContainingTypeInstance } in a
+        //     non-constructor method.
+        // The package ships IDE0064 at `suggestion` severity (config/analyzers/
+        // Analyzer.Microsoft.CodeAnalysis.CSharp.CodeStyle.editorconfig line 276), so at build
+        // it surfaces in SARIF at level "note" -- asserted with HasNote, matching the dozens of
+        // other suggestion-severity rules in this suite (IDE0066, IDE0250, the MA family, etc.).
+        using var project = await CreateProjectBuilder();
+        await project.AddFile(
+            "Program.cs",
+            """
+            namespace test;
+
+            public struct Counter
+            {
+                private readonly int _seed;
+
+                public Counter(int seed) => _seed = seed;
+
+                public void Reset()
+                {
+                    this = new Counter(0);
+                }
+            }
+
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasNote("IDE0064").ShouldBeTrue();
+    }
 }
