@@ -3,6 +3,7 @@
 
 using System.Text;
 using Opinionated.DotNet.CodingStandards.Tests;
+using Opinionated.DotNet.CodingStandards.Tooling;
 
 Console.WriteLine("Generating rule reference...");
 
@@ -11,7 +12,7 @@ var analyzerDir = Path.Combine(rootDir, "packages", "Opinionated.Dotnet.CodingSt
 var editorConfigPath = Path.Combine(rootDir, "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
 var outputFile = Path.Combine(rootDir, "docs", "rule-reference.md");
 
-var content = RuleReferenceGenerator.Generate(analyzerDir, typeof(RuleReferenceGenerator).Assembly, editorConfigPath);
+var content = RuleReferenceGenerator.Generate(analyzerDir, typeof(RuleDocCoverageShould).Assembly, editorConfigPath);
 
 Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
 File.WriteAllText(outputFile, content, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));

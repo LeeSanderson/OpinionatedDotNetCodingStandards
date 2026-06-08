@@ -2,7 +2,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Opinionated.DotNet.CodingStandards.Tests;
+namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 public static class RuleReferenceGenerator
 {

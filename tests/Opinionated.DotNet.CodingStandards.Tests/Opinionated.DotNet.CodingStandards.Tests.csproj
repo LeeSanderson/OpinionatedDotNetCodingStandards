@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Opinionated.DotNet.CodingStandards.Tooling\Opinionated.DotNet.CodingStandards.Tooling.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Opinionated.DotNet.CodingStandards.Tooling" />
     <Using Include="Xunit" />
   </ItemGroup>
 

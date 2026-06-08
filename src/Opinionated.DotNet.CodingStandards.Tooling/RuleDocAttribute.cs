@@ -1,4 +1,4 @@
-namespace Opinionated.DotNet.CodingStandards.Tests;
+namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
 public sealed class RuleDocAttribute(string ruleId, string description) : Attribute

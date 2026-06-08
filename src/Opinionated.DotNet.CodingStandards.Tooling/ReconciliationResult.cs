@@ -1,4 +1,4 @@
-namespace Opinionated.DotNet.CodingStandards.Tests;
+namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 public record ReconciliationResult(
     IReadOnlyList<string> UncoveredRules,
