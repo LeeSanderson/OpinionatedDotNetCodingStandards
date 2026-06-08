@@ -24,7 +24,8 @@ The package emits **no production assembly** — the shipped payload is the file
 ```powershell
 dotnet build Opinionated.DotNet.CodingStandards.slnx          # build (warnings = errors)
 dotnet test  Opinionated.DotNet.CodingStandards.slnx          # run the integration tests
-dotnet test  --filter "FullyQualifiedName~CodeAnalysisRules"  # run a single test class
+dotnet test  --filter "FullyQualifiedName~CodeAnalysisRulesDesign"  # run one test class
+dotnet test  --filter "FullyQualifiedName~CodeAnalysisRules"   # run a subdirectory of classes
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs          # verify nuspec deps == Directory.Packages.props
 ```
 
@@ -38,9 +39,40 @@ so they need network access to nuget.org and are slower than typical unit tests.
 - `packages/.../pkgsrc/` — the actual shipped payload: `build/`, `buildTransitive/`,
   `buildMultiTargeting/` MSBuild logic, and `config/*.editorconfig` + `defaultBannedApis/`.
 - `tests/` — integration tests and their helpers (`ProjectBuilder`, `PackageFixture`).
+  - Top-level `*Should.cs` files cover cross-cutting concerns (happy path, package metadata,
+    StyleCop, banned-API).
+  - Large test classes are split into logically-grouped files under a folder named after the
+    originator: `CodeAnalysisRules/`, `CodingStandards/`, `MeziantouAnalyzers/`. Each split
+    file is named `<OriginalClass><Group>Should.cs` and its namespace mirrors the folder.
+  - `UntestableRules.cs` holds class-level `[RuleDoc]` entries for rules that cannot be
+    triggered by the single-project build harness.
 - `scripts/` — the dependency-sync check (run as a `dotnet` file-based app).
 - The solution **dogfoods itself** via `Directory.Build.props`/`.targets`, which import
   the package's own props/targets.
+
+## Test conventions
+
+Every active rule must be covered by exactly one `[RuleDoc]` attribute — enforced by
+`RuleDocCoverageShould`. Keep these rules in mind when adding or modifying tests:
+
+- **Positive tests** get a method-level `[RuleDoc]`:
+  ```csharp
+  [Fact]
+  [RuleDoc("CA1000", "Do not declare static members on generic types",
+      HelpLink = "https://learn.microsoft.com/...")]
+  public async Task ProhibitStaticMembersOnGenericTypes() { ... }
+  ```
+- **Negative and toggle tests** must NOT carry `[RuleDoc]`.
+- **Untestable rules** — those that cannot fire in the single-project build harness — get a
+  class-level `[RuleDoc]` in `UntestableRules.cs` with a non-null `Untestable` reason.
+- **One `[RuleDoc]` per rule ID** across the entire test assembly; the coverage test enforces
+  uniqueness.
+- **Formatter-backed IDE rules**: many IDE rules emit `IDE0055` instead of their own ID in
+  build SARIF. If a new IDE rule test never produces its own diagnostic ID, confirm with
+  control/violation probes, then add it to `UntestableRules.cs` with a "formatter-backed"
+  reason rather than leaving a broken test.
+- Keep test files under **1000 lines**. If a file grows past that, split it into a new
+  subdirectory using the `<OriginalClass><Group>Should` naming convention above.
 
 ## Code style
 

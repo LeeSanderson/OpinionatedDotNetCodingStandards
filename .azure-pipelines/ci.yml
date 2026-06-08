@@ -59,12 +59,6 @@ stages:
         echo "NuGet dependencies version check completed"
       displayName: 'Check for outdated dependencies in NuGet package'
 
-    - script: |
-        echo "Checking rule reference is up to date..."
-        dotnet ./scripts/CheckRuleReferenceFreshness.cs
-        echo "Rule reference freshness check completed"
-      displayName: 'Check rule reference is up to date'
-
     - task: DotNetCoreCLI@2
       displayName: 'Build solution'
       inputs:
@@ -79,6 +73,14 @@ stages:
         projects: '$(solutionFileName)'
         arguments: '--configuration $(buildConfiguration) --no-build'
         publishTestResults: true
+
+    - script: |
+        echo "Regenerating rule reference..."
+        dotnet ./scripts/GenerateRuleReference.cs
+        echo "Checking rule reference is up to date..."
+        git diff --exit-code docs/
+        echo "Rule reference freshness check completed"
+      displayName: 'Regenerate and diff rule reference'
 
     - task: DotNetCoreCLI@2
       displayName: 'Pack NuGet package'

@@ -416,3 +416,17 @@ Rules set to `none` or `silent` are omitted.
 |---------|-------------|----------|------|
 | `SA1649` | File name should match first type name | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md) |
 
+## IDE / editor rules
+
+These rules are configured in the IDE tier. Build enforcement varies: some fire
+during `dotnet build`, others are IDE-only and not emitted by Roslyn build analyzers.
+
+| Rule ID | Description | Severity | Help |
+|---------|-------------|----------|------|
+| `IDE0001` | Simplify name | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0001) |
+| `IDE0002` | Simplify member access | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0002) |
+| `IDE0003` | Remove this or Me qualification | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0003) |
+| `IDE0038` | Use pattern matching to avoid is check followed by a cast | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0038) |
+| `IDE0049` | Use language keywords instead of framework type names | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0049) |
+| `IDE0084` | Use pattern matching (IsNot operator) | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0084) |
+
