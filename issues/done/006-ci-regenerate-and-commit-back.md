@@ -39,3 +39,13 @@ on a real PR, and there is no existing CI to model on.
 - User story 16
 - User story 17
 - User story 19
+
+## Completion note
+
+Pipeline created at `.azure-pipelines/analyzer-bump.yml`. Models the existing `ci.yml` style
+(`windows-latest`, `dotnetSdkVersion: 10.x`, `DotNetCoreCLI@2` tasks).
+
+**Still required from the user before this is live:**
+1. Register the pipeline in Azure DevOps pointing to `.azure-pipelines/analyzer-bump.yml`.
+2. Ensure the GitHub service connection used by the pipeline has **write** access to the repo
+   so `git push origin HEAD:refs/heads/<branch>` succeeds in the commit-back step.
