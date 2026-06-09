@@ -45,7 +45,6 @@ dotnet_diagnostic.CA1012.severity = warning
 # CA1014: Mark assemblies with CLSCompliant
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1014
 # Enabled: False, Severity: warning
-# Disabled because the types of this project aren't exposed to other programming languages
 dotnet_diagnostic.CA1014.severity = none
 
 # CA1016: Mark assemblies with assembly version
@@ -111,7 +110,6 @@ dotnet_diagnostic.CA1033.severity = warning
 # CA1034: Nested types should not be visible
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1034
 # Enabled: False, Severity: warning
-# Disabled, because convenient for nested option classes, DTOs in controllers, etc.
 dotnet_diagnostic.CA1034.severity = none
 
 # CA1036: Override methods on comparable types
@@ -122,7 +120,6 @@ dotnet_diagnostic.CA1036.severity = warning
 # CA1040: Avoid empty interfaces
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1040
 # Enabled: False, Severity: warning
-# Disabled to allow marker interfaces
 dotnet_diagnostic.CA1040.severity = none
 
 # CA1041: Provide ObsoleteAttribute message
@@ -173,19 +170,16 @@ dotnet_diagnostic.CA1052.severity = warning
 # CA1054: URI-like parameters should not be strings
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1054
 # Enabled: False, Severity: warning
-# Disabled because it's simply annoying and the .NET runtime contains method that accept URI strings
 dotnet_diagnostic.CA1054.severity = none
 
 # CA1055: URI-like return values should not be strings
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1055
 # Enabled: False, Severity: warning
-# Disabled for convenience and ease of adoption, returning URI strings can also be useful
 dotnet_diagnostic.CA1055.severity = none
 
 # CA1056: URI-like properties should not be strings
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1056
 # Enabled: False, Severity: warning
-# Disabled because it's sometimes inconvenient to force properties to use Uri instead of strings
 dotnet_diagnostic.CA1056.severity = none
 
 # CA1058: Types should not extend certain base types
@@ -206,7 +200,6 @@ dotnet_diagnostic.CA1061.severity = warning
 # CA1062: Validate arguments of public methods
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1062
 # Enabled: False, Severity: warning
-# Disabled because there's no need to always enforce null-checks thanks to nullable reference types
 dotnet_diagnostic.CA1062.severity = none
 
 # CA1063: Implement IDisposable Correctly
@@ -217,7 +210,6 @@ dotnet_diagnostic.CA1063.severity = warning
 # CA1064: Exceptions should be public
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1064
 # Enabled: False, Severity: warning
-# Disabled, because it's not always relevant in the context of an internal application
 dotnet_diagnostic.CA1064.severity = none
 
 # CA1065: Do not raise exceptions in unexpected locations
@@ -253,13 +245,11 @@ dotnet_diagnostic.CA1070.severity = warning
 # CA1200: Avoid using cref tags with a prefix
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1200
 # Enabled: True, Severity: silent
-# Disabled because using 'T:' prefix is actually convenient VS importing the namespace of the referenced type
 dotnet_diagnostic.CA1200.severity = none
 
 # CA1303: Do not pass literals as localized parameters
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1303
 # Enabled: False, Severity: warning
-# disabled, using *.resx files for user-displayed messages might be too much
 dotnet_diagnostic.CA1303.severity = none
 
 # CA1304: Specify CultureInfo
@@ -360,14 +350,11 @@ dotnet_diagnostic.CA1506.severity = none
 # CA1507: Use nameof to express symbol names
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1507
 # Enabled: True, Severity: suggestion
-# Disabled because it was suggested when using [Newtonsoft.Json.JsonProperty],
-# which could lead to JSON breaking changes in case of refactoring or obfuscation
 dotnet_diagnostic.CA1507.severity = none
 
 # CA1508: Avoid dead conditional code
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1508
 # Enabled: False, Severity: warning
-# Disabled because provides false positives in cases with double checked locking and has performance impact
 dotnet_diagnostic.CA1508.severity = none
 
 # CA1509: Invalid entry in code metrics rule specification file
@@ -418,7 +405,6 @@ dotnet_diagnostic.CA1700.severity = warning
 # CA1707: Identifiers should not contain underscores
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1707
 # Enabled: True, Severity: silent
-# Disabled because this is a common practice in test method names (and other cases)
 dotnet_diagnostic.CA1707.severity = none
 
 # CA1708: Identifiers should differ by more than case
@@ -429,13 +415,11 @@ dotnet_diagnostic.CA1708.severity = warning
 # CA1710: Identifiers should have correct suffix
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1710
 # Enabled: True, Severity: silent
-# Disabled because it's simply annoying (streams types must end with 'Stream', same for queue, stack, collection, dictionary, etc.)
 dotnet_diagnostic.CA1710.severity = none
 
 # CA1711: Identifiers should not have incorrect suffix
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1711
 # Enabled: True, Severity: silent
-# Disabled because it's sometimes OK to name something ending with Collection even if it doesn't implement ICollection
 dotnet_diagnostic.CA1711.severity = none
 
 # CA1712: Do not prefix enum values with type name
@@ -456,7 +440,6 @@ dotnet_diagnostic.CA1715.severity = warning
 # CA1716: Identifiers should not match keywords
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1716
 # Enabled: True, Severity: silent
-# Some method names such as "Get" or "Set" should be allowed. This rule exists mostly because of VB.NET. As we don't use it, this is fine to disable the rule.
 dotnet_diagnostic.CA1716.severity = none
 
 # CA1720: Identifier contains type name
@@ -472,7 +455,6 @@ dotnet_diagnostic.CA1721.severity = warning
 # CA1724: Type names should not match namespaces
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1724
 # Enabled: False, Severity: warning
-# Disabled to increase the adoption of this library, as many projects have classes with the same name of the namespace
 dotnet_diagnostic.CA1724.severity = none
 
 # CA1725: Parameter names should match base declaration
@@ -548,7 +530,6 @@ dotnet_diagnostic.CA1821.severity = warning
 # CA1822: Mark members as static
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1822
 # Enabled: True, Severity: suggestion
-# Disabled because the compiler might not always be aware of how a member is used
 dotnet_diagnostic.CA1822.severity = none
 
 # CA1823: Avoid unused private fields
@@ -679,7 +660,6 @@ dotnet_diagnostic.CA1847.severity = warning
 # CA1848: Use the LoggerMessage delegates
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1848
 # Enabled: True, Severity: silent
-# Disabled because high-performance logging is overkill in most cases (except in libs with hot paths)
 dotnet_diagnostic.CA1848.severity = none
 
 # CA1849: Call async methods when in an async method
@@ -735,14 +715,11 @@ dotnet_diagnostic.CA1858.severity = warning
 # CA1859: Use concrete types when possible for improved performance
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1859
 # Enabled: True, Severity: suggestion
-# Disabled, down-casting doesn't degrade performance that much
 dotnet_diagnostic.CA1859.severity = none
 
 # CA1860: Avoid using 'Enumerable.Any()' extension method
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1860
 # Enabled: True, Severity: suggestion
-# Disabled because the modern version of 'Any()' has been significantly optimized for types that implement ICollection
-# 'Any' may also be considered more readable in some cases
 dotnet_diagnostic.CA1860.severity = none
 
 # CA1861: Avoid constant arrays as arguments
@@ -758,7 +735,6 @@ dotnet_diagnostic.CA1862.severity = warning
 # CA1863: Use 'CompositeFormat'
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1863
 # Enabled: True, Severity: silent
-# Disabled, this is fairly new and the performance gains over string.Format isn't worth it
 dotnet_diagnostic.CA1863.severity = none
 
 # CA1864: Prefer the 'IDictionary.TryAdd(TKey, TValue)' method
@@ -824,7 +800,6 @@ dotnet_diagnostic.CA1875.severity = suggestion
 # CA2000: Dispose objects before losing scope
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2000
 # Enabled: False, Severity: warning
-# Disabled because disposables don't always need to be disposed in the current scope (ex: HttpClients provided by IHttpClientFactory)
 dotnet_diagnostic.CA2000.severity = none
 
 # CA2002: Do not lock on objects with weak identity
@@ -835,13 +810,11 @@ dotnet_diagnostic.CA2002.severity = warning
 # CA2007: Consider calling ConfigureAwait on the awaited task
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2007
 # Enabled: False, Severity: warning
-# Disabled because using ConfigureAwait(true) isn't necessary in ASP.NET Core (MVC & APIs) as there is no synchronization context
 dotnet_diagnostic.CA2007.severity = none
 
 # CA2008: Do not create tasks without passing a TaskScheduler
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2008
 # Enabled: False, Severity: warning
-# Disabled because it's OK to use the default scheduler in most applications (for desktop ones, this might be different)
 dotnet_diagnostic.CA2008.severity = none
 
 # CA2009: Do not call ToImmutableCollection on an ImmutableCollection value
@@ -1022,7 +995,6 @@ dotnet_diagnostic.CA2226.severity = warning
 # CA2227: Collection properties should be read only
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2227
 # Enabled: False, Severity: warning
-# Disabled to allow collections to have setters (ex: JSON serialization)
 dotnet_diagnostic.CA2227.severity = none
 
 # CA2231: Overload operator equals on overriding value type Equals
@@ -1033,7 +1005,6 @@ dotnet_diagnostic.CA2231.severity = warning
 # CA2234: Pass system uri objects instead of strings
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2234
 # Enabled: False, Severity: warning
-# Disabled, it's more convenient to pass strings in some cases
 dotnet_diagnostic.CA2234.severity = none
 
 # CA2235: Mark all non-serializable fields
@@ -1294,99 +1265,61 @@ dotnet_diagnostic.CA2362.severity = warning
 # CA3001: Review code for SQL injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3001
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3001.severity = none
 
 # CA3002: Review code for XSS vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3002
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3002.severity = none
 
 # CA3003: Review code for file path injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3003
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3003.severity = none
 
 # CA3004: Review code for information disclosure vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3004
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
-# Also, the rule is relevant for web apps but didn't seem to work with basic ASP.NET Core setup
 dotnet_diagnostic.CA3004.severity = none
 
 # CA3005: Review code for LDAP injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3005
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3005.severity = none
 
 # CA3006: Review code for process command injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3006
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3006.severity = none
 
 # CA3007: Review code for open redirect vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3007
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
-# Also, the rule is relevant for web apps but didn't seem to work with basic ASP.NET Core setup
 dotnet_diagnostic.CA3007.severity = none
 
 # CA3008: Review code for XPath injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3008
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3008.severity = none
 
 # CA3009: Review code for XML injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3009
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3009.severity = none
 
 # CA3010: Review code for XAML injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3010
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3010.severity = none
 
 # CA3011: Review code for DLL injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3011
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3011.severity = none
 
 # CA3012: Review code for regex injection vulnerabilities
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca3012
 # Enabled: False, Severity: warning
-# Highly unlikely to be necessary when using a proper SAST tool
-# Also, EXTREMELY expensive to execute on a medium-sized codebase (more than 70% of the total time spent on the analysis)
-# Enable them on a case by case basis if you have a specific need for them
 dotnet_diagnostic.CA3012.severity = none
 
 # CA3061: Do Not Add Schema By URL
@@ -1447,7 +1380,6 @@ dotnet_diagnostic.CA5361.severity = warning
 # CA5362: Potential reference cycle in deserialized object graph
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5362
 # Enabled: False, Severity: warning
-# Disabled because the use of SerializableAttribute on our types is almost non-existent
 dotnet_diagnostic.CA5362.severity = none
 
 # CA5363: Do Not Disable Request Validation
@@ -1583,7 +1515,6 @@ dotnet_diagnostic.CA5388.severity = warning
 # CA5389: Do Not Add Archive Item's Path To The Target File System Path
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5389
 # Enabled: False, Severity: warning
-# Disabled because this rule is very expensive and using ZipArchive is not that common
 dotnet_diagnostic.CA5389.severity = none
 
 # CA5390: Do not hard-code encryption key
@@ -1609,7 +1540,6 @@ dotnet_diagnostic.CA5393.severity = warning
 # CA5394: Do not use insecure randomness
 # Help link: https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5394
 # Enabled: False, Severity: warning
-# Disabled because it's OK to use Random in non security-critical contexts
 dotnet_diagnostic.CA5394.severity = none
 
 # CA5395: Miss HttpVerb attribute for action methods

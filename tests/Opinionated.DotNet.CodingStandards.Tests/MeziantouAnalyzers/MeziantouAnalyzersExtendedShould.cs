@@ -711,4 +711,81 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("MA0130").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0179", "Use Attribute.IsDefined instead of GetCustomAttribute(s)",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0179.md")]
+    public async Task UseAttributeIsDefinedInsteadOfGetCustomAttribute()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Reflection;
+            namespace test;
+            public class C
+            {
+                public bool M() => typeof(System.Console).GetCustomAttribute<System.ObsoleteAttribute>() != null;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0179").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0180", "ILogger type parameter should match containing type",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0180.md")]
+    public async Task LoggerTypeParameterShouldMatchContainingType()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public class MyService
+            {
+                public MyService(ILogger<OtherService> logger) { }
+            }
+            public class OtherService { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0180").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0181", "Do not use cast",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0181.md")]
+    public async Task DoNotUseCast()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public int M(object obj) => (int)obj;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0181").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0182", "Avoid unused internal types",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0182.md")]
+    public async Task AvoidUnusedInternalTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            internal class Unused { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("MA0182").ShouldBeTrue();
+    }
 }
