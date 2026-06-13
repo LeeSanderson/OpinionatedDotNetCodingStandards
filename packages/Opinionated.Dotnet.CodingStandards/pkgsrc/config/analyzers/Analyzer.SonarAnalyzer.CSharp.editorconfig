@@ -269,7 +269,7 @@ dotnet_diagnostic.S1479.severity = warning
 
 # S1481: Unused local variables should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1481.severity = none
+dotnet_diagnostic.S1481.severity = warning
 
 # S1541: Methods and properties should not be too complex
 # Enabled: False, Severity: warning

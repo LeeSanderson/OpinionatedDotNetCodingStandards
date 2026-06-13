@@ -795,4 +795,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1451").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1481", "Unused local variables should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1481/")]
+    public async Task ProhibitUnusedLocalVariables()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Calculator
+            {
+                public static int Add(int a, int b)
+                {
+                    int unused = a * b;
+                    return a + b;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1481").ShouldBeTrue();
+    }
 }
