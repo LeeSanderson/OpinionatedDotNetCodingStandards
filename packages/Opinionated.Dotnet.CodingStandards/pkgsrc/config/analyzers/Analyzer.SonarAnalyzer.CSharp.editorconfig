@@ -777,7 +777,7 @@ dotnet_diagnostic.S3234.severity = warning
 
 # S3235: Redundant parentheses should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3235.severity = none
+dotnet_diagnostic.S3235.severity = warning
 
 # S3236: Caller information arguments should not be provided explicitly
 # Enabled: True, Severity: warning

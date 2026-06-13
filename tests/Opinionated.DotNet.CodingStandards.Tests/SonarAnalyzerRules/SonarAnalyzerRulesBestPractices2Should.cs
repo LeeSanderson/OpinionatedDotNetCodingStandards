@@ -475,4 +475,30 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3220").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3235", "Redundant parentheses should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3235/")]
+    public async Task WarnOnRedundantParentheses()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyClass
+            {
+                public int Value { get; set; }
+            }
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var obj = new MyClass() { Value = 1 };
+                    return obj.Value;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3235").ShouldBeTrue();
+    }
 }
