@@ -841,7 +841,7 @@ dotnet_diagnostic.S3260.severity = warning
 
 # S3261: Namespaces should not be empty
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3261.severity = none
+dotnet_diagnostic.S3261.severity = warning
 
 # S3262: "params" should be used on overrides
 # Enabled: True, Severity: warning

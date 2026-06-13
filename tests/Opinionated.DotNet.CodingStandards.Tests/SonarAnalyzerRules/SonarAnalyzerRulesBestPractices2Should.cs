@@ -710,4 +710,22 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3257").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3261", "Namespaces should not be empty",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3261/")]
+    public async Task ProhibitEmptyNamespace()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test
+            {
+                public static class Program { public static int Main() => 0; }
+            }
+            namespace empty { }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3261").ShouldBeTrue();
+    }
 }
