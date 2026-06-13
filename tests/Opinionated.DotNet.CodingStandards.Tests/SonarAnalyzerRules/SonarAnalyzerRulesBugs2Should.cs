@@ -351,4 +351,30 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3168").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3172", "Delegates should not be subtracted",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3172/")]
+    public async Task DetectDelegateSubtraction()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public delegate void MyDelegate();
+            public static class Program
+            {
+                public static int Main()
+                {
+                    MyDelegate first = () => { };
+                    MyDelegate second = () => { };
+                    MyDelegate chain = first + second;
+                    chain -= first + second;
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3172").ShouldBeTrue();
+    }
 }

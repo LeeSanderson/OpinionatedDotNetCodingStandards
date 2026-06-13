@@ -749,7 +749,7 @@ dotnet_diagnostic.S3169.severity = none
 
 # S3172: Delegates should not be subtracted
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3172.severity = none
+dotnet_diagnostic.S3172.severity = warning
 
 # S3215: "interface" instances should not be cast to concrete types
 # Enabled: False, Severity: warning
