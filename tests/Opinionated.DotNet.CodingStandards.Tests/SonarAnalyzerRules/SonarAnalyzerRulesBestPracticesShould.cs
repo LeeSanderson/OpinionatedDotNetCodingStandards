@@ -727,4 +727,34 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1309").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S131", "“switch/Select” statements should contain a “default/Case Else” clause",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-131/")]
+    public async Task WarnOnSwitchStatementMissingDefault()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public enum Direction { North, South, East, West }
+            public static class Checker
+            {
+                public static string Describe(Direction d)
+                {
+                    switch (d)
+                    {
+                        case Direction.North: return "up";
+                        case Direction.South: return "down";
+                        case Direction.East:  return "right";
+                        case Direction.West:  return "left";
+                    }
+                    return "unknown";
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S131").ShouldBeTrue();
+    }
 }

@@ -231,7 +231,7 @@ dotnet_diagnostic.S1309.severity = warning
 
 # S131: "switch/Select" statements should contain a "default/Case Else" clauses
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S131.severity = none
+dotnet_diagnostic.S131.severity = warning
 
 # S1312: Logger fields should be "private static readonly"
 # Enabled: False, Severity: warning
