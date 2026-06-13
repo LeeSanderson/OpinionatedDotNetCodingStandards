@@ -781,7 +781,7 @@ dotnet_diagnostic.S3235.severity = warning
 
 # S3236: Caller information arguments should not be provided explicitly
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3236.severity = none
+dotnet_diagnostic.S3236.severity = warning
 
 # S3237: "value" contextual keyword should be used
 # Enabled: True, Severity: warning

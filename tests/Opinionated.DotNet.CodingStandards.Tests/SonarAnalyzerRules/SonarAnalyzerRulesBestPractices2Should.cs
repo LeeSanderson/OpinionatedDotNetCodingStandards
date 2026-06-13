@@ -501,4 +501,41 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3235").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3236", "Caller information arguments should not be provided explicitly",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3236/")]
+    public async Task ProhibitExplicitCallerInfoArguments()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.CompilerServices;
+
+            namespace test;
+
+            public static class Logger
+            {
+                public static void Trace(
+                    string message,
+                    [CallerFilePath] string file = "",
+                    [CallerLineNumber] int line = 0)
+                {
+                    _ = message; _ = file; _ = line;
+                }
+            }
+
+            public static class Usage
+            {
+                public static void Run()
+                {
+                    Logger.Trace("hello", "MyFile.cs", 42); // S3236: explicit args for CallerFilePath and CallerLineNumber
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3236").ShouldBeTrue();
+    }
 }
