@@ -444,4 +444,28 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2139").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2178", "Short-circuit logic should be used in boolean contexts",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2178/")]
+    public async Task WarnOnNonShortCircuitBooleanOperators()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static bool IsValid(string s)
+                {
+                    // S2178: uses & (non-short-circuit) between two boolean expressions;
+                    // should use && to avoid evaluating the right-hand side unnecessarily
+                    return s != null & s.Length > 0;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2178").ShouldBeTrue();
+    }
 }
