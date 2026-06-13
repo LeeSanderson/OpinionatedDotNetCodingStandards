@@ -497,7 +497,7 @@ dotnet_diagnostic.S2306.severity = warning
 
 # S2325: Methods and properties that don't access instance data should be static
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2325.severity = none
+dotnet_diagnostic.S2325.severity = warning
 
 # S2326: Unused type parameters should be removed
 # Enabled: True, Severity: warning

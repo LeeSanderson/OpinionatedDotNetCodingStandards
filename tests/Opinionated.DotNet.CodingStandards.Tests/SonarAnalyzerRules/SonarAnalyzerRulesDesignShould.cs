@@ -274,4 +274,24 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2292").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2325", "Methods and properties that don't access instance data should be static",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2325/")]
+    public async Task WarnOnInstanceMethodWithNoInstanceAccess()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public int Add(int a, int b) => a + b;
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2325").ShouldBeTrue();
+    }
 }
