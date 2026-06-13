@@ -250,4 +250,28 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2156").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2292", "Trivial properties should be auto-implemented",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2292/")]
+    public async Task WarnOnTrivialPropertyWithBackingField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Sample
+            {
+                private int _value;
+                public int Value
+                {
+                    get { return _value; }
+                    set { _value = value; }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2292").ShouldBeTrue();
+    }
 }
