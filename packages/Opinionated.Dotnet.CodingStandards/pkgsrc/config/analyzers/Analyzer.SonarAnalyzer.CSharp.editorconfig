@@ -289,7 +289,7 @@ dotnet_diagnostic.S1656.severity = warning
 
 # S1659: Multiple variables should not be declared on the same line
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1659.severity = none
+dotnet_diagnostic.S1659.severity = warning
 
 # S1694: An abstract class should have both abstract and concrete methods
 # Enabled: True, Severity: warning

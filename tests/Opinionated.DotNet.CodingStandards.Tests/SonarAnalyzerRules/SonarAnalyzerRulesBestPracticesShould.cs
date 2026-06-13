@@ -869,4 +869,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1643").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1659", "Multiple variables should not be declared on the same line",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1659/")]
+    public async Task ProhibitMultipleVariableDeclarationsOnSameLine()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method()
+                {
+                    int a = 1, b = 2, c = 3;
+                    _ = a + b + c;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1659").ShouldBeTrue();
+    }
 }
