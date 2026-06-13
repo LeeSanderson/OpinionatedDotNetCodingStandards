@@ -889,7 +889,7 @@ dotnet_diagnostic.S3363.severity = warning
 
 # S3366: "this" should not be exposed from constructors
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3366.severity = none
+dotnet_diagnostic.S3366.severity = warning
 
 # S3376: Attribute, EventArgs, and Exception type names should end with the type being extended
 # Enabled: True, Severity: warning

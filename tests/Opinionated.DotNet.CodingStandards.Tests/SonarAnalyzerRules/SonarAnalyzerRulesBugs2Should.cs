@@ -590,4 +590,35 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3363").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3366", "this should not be exposed from constructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3366/")]
+    public async Task WarnOnThisExposedFromConstructor()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Registry
+            {
+                private object? _instance;
+                public void Register(object obj) { _instance = obj; }
+            }
+
+            public class MyClass
+            {
+                public MyClass(Registry registry)
+                {
+                    registry.Register(this); // S3366: 'this' exposed before construction completes
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3366").ShouldBeTrue();
+    }
 }
