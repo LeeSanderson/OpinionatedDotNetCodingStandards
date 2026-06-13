@@ -929,7 +929,7 @@ dotnet_diagnostic.S3433.severity = warning
 
 # S3440: Variables should not be checked against the values they're about to be assigned
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3440.severity = none
+dotnet_diagnostic.S3440.severity = warning
 
 # S3441: Redundant property names should be omitted in anonymous classes
 # Enabled: False, Severity: warning

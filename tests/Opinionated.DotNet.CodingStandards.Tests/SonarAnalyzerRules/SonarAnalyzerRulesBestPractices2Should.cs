@@ -912,4 +912,30 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3433").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3440", "Variables should not be checked against the values they're about to be assigned",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3440/")]
+    public async Task WarnOnRedundantConditionalAroundAssignment()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                private int _value;
+                public void SetValue(int v)
+                {
+                    if (_value != v)
+                    {
+                        _value = v;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3440").ShouldBeTrue();
+    }
 }
