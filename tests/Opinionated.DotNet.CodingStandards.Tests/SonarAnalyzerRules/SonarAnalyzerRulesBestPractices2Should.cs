@@ -338,4 +338,28 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2971").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3052", "Members should not be initialized to default values",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3052/")]
+    public async Task ProhibitDefaultValueInitialization()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                private int _count = 0;
+                private bool _active = false;
+                private string? _name = null;
+                public int GetCount() => _count;
+                public bool IsActive() => _active;
+                public string? GetName() => _name;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3052").ShouldBeTrue();
+    }
 }
