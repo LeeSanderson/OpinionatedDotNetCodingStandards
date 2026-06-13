@@ -268,7 +268,7 @@ dotnet_diagnostic.S1481.severity = none
 
 # S1541: Methods and properties should not be too complex
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1541.severity = none
+dotnet_diagnostic.S1541.severity = warning
 
 # S1607: Tests should not be ignored
 # Enabled: True, Severity: warning
@@ -1028,7 +1028,7 @@ dotnet_diagnostic.S3717.severity = none
 
 # S3776: Cognitive Complexity of methods should not be too high
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3776.severity = none
+dotnet_diagnostic.S3776.severity = warning
 
 # S3869: "SafeHandle.DangerousGetHandle" should not be called
 # Enabled: True, Severity: warning
