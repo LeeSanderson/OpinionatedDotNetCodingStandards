@@ -29,36 +29,53 @@ public static class DescriptorExtractor
 
         foreach (var dllPath in paths)
         {
-            var reference = new AnalyzerFileReference(dllPath, loader);
-            reference.AnalyzerLoadFailed += (_, _) => { };
-
-            try
-            {
-                foreach (var analyzer in reference.GetAnalyzers(LanguageNames.CSharp))
-                {
-                    foreach (var diagnostic in analyzer.SupportedDiagnostics)
-                    {
-                        if (!seen.Add(diagnostic.Id))
-                        {
-                            continue;
-                        }
-
-                        descriptors.Add(new RuleDescriptor(
-                            diagnostic.Id,
-                            diagnostic.Title.ToString(),
-                            diagnostic.HelpLinkUri ?? string.Empty,
-                            MapSeverity(diagnostic.DefaultSeverity),
-                            diagnostic.IsEnabledByDefault));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Skip DLLs or analyzers that fail to load or instantiate
-            }
+            CollectFromDll(dllPath, loader, seen, descriptors);
         }
 
         return descriptors;
+    }
+
+    private static void CollectFromDll(
+        string dllPath,
+        IAnalyzerAssemblyLoader loader,
+        HashSet<string> seen,
+        List<RuleDescriptor> descriptors)
+    {
+        var reference = new AnalyzerFileReference(dllPath, loader);
+        reference.AnalyzerLoadFailed += (_, _) => { };
+
+        try
+        {
+            foreach (var analyzer in reference.GetAnalyzers(LanguageNames.CSharp))
+            {
+                CollectFromAnalyzer(analyzer, seen, descriptors);
+            }
+        }
+        catch (Exception)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+    }
+
+    private static void CollectFromAnalyzer(
+        DiagnosticAnalyzer analyzer,
+        HashSet<string> seen,
+        List<RuleDescriptor> descriptors)
+    {
+        foreach (var diagnostic in analyzer.SupportedDiagnostics)
+        {
+            if (!seen.Add(diagnostic.Id))
+            {
+                continue;
+            }
+
+            descriptors.Add(new RuleDescriptor(
+                diagnostic.Id,
+                diagnostic.Title.ToString(),
+                diagnostic.HelpLinkUri ?? string.Empty,
+                MapSeverity(diagnostic.DefaultSeverity),
+                diagnostic.IsEnabledByDefault));
+        }
     }
 
     private static RuleDefaultSeverity MapSeverity(DiagnosticSeverity severity) => severity switch

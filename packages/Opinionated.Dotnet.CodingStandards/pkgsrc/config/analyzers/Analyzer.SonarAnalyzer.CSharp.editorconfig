@@ -240,7 +240,8 @@ dotnet_diagnostic.S1313.severity = none
 
 # S134: Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S134.severity = none
+dotnet_diagnostic.S134.severity = warning
+sonar.S134.maximumNestingLevel = 3
 
 # S138: Functions should not have too many lines of code
 # Enabled: False, Severity: warning

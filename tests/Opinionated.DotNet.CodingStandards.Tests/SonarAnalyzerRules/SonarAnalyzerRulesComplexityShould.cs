@@ -105,4 +105,38 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S1541").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S134", "Control flow statements \"if\", \"switch\", \"for\", \"foreach\", \"while\", \"do\" and \"try\" should not be nested too deeply",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-134/")]
+    public async Task ProhibitExcessiveNestingDepth()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method(bool a, int n)
+                {
+                    if (a)                               // level 1
+                    {
+                        while (n > 0)                    // level 2
+                        {
+                            for (int i = 0; i < n; i++) // level 3
+                            {
+                                if (i > 0)               // level 4 — exceeds default threshold of 3
+                                {
+                                    n--;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S134").ShouldBeTrue();
+    }
 }
