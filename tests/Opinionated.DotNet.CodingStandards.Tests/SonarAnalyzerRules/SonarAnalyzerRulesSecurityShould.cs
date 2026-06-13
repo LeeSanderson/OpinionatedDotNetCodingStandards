@@ -205,4 +205,36 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2257").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2612", "File permissions should not be set to world-accessible values",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2612/")]
+    public async Task WarnOnWorldAccessibleFilePermissions()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System.Security.AccessControl;
+            using System.Security.Principal;
+
+            public static class FilePermissionExample
+            {
+                public static void GrantWorldAccess()
+                {
+                    var fileSecurity = new FileSecurity();
+                    var rule = new FileSystemAccessRule(
+                        new NTAccount("Everyone"),
+                        FileSystemRights.FullControl,
+                        AccessControlType.Allow);
+                    fileSecurity.AddAccessRule(rule);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2612").ShouldBeTrue();
+    }
 }

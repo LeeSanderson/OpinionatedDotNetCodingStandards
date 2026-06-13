@@ -597,7 +597,7 @@ dotnet_diagnostic.S2551.severity = none
 
 # S2612: File permissions should not be set to world-accessible values
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2612.severity = none
+dotnet_diagnostic.S2612.severity = warning
 
 # S2629: Logging templates should be constant
 # Enabled: True, Severity: warning
