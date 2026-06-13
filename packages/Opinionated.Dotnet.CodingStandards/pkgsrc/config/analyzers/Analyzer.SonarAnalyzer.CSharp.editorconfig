@@ -673,7 +673,7 @@ dotnet_diagnostic.S2931.severity = none
 
 # S2933: Fields that are only assigned in the constructor should be "readonly"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2933.severity = none
+dotnet_diagnostic.S2933.severity = warning
 
 # S2934: Property assignments should not be made for "readonly" fields not constrained to reference types
 # Enabled: True, Severity: warning

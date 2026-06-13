@@ -293,4 +293,24 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2925").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2933", "Fields that are only assigned in the constructor should be 'readonly'",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2933/")]
+    public async Task WarnOnNonReadonlyConstructorOnlyFields()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                private int _value;
+                public C(int value) { _value = value; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2933").ShouldBeTrue();
+    }
 }
