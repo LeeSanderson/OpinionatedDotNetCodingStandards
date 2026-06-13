@@ -219,7 +219,7 @@ dotnet_diagnostic.S1264.severity = warning
 
 # S127: "for" loop stop conditions should be invariant
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S127.severity = none
+dotnet_diagnostic.S127.severity = warning
 
 # S1301: "switch" statements should have at least 3 "case" clauses
 # Enabled: False, Severity: warning

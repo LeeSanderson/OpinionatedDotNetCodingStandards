@@ -59,4 +59,33 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1244").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S127", "“for” loop stop conditions should be invariant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-127/")]
+    public async Task ProhibitMutatingForLoopStopConditionVariable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var total = 0;
+                    for (var i = 0; i < 10; i++)
+                    {
+                        total += i;
+                        i++; // modifies the loop counter variable — S127: stop condition is no longer invariant
+                    }
+
+                    return total;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S127").ShouldBeTrue();
+    }
 }
