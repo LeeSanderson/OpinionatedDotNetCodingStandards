@@ -191,4 +191,26 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1694").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1939", "Inheritance list should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1939/")]
+    public async Task WarnOnRedundantInheritanceListEntry()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program { public static int Main() => 0; }
+
+            public interface IFoo { void DoWork(); }
+
+            public class Base : IFoo { public void DoWork() { } }
+
+            public class Derived : Base, IFoo { }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1939").ShouldBeTrue();
+    }
 }
