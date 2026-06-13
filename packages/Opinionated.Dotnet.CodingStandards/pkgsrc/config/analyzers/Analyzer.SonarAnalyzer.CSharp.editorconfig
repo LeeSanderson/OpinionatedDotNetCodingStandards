@@ -805,7 +805,7 @@ dotnet_diagnostic.S3244.severity = none
 
 # S3246: Generic type parameters should be co/contravariant when possible
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3246.severity = none
+dotnet_diagnostic.S3246.severity = warning
 
 # S3247: Duplicate casts should not be made
 # Enabled: True, Severity: warning

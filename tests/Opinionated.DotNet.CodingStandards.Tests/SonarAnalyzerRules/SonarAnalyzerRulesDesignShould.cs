@@ -535,4 +535,24 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3242").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3246", "Generic type parameters should be co/contravariant when possible",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3246/")]
+    public async Task WarnOnMissingVarianceKeyword()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public interface IProducer<T>
+            {
+                T Produce();
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3246").ShouldBeTrue();
+    }
 }
