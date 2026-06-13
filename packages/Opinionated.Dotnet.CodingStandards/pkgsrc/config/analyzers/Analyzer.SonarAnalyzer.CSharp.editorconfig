@@ -529,7 +529,7 @@ dotnet_diagnostic.S2342.severity = warning
 
 # S2344: Enumeration type names should not have "Flags" or "Enum" suffixes
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2344.severity = none
+dotnet_diagnostic.S2344.severity = warning
 
 # S2345: Flags enumerations should explicitly initialize all their members
 # Enabled: True, Severity: warning

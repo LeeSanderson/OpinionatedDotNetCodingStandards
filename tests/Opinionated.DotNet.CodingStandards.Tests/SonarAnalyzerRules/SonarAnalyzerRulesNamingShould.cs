@@ -129,4 +129,22 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2342").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2344", "Enumeration type names should not have \"Flags\" or \"Enum\" suffixes",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2344/")]
+    public async Task ProhibitFlagsOrEnumSuffixOnEnumerationTypes()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public enum StatusEnum { Active, Inactive }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2344").ShouldBeTrue();
+    }
 }
