@@ -705,7 +705,7 @@ dotnet_diagnostic.S2995.severity = none
 
 # S2996: "ThreadStatic" fields should not be initialized
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2996.severity = none
+dotnet_diagnostic.S2996.severity = warning
 
 # S2997: "IDisposables" created in a "using" statement should not be returned
 # Enabled: True, Severity: warning

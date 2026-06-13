@@ -234,4 +234,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2970").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2996", "ThreadStatic fields should not be initialized",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2996/")]
+    public async Task WarnOnThreadStaticFieldWithInitializer()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                [System.ThreadStatic]
+                private static int _counter = 42;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2996").ShouldBeTrue();
+    }
 }
