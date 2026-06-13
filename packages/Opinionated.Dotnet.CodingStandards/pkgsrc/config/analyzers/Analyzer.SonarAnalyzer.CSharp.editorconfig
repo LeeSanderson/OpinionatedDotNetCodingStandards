@@ -397,7 +397,7 @@ dotnet_diagnostic.S2148.severity = warning
 
 # S2156: "sealed" classes should not have "protected" members
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2156.severity = none
+dotnet_diagnostic.S2156.severity = warning
 
 # S2166: Classes named like "Exception" should extend "Exception" or a subclass
 # Enabled: True, Severity: warning

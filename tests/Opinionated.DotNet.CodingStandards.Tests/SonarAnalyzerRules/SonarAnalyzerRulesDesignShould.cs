@@ -231,4 +231,23 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2094").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2156", "“sealed” classes should not have “protected” members",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2156/")]
+    public async Task ProhibitProtectedMembersInSealedClass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public sealed class MySealedClass
+            {
+                protected int Value { get; set; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2156").ShouldBeTrue();
+    }
 }
