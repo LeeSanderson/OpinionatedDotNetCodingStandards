@@ -38,4 +38,25 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1206").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1244", "Floating point numbers should not be tested for equality",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1244/")]
+    public async Task WarnOnFloatingPointEqualityComparison()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class FloatComparison
+            {
+                public static bool AreEqual(double a, double b) => a == b;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1244").ShouldBeTrue();
+    }
 }

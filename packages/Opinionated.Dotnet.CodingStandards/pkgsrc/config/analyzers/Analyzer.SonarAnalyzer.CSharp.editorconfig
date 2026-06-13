@@ -199,11 +199,11 @@ dotnet_diagnostic.S1226.severity = warning
 
 # S1227: break statements should not be used except for switch cases
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1227.severity = none
+dotnet_diagnostic.S1227.severity = warning
 
 # S1244: Floating point numbers should not be tested for equality
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1244.severity = none
+dotnet_diagnostic.S1244.severity = warning
 
 # S125: Sections of code should not be commented out
 # Enabled: True, Severity: warning
