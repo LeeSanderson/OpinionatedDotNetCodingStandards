@@ -141,4 +141,31 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1200").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1450", "Private fields only used as local variables in methods should become local variables",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1450/")]
+    public async Task DetectPrivateFieldUsedOnlyAsLocalVariable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                private int _value;
+
+                public void Method()
+                {
+                    _value = 42;
+                    System.Console.Write(_value);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1450").ShouldBeTrue();
+    }
 }
