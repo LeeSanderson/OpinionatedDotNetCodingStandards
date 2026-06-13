@@ -621,7 +621,7 @@ dotnet_diagnostic.S2692.severity = warning
 
 # S2696: Instance members should not write to "static" fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2696.severity = none
+dotnet_diagnostic.S2696.severity = warning
 
 # S2699: Tests should include assertions
 # Enabled: True, Severity: warning

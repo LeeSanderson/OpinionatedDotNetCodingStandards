@@ -935,4 +935,25 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2692").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2696", "Instance members should not write to “static” fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2696/")]
+    public async Task WarnOnInstanceMemberWritingStaticField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                private static int _count;
+                public void Increment() { _count++; }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2696").ShouldBeTrue();
+    }
 }
