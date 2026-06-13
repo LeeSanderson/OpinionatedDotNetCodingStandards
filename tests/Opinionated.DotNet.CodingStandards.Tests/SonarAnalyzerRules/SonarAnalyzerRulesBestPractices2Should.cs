@@ -561,4 +561,28 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3240").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3241", "Methods should not return values that are never used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3241/")]
+    public async Task WarnOnMethodReturnValueNeverUsed()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                private static int Compute(int x, int y) => x + y;
+                public static int Main()
+                {
+                    Compute(1, 2);
+                    return 0;
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3241").ShouldBeTrue();
+    }
 }
