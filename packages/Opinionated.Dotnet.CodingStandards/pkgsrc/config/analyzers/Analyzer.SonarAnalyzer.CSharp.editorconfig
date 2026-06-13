@@ -461,7 +461,7 @@ dotnet_diagnostic.S2245.severity = warning
 
 # S2251: A "for" loop update clause should move the counter in the right direction
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2251.severity = none
+dotnet_diagnostic.S2251.severity = warning
 
 # S2252: For-loop conditions should be true at least once
 # Enabled: True, Severity: warning

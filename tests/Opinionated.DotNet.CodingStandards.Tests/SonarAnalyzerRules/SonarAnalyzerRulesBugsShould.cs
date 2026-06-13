@@ -641,4 +641,33 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2234").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2251", "A \"for\" loop update clause should move the counter in the right direction",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2251/")]
+    public async Task DetectForLoopCounterMovingInWrongDirection()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Counter
+            {
+                public static void Run()
+                {
+                    // S2251: condition requires i > 0 (decrement to terminate),
+                    // but update clause increments — counter never satisfies termination.
+                    for (int i = 10; i > 0; i++)
+                    {
+                        _ = i;
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2251").ShouldBeTrue();
+    }
 }
