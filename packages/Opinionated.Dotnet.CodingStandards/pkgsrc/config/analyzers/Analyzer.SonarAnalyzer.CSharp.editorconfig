@@ -625,7 +625,7 @@ dotnet_diagnostic.S2696.severity = warning
 
 # S2699: Tests should include assertions
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2699.severity = none
+dotnet_diagnostic.S2699.severity = warning
 
 # S2701: Literal boolean values should not be used in assertions
 # Enabled: True, Severity: warning

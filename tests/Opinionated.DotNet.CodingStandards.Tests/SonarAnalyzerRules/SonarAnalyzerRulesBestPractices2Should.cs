@@ -221,4 +221,30 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2479").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2699", "Tests should include assertions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2699/")]
+    public async Task WarnOnTestMethodWithNoAssertions()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "xunit", Version: "2.9.3")]);
+        await project.AddFile("Program.cs", """
+            using Xunit;
+            namespace test;
+            public sealed class SomeTests
+            {
+                [Fact]
+                public void DoesNothing()
+                {
+                    var x = 1 + 1;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2699").ShouldBeTrue();
+    }
 }
