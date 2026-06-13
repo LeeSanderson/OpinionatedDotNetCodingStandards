@@ -74,7 +74,7 @@ dotnet_diagnostic.S1109.severity = none
 
 # S1110: Redundant pairs of parentheses should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1110.severity = none
+dotnet_diagnostic.S1110.severity = warning
 
 # S1116: Empty statements should be removed
 # Enabled: True, Severity: warning

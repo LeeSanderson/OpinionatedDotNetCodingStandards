@@ -151,4 +151,23 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S109").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1110", "Redundant pairs of parentheses should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1110/")]
+    public async Task ProhibitRedundantParentheses()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Calculator
+            {
+                public static int Add(int a, int b) => ((a + b));
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1110").ShouldBeTrue();
+    }
 }
