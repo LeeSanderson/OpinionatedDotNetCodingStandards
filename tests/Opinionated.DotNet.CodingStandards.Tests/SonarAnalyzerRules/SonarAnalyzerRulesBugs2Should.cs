@@ -61,4 +61,37 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2757").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2760", "Sequential tests should not check the same condition",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2760/")]
+    public async Task DetectSequentialTestsWithSameCondition()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int a;
+                public static int b;
+                public static void DoSomething() { }
+
+                public static void Method()
+                {
+                    if (a == b)
+                    {
+                        DoSomething();
+                    }
+                    if (a == b) // S2760: same condition as the preceding if, no update in between
+                    {
+                        DoSomething();
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2760").ShouldBeTrue();
+    }
 }

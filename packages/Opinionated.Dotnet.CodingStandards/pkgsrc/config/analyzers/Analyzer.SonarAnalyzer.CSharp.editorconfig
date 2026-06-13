@@ -649,7 +649,7 @@ dotnet_diagnostic.S2757.severity = warning
 
 # S2760: Sequential tests should not check the same condition
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2760.severity = none
+dotnet_diagnostic.S2760.severity = warning
 
 # S2761: Doubled prefix operators "!!" and "~~" should not be used
 # Enabled: True, Severity: warning
