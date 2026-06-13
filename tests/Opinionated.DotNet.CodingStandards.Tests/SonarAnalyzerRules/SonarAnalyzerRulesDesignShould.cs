@@ -316,4 +316,25 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2326").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2339", "Public constant members should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2339/")]
+    public async Task ProhibitPublicConstantMembers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class ApiConstants
+            {
+                public const string Version = "1.0.0";
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2339").ShouldBeTrue();
+    }
 }

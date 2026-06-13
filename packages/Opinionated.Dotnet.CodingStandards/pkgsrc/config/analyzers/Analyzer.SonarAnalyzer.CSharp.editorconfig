@@ -521,7 +521,7 @@ dotnet_diagnostic.S2333.severity = warning
 
 # S2339: Public constant members should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2339.severity = none
+dotnet_diagnostic.S2339.severity = warning
 
 # S2342: Enumeration types should comply with a naming convention
 # Enabled: False, Severity: warning
