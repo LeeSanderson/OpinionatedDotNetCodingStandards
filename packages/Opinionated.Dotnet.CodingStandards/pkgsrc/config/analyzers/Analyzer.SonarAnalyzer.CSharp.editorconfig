@@ -641,7 +641,7 @@ dotnet_diagnostic.S2743.severity = warning
 
 # S2755: XML parsers should not be vulnerable to XXE attacks
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2755.severity = none
+dotnet_diagnostic.S2755.severity = warning
 
 # S2757: Non-existent operators like "=+" should not be used
 # Enabled: True, Severity: warning

@@ -237,4 +237,29 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2612").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2755", "XML parsers should not be vulnerable to XXE attacks",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2755/")]
+    public async Task WarnOnXxeVulnerableXmlParser()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Xml;
+            namespace test;
+            public static class Vulnerable
+            {
+                public static void Parse()
+                {
+                    var parser = new XmlDocument();
+                    parser.XmlResolver = new XmlUrlResolver(); // Noncompliant: enables external entity resolution
+                    parser.LoadXml("<root/>");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2755").ShouldBeTrue();
+    }
 }
