@@ -783,4 +783,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2330").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2345", "Flags enumerations should explicitly initialize all their members",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2345/")]
+    public async Task WarnOnFlagsEnumWithImplicitMemberValues()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            [System.Flags]
+            enum FruitType
+            {
+                None,
+                Banana,
+                Orange,
+                Strawberry
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2345").ShouldBeTrue();
+    }
 }
