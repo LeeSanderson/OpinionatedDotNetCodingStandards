@@ -670,4 +670,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2251").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2252", "For-loop conditions should be true at least once",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2252/")]
+    public async Task DetectForLoopConditionNeverTrue()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class ForLoopBug
+            {
+                public static void Run()
+                {
+                    // Condition is false immediately: i starts at 100, but must be < 0
+                    for (int i = 100; i < 0; i++)
+                    {
+                        System.Console.WriteLine(i);
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2252").ShouldBeTrue();
+    }
 }
