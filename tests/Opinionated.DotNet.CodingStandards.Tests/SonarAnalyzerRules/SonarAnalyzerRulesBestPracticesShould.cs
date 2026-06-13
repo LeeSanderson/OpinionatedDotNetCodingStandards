@@ -241,4 +241,23 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1125").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1128", "Unnecessary \"using\" should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1128/")]
+    public async Task WarnOnUnnecessaryUsingDirective()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Text;
+
+            namespace test;
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1128").ShouldBeTrue();
+    }
 }

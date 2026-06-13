@@ -106,7 +106,7 @@ dotnet_diagnostic.S1125.severity = warning
 
 # S1128: Unnecessary "using" should be removed
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1128.severity = none
+dotnet_diagnostic.S1128.severity = warning
 
 # S113: Files should end with a newline
 # Enabled: False, Severity: warning
