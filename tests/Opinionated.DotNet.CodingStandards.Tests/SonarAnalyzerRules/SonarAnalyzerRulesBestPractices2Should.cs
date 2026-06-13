@@ -313,4 +313,29 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2933").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2971", "LINQ expressions should be simplified",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2971/")]
+    public async Task WarnOnUnsimplifiedLinqExpressions()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            internal static class LinqSimplification
+            {
+                internal static bool HasNulls(List<string> items) =>
+                    items.Where(x => x == null).Any();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2971").ShouldBeTrue();
+    }
 }

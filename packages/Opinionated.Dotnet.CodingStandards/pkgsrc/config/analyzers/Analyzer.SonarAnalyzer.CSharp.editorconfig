@@ -697,7 +697,7 @@ dotnet_diagnostic.S2970.severity = warning
 
 # S2971: LINQ expressions should be simplified
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2971.severity = none
+dotnet_diagnostic.S2971.severity = warning
 
 # S2995: "Object.ReferenceEquals" should not be used for value types
 # Enabled: True, Severity: warning
