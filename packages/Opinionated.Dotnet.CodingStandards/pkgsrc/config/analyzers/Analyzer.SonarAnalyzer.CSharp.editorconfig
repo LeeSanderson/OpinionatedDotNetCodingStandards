@@ -809,7 +809,7 @@ dotnet_diagnostic.S3246.severity = warning
 
 # S3247: Duplicate casts should not be made
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3247.severity = none
+dotnet_diagnostic.S3247.severity = warning
 
 # S3249: Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals"
 # Enabled: True, Severity: warning

@@ -585,4 +585,37 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3241").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3247", "Duplicate casts should not be made",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3247/")]
+    public async Task WarnOnDuplicateCast()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base { }
+            public class Derived : Base { public int Value => 42; }
+
+            public class Checker
+            {
+                public static int Check(Base b)
+                {
+                    if (b is Derived)
+                    {
+                        var d = (Derived)b; // S3247: duplicate cast — 'is' already performed the cast
+                        return d.Value;
+                    }
+                    return 0;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3247").ShouldBeTrue();
+    }
 }
