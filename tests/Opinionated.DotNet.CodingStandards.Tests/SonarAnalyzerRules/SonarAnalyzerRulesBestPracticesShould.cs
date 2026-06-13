@@ -365,4 +365,31 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1147").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1168", "Empty arrays and collections should be returned instead of null",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1168/")]
+    public async Task ProhibitReturningNullCollections()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            namespace test;
+            public static class Collector
+            {
+                public static IEnumerable<int> GetItems(bool flag)
+                {
+                    if (flag)
+                    {
+                        return null;
+                    }
+                    return new List<int> { 1, 2, 3 };
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1168").ShouldBeTrue();
+    }
 }

@@ -146,7 +146,7 @@ dotnet_diagnostic.S1163.severity = none
 
 # S1168: Empty arrays and collections should be returned instead of null
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1168.severity = none
+dotnet_diagnostic.S1168.severity = warning
 
 # S1172: Unused method parameters should be removed
 # Enabled: True, Severity: warning
