@@ -114,4 +114,42 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2302").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2327", "“try” statements with identical “catch” and/or “finally” blocks should be merged",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2327/")]
+    public async Task WarnOnDuplicateTryCatchBlocks()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method(int x)
+                {
+                    try
+                    {
+                        _ = x + 1;
+                    }
+                    catch (System.InvalidOperationException)
+                    {
+                        // handle
+                    }
+
+                    try
+                    {
+                        _ = x + 2;
+                    }
+                    catch (System.InvalidOperationException)
+                    {
+                        // handle
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2327").ShouldBeTrue();
+    }
 }
