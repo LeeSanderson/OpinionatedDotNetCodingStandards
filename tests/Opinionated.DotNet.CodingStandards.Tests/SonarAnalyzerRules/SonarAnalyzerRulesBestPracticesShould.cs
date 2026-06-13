@@ -935,4 +935,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1871").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1905", "Redundant casts should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1905/")]
+    public async Task WarnOnRedundantCast()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static string GetValue()
+                {
+                    string s = "hello";
+                    return (string)s; // S1905: cast to string is redundant, s is already string
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1905").ShouldBeTrue();
+    }
 }
