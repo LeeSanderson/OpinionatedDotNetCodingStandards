@@ -223,15 +223,9 @@ public static class RuleReferenceGenerator
             var description = "";
             var helpLink = "";
 
-            for (var j = i - 1; j >= 0; j--)
+            for (var j = i - 1; j >= 0 && lines[j].StartsWith('#'); j--)
             {
-                var commentLine = lines[j];
-                if (!commentLine.StartsWith('#'))
-                {
-                    break;
-                }
-
-                var text = commentLine.TrimStart('#').Trim();
+                var text = lines[j].TrimStart('#').Trim();
 
                 if (text.StartsWith($"{id}:", StringComparison.Ordinal))
                 {

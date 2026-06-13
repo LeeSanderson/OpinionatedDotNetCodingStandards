@@ -137,14 +137,12 @@ public static class AnalyzerResolver
                 relPath.Replace('/', Path.DirectorySeparatorChar));
 
             // Try each package folder in order; use the first that has the file.
-            foreach (var packageFolder in packageFolders)
+            var found = packageFolders
+                .Select(packageFolder => Path.Combine(packageFolder, relativePart))
+                .FirstOrDefault(File.Exists);
+            if (found != null)
             {
-                var fullPath = Path.Combine(packageFolder, relativePart);
-                if (File.Exists(fullPath))
-                {
-                    dlls.Add(fullPath);
-                    break;
-                }
+                dlls.Add(found);
             }
         }
 

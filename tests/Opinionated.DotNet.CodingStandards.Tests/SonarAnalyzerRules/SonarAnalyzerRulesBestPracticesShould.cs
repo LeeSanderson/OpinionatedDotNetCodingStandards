@@ -554,4 +554,35 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1226").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1227", "break statements should not be used except for switch cases",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1227/")]
+    public async Task ProhibitBreakInLoops()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int FindFirst(int[] items, int target)
+                {
+                    int index = -1;
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                        if (items[i] == target)
+                        {
+                            index = i;
+                            break;
+                        }
+                    }
+                    return index;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1227").ShouldBeTrue();
+    }
 }
