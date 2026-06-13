@@ -9,7 +9,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
-    public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIDE()
+    public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIde()
     {
         using var project = await CreateProjectBuilder();
         await project.AddFile(

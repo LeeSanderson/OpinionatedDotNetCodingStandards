@@ -4,7 +4,7 @@ global_level = 0
 
 # S100: Methods and properties should be named in PascalCase
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S100.severity = none
+dotnet_diagnostic.S100.severity = warning
 
 # S1006: Method overrides should not change parameter defaults
 # Enabled: True, Severity: warning
