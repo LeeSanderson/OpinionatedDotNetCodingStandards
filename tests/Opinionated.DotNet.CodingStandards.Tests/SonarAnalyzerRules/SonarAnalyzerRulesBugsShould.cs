@@ -468,4 +468,26 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2178").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2183", "Integral numbers should not be shifted by zero or more than their number of bits-1",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2183/")]
+    public async Task DetectInvalidBitShiftAmount()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int ShiftTooFar(int x)
+                {
+                    return x << 32;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2183").ShouldBeTrue();
+    }
 }
