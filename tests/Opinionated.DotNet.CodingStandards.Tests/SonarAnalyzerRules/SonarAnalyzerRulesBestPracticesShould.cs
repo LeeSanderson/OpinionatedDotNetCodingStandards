@@ -194,4 +194,32 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1116").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1121", "Assignments should not be made from within sub-expressions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1121/")]
+    public async Task ProhibitAssignmentInSubExpression()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int GetValue() => 0;
+
+                public static void Use(int v) { _ = v; }
+
+                public static int Main()
+                {
+                    int x = 0;
+                    Use(x = GetValue());
+                    return x;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1121").ShouldBeTrue();
+    }
 }

@@ -94,7 +94,7 @@ dotnet_diagnostic.S112.severity = none
 
 # S1121: Assignments should not be made from within sub-expressions
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1121.severity = none
+dotnet_diagnostic.S1121.severity = warning
 
 # S1123: "Obsolete" attributes should include explanations
 # Enabled: True, Severity: warning
