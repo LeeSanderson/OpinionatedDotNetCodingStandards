@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;

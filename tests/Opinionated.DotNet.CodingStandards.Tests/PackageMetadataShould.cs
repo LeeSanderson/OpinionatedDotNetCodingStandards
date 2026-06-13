@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.IO.Compression;
 using System.Xml.Linq;
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;

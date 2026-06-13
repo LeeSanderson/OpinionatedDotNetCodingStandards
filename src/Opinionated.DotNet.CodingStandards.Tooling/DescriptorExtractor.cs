@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;

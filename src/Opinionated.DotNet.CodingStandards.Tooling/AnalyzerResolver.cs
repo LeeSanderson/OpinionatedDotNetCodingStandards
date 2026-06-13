@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Diagnostics;
 using System.Text.Json;
 using System.Text.RegularExpressions;

@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = true)]
