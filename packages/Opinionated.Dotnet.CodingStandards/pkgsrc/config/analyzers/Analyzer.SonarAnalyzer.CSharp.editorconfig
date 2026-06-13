@@ -537,7 +537,7 @@ dotnet_diagnostic.S2345.severity = warning
 
 # S2346: Flags enumerations zero-value members should be named "None"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2346.severity = none
+dotnet_diagnostic.S2346.severity = warning
 
 # S2357: Fields should be private
 # Enabled: False, Severity: warning

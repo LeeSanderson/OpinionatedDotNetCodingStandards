@@ -147,4 +147,28 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2344").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2346", "Flags enumerations zero-value members should be named \"None\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2346/")]
+    public async Task WarnOnFlagsEnumZeroValueMemberNotNamedNone()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            [System.Flags]
+            public enum Permissions
+            {
+                Everything = 0,
+                Read = 1,
+                Write = 2,
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2346").ShouldBeTrue();
+    }
 }
