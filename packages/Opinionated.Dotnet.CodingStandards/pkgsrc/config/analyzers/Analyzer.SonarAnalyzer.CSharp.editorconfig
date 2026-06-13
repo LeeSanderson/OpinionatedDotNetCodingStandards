@@ -453,7 +453,7 @@ dotnet_diagnostic.S2225.severity = warning
 
 # S2234: Arguments should be passed in the same order as the method parameters
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2234.severity = none
+dotnet_diagnostic.S2234.severity = warning
 
 # S2245: Using pseudorandom number generators (PRNGs) is security-sensitive
 # Enabled: True, Severity: warning

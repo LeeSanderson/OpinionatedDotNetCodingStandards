@@ -610,4 +610,35 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2225").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2234", "Arguments should be passed in the same order as the method parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2234/")]
+    public async Task WarnOnArgumentsPassedInWrongOrder()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Calculator
+            {
+                public static double Divide(double dividend, double divisor) => dividend / divisor;
+            }
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    double divisor = 2.0;
+                    double dividend = 10.0;
+                    // S2234: arguments passed in reverse order — divisor for dividend, dividend for divisor
+                    var result = Calculator.Divide(divisor, dividend);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2234").ShouldBeTrue();
+    }
 }
