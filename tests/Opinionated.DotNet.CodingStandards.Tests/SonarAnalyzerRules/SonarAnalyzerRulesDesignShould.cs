@@ -604,4 +604,30 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3398").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3427", "Method overloads with default parameter values should not overlap",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3427/")]
+    public async Task WarnOnOverlappingMethodOverloadsWithDefaultParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Printer
+            {
+                public void Print(string message) { }
+
+                // S3427: this overload overlaps the one above — callers writing Print("hi")
+                // always resolve to the single-parameter overload, so the default on `count`
+                // is unreachable and the two overloads are ambiguous from the caller's perspective.
+                public void Print(string message, int count = 1) { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3427").ShouldBeTrue();
+    }
 }

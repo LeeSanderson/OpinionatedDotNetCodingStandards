@@ -917,7 +917,7 @@ dotnet_diagnostic.S3416.severity = none
 
 # S3427: Method overloads with default parameter values should not overlap
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3427.severity = none
+dotnet_diagnostic.S3427.severity = warning
 
 # S3431: "[ExpectedException]" should not be used
 # Enabled: True, Severity: warning
