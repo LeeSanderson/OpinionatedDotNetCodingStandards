@@ -179,4 +179,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2333").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2365", "Properties should not make collection or array copies",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2365/")]
+    public async Task WarnOnPropertyMakingCollectionCopy()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public sealed class MyCollection
+            {
+                private readonly System.Collections.Generic.List<int> _items = [1, 2, 3];
+
+                public System.Collections.Generic.List<int> Items => _items.ToList();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2365").ShouldBeTrue();
+    }
 }

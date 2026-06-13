@@ -549,7 +549,7 @@ dotnet_diagnostic.S2360.severity = warning
 
 # S2365: Properties should not make collection or array copies
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2365.severity = none
+dotnet_diagnostic.S2365.severity = warning
 
 # S2368: Public methods should not have multidimensional array parameters
 # Enabled: True, Severity: warning
