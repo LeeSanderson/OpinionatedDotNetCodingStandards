@@ -509,4 +509,26 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S121").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1215", "“GC.Collect” should not be called",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1215/")]
+    public async Task ProhibitExplicitGarbageCollection()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Cleaner
+            {
+                public void ForceCollect()
+                {
+                    GC.Collect();
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1215").ShouldBeTrue();
+    }
 }

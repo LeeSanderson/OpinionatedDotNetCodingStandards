@@ -187,7 +187,7 @@ dotnet_diagnostic.S1210.severity = none
 
 # S1215: "GC.Collect" should not be called
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1215.severity = none
+dotnet_diagnostic.S1215.severity = warning
 
 # S122: Statements should be on separate lines
 # Enabled: False, Severity: warning
