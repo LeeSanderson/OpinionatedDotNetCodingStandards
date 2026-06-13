@@ -712,4 +712,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3447").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3449", "Right operands of shift operators should be integers",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3449/")]
+    public async Task WarnOnShiftWithNonIntegerRightOperand()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method()
+                {
+                    dynamic d = 42;
+                    var x = d >> 5.4;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3449").ShouldBeTrue();
+    }
 }

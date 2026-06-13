@@ -957,7 +957,7 @@ dotnet_diagnostic.S3447.severity = warning
 
 # S3449: Right operands of shift operators should be integers
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3449.severity = none
+dotnet_diagnostic.S3449.severity = warning
 
 # S3450: Parameters with "[DefaultParameterValue]" attributes should also be marked "[Optional]"
 # Enabled: True, Severity: warning
