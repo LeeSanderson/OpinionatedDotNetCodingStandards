@@ -322,4 +322,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1135").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1144", "Unused private types or members should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1144/")]
+    public async Task WarnOnUnusedPrivateMembers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Worker
+            {
+                public int Run() => 42;
+
+                private int UnusedHelper() => 0;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1144").ShouldBeTrue();
+    }
 }

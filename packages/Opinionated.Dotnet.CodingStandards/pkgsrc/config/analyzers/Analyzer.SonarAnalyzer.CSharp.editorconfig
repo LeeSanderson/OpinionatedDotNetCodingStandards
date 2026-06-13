@@ -126,7 +126,7 @@ dotnet_diagnostic.S1135.severity = warning
 
 # S1144: Unused private types or members should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1144.severity = none
+dotnet_diagnostic.S1144.severity = warning
 
 # S1147: Exit methods should not be called
 # Enabled: False, Severity: warning
