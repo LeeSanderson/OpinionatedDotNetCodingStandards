@@ -429,7 +429,7 @@ dotnet_diagnostic.S2197.severity = warning
 
 # S2198: Unnecessary mathematical comparisons should not be made
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2198.severity = none
+dotnet_diagnostic.S2198.severity = warning
 
 # S2201: Methods without side effects should not have their return values ignored
 # Enabled: True, Severity: warning

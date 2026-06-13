@@ -537,4 +537,27 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2197").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2198", "Unnecessary mathematical comparisons should not be made",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2198/")]
+    public async Task DetectUnnecessaryMathematicalComparison()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static bool Compare(char c)
+                {
+                    const int veryBig = int.MaxValue;
+                    return c < veryBig;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2198").ShouldBeTrue();
+    }
 }
