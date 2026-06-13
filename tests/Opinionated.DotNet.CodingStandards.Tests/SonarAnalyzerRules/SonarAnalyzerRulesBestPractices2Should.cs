@@ -618,4 +618,30 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3247").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3251", "Implementations should be provided for \"partial\" methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3251/")]
+    public async Task WarnOnPartialMethodsWithoutImplementation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public partial class C
+            {
+                partial void DoSomething();
+
+                public void Run()
+                {
+                    DoSomething();
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3251").ShouldBeTrue();
+    }
 }

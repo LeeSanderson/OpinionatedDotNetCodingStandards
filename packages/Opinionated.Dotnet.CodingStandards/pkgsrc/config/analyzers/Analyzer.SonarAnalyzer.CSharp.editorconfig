@@ -817,7 +817,7 @@ dotnet_diagnostic.S3249.severity = warning
 
 # S3251: Implementations should be provided for "partial" methods
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3251.severity = none
+dotnet_diagnostic.S3251.severity = warning
 
 # S3253: Constructor and destructor declarations should not be redundant
 # Enabled: False, Severity: warning
