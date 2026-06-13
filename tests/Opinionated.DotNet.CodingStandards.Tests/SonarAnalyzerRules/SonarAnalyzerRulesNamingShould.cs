@@ -26,4 +26,20 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S100").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S101", "Types should be named in PascalCase",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-101/")]
+    public async Task WarnOnNonPascalCaseTypeName()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class myClass { public int Value { get; set; } }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S101").ShouldBeTrue();
+    }
 }
