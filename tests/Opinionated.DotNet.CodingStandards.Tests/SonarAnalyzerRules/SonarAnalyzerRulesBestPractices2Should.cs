@@ -202,4 +202,23 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2365").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2479", "Whitespace and control characters in string literals should be explicit",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2479/")]
+    public async Task WarnOnRawWhitespaceInStringLiteral()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Greeter
+            {
+                public static string GetMessage() => "Hello	World";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2479").ShouldBeTrue();
+    }
 }

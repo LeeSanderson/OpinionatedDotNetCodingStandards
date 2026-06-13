@@ -585,7 +585,7 @@ dotnet_diagnostic.S2445.severity = warning
 
 # S2479: Whitespace and control characters in string literals should be explicit
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2479.severity = none
+dotnet_diagnostic.S2479.severity = warning
 
 # S2486: Generic exceptions should not be ignored
 # Enabled: True, Severity: warning
