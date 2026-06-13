@@ -268,4 +268,29 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2701").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2925", "Thread.Sleep should not be used in tests",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2925/")]
+    public async Task WarnOnThreadSleepInTests()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "xunit", Version: "2.9.3")]);
+        await project.AddFile("Program.cs", """
+            using Xunit;
+            namespace test;
+            public class MyTests
+            {
+                [Fact]
+                public void SlowTest()
+                {
+                    System.Threading.Thread.Sleep(1000);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2925").ShouldBeTrue();
+    }
 }

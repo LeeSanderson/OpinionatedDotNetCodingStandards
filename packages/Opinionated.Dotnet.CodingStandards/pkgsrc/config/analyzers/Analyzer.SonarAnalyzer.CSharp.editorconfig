@@ -661,7 +661,7 @@ dotnet_diagnostic.S2857.severity = warning
 
 # S2925: "Thread.Sleep" should not be used in tests
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2925.severity = none
+dotnet_diagnostic.S2925.severity = warning
 
 # S2930: "IDisposables" should be disposed
 # Enabled: True, Severity: warning
