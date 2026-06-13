@@ -8,7 +8,10 @@ namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 public static class RuleReferenceGenerator
 {
-    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir, string? editorConfigPath = null)
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir)
+        => CollectActiveRules(analyzerDir, null);
+
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir, string? editorConfigPath)
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var file in Directory.GetFiles(analyzerDir, "*.editorconfig"))
@@ -53,7 +56,11 @@ public static class RuleReferenceGenerator
     }
 
     public static ReconciliationResult Reconcile(
-        string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
+        string analyzerDir, Assembly testAssembly)
+        => Reconcile(analyzerDir, testAssembly, null);
+
+    public static ReconciliationResult Reconcile(
+        string analyzerDir, Assembly testAssembly, string? editorConfigPath)
     {
         var activeRules = CollectActiveRules(analyzerDir, editorConfigPath);
         var docEntries = CollectRuleDocEntries(testAssembly);
@@ -126,7 +133,10 @@ public static class RuleReferenceGenerator
         return docs;
     }
 
-    public static string Generate(string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
+    public static string Generate(string analyzerDir, Assembly testAssembly)
+        => Generate(analyzerDir, testAssembly, null);
+
+    public static string Generate(string analyzerDir, Assembly testAssembly, string? editorConfigPath)
     {
         var ruleDocs = CollectRuleDocs(testAssembly);
         var files = Directory.GetFiles(analyzerDir, "*.editorconfig").OrderBy(Path.GetFileName).ToArray();

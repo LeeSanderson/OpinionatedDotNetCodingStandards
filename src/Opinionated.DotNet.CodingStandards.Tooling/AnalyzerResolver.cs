@@ -21,10 +21,15 @@ public static class AnalyzerResolver
             ["stylecop.analyzers.unstable"] = "Analyzer.StyleCop.Analyzers.Unstable.editorconfig",
         };
 
+    public static Task<IReadOnlyList<AnalyzerPackageInfo>> ResolveAsync(
+        string projectPath,
+        string analyzerEditorConfigDir)
+        => ResolveAsync(projectPath, analyzerEditorConfigDir, CancellationToken.None);
+
     public static async Task<IReadOnlyList<AnalyzerPackageInfo>> ResolveAsync(
         string projectPath,
         string analyzerEditorConfigDir,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken)
     {
         var projectDir = Path.GetDirectoryName(Path.GetFullPath(projectPath))!;
         var assetsFile = Path.Combine(projectDir, "obj", "project.assets.json");

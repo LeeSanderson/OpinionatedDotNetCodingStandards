@@ -337,4 +337,23 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2339").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2360", "Optional parameters should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2360/")]
+    public async Task ProhibitOptionalParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public int Add(int a, int b = 0) => a + b;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2360").ShouldBeTrue();
+    }
 }

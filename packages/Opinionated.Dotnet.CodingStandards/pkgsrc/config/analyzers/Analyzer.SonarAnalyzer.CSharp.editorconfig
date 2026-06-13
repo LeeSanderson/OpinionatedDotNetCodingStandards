@@ -545,7 +545,7 @@ dotnet_diagnostic.S2357.severity = none
 
 # S2360: Optional parameters should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2360.severity = none
+dotnet_diagnostic.S2360.severity = warning
 
 # S2365: Properties should not make collection or array copies
 # Enabled: True, Severity: warning
