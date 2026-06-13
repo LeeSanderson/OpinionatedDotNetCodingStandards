@@ -765,7 +765,7 @@ dotnet_diagnostic.S3217.severity = warning
 
 # S3218: Inner class members should not shadow outer class "static" or type members
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3218.severity = none
+dotnet_diagnostic.S3218.severity = warning
 
 # S3220: Method calls should not resolve ambiguously to overloads with "params"
 # Enabled: True, Severity: warning

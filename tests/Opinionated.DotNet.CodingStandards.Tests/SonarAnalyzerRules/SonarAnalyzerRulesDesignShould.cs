@@ -480,4 +480,30 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3215").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3218", "Inner class members should not shadow outer class 'static' or type members",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3218/")]
+    public async Task WarnOnInnerClassMemberShadowingOuterStaticMember()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Outer
+            {
+                public static int Value => 42;
+
+                public class Inner
+                {
+                    public int Value => 0;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3218").ShouldBeTrue();
+    }
 }
