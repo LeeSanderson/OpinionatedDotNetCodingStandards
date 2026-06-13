@@ -637,7 +637,7 @@ dotnet_diagnostic.S2737.severity = warning
 
 # S2743: Static fields should not be used in generic types
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2743.severity = none
+dotnet_diagnostic.S2743.severity = warning
 
 # S2755: XML parsers should not be vulnerable to XXE attacks
 # Enabled: True, Severity: warning

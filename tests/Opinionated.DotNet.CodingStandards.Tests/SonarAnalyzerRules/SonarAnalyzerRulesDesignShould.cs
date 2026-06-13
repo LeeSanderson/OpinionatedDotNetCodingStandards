@@ -402,4 +402,30 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2387").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2743", "Static fields should not be used in generic types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2743/")]
+    public async Task WarnOnStaticFieldInGenericType()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Cache<T>
+            {
+                private static int _count;
+
+                public static int GetCount() => _count;
+
+                public void Add() => _count++;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2743").ShouldBeTrue();
+    }
 }
