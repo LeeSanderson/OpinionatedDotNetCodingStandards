@@ -247,4 +247,25 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2699").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2701", "Literal boolean values should not be used in assertions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2701/")]
+    public async Task ProhibitLiteralBooleanInAssertions()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "MSTest.TestFramework", Version: "4.2.3")]);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using Microsoft.VisualStudio.TestTools.UnitTesting;
+            public static class MyTests
+            {
+                public static void Run() => Assert.IsTrue(true);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2701").ShouldBeTrue();
+    }
 }
