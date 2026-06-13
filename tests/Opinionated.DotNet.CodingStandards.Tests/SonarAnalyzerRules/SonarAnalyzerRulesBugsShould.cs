@@ -273,4 +273,43 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1854").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1862", "Related 'if/else if' statements should not have the same condition",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1862/")]
+    public async Task DetectDuplicateConditionInIfElseIfChain()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Checker
+            {
+                public static string Classify(int x)
+                {
+                    if (x > 0)
+                    {
+                        return "positive";
+                    }
+                    else if (x < 0)
+                    {
+                        return "negative";
+                    }
+                    else if (x > 0)
+                    {
+                        return "duplicate";
+                    }
+                    else
+                    {
+                        return "zero";
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1862").ShouldBeTrue();
+    }
 }

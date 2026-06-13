@@ -333,7 +333,7 @@ dotnet_diagnostic.S1858.severity = none
 
 # S1862: Related "if/else if" statements should not have the same condition
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1862.severity = none
+dotnet_diagnostic.S1862.severity = warning
 
 # S1871: Two branches in a conditional structure should not have exactly the same implementation
 # Enabled: True, Severity: warning
