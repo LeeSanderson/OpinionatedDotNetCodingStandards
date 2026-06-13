@@ -57,8 +57,8 @@ dotnet_diagnostic.S1075.severity = warning
 dotnet_diagnostic.S108.severity = warning
 
 # S109: Magic numbers should not be used
-# Enabled: False, Severity: warning
-dotnet_diagnostic.S109.severity = none
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S109.severity = warning
 
 # S110: Inheritance tree of classes should not be too deep
 # Enabled: False, Severity: warning

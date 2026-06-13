@@ -129,4 +129,26 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S108").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S109", "Magic numbers should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-109/")]
+    public async Task WarnOnMagicNumbers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Calculator
+            {
+                public static int Compute(int a) => a * 42;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S109").ShouldBeTrue();
+    }
 }
