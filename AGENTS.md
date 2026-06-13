@@ -67,10 +67,20 @@ Every active rule must be covered by exactly one `[RuleDoc]` attribute — enfor
   class-level `[RuleDoc]` in `UntestableRules.cs` with a non-null `Untestable` reason.
 - **One `[RuleDoc]` per rule ID** across the entire test assembly; the coverage test enforces
   uniqueness.
-- **Formatter-backed IDE rules**: many IDE rules emit `IDE0055` instead of their own ID in
-  build SARIF. If a new IDE rule test never produces its own diagnostic ID, confirm with
-  control/violation probes, then add it to `UntestableRules.cs` with a "formatter-backed"
-  reason rather than leaving a broken test.
+- **Before marking a rule untestable, exhaust the confounder playbook first:** (1) add a
+  real `PackageReference` if the rule guards on a type in an external package; (2) use stub
+  types for type-existence gates; (3) pin `LangVersion=12` if C# 13 overload routing might
+  redirect calls to a new span overload the analyzer can't match. Only record a rule as
+  untestable when a structural reason applies:
+  - **EnforceOnBuild.Never** — certain IDE rules are tagged `Never` in the Roslyn source;
+    they never emit diagnostics at `dotnet build` regardless of editorconfig severity.
+  - **IDE Features-assembly gate** — the reporting analyzer lives in
+    `Microsoft.CodeAnalysis.CSharp.Features` (IDE/LSP only), not the build-time CodeStyle
+    package. Check the source path: `Analyzers/` = builds; `Features/` = IDE-only.
+  - **NetFramework mscorlib gate** — rules that check `System.String` is in `mscorlib`
+    structurally cannot fire on `net10.0` (it lives in `System.Private.CoreLib`).
+  - **Formatter-backed** — rules that emit `IDE0055` instead of their own ID at build time;
+    the rule ID itself never appears in SARIF.
 - Keep test files under **1000 lines**. If a file grows past that, split it into a new
   subdirectory using the `<OriginalClass><Group>Should` naming convention above.
 
@@ -91,6 +101,9 @@ deliberately rather than suppressing inline.
   two files under `config/`.
 - The `pkgsrc/**` glob in the `.nuspec` ships everything under `pkgsrc/` — anything added
   there becomes part of the public package.
+- **InternalsVisibleTo auto-injection.** The package auto-injects an `InternalsVisibleTo`
+  attribute pointing at the test project, silently suppressing friend-assembly-sensitive
+  CA rules. Opt back in via `ignore_internalsvisibleto=true` in the `ProjectBuilder` call.
 
 ## Git & boundaries
 
