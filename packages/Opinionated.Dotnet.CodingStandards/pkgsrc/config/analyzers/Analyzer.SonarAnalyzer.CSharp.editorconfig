@@ -62,7 +62,7 @@ dotnet_diagnostic.S109.severity = warning
 
 # S110: Inheritance tree of classes should not be too deep
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S110.severity = none
+dotnet_diagnostic.S110.severity = warning
 
 # S1104: Fields should not have public accessibility
 # Enabled: True, Severity: warning
