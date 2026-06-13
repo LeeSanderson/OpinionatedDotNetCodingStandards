@@ -213,4 +213,22 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1939").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2094", "Classes should not be empty",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2094/")]
+    public async Task WarnOnEmptyClass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Empty { }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2094").ShouldBeTrue();
+    }
 }
