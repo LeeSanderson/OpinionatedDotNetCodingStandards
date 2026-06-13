@@ -662,4 +662,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3397").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3415", "Assertion arguments should be passed in the correct order",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3415/")]
+    public async Task WarnOnSwappedAssertionArguments()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "NUnit", Version: "3.14.0")]);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void M(int value)
+                {
+                    NUnit.Framework.Assert.AreEqual(value, 42);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3415").ShouldBeTrue();
+    }
 }

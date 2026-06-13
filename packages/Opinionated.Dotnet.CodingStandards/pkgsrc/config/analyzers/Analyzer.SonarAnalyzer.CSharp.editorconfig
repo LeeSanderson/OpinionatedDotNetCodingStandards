@@ -909,7 +909,7 @@ dotnet_diagnostic.S3400.severity = warning
 
 # S3415: Assertion arguments should be passed in the correct order
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3415.severity = none
+dotnet_diagnostic.S3415.severity = warning
 
 # S3416: Loggers should be named for their enclosing types
 # Enabled: False, Severity: warning
