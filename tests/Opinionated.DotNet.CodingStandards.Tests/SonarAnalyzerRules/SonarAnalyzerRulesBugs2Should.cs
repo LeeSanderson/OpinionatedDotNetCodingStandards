@@ -113,4 +113,29 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2761").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2857", "SQL keywords should be delimited by whitespace",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2857/")]
+    public async Task DetectSqlKeywordsNotDelimitedByWhitespace()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Data;
+
+            namespace test;
+
+            internal static class SqlQueryBuilder
+            {
+                internal static string Build() =>
+                    "SELECT" + "Id FROM Customers";
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2857").ShouldBeTrue();
+    }
 }
