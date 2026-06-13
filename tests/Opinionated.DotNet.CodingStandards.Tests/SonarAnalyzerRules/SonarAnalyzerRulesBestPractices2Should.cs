@@ -418,4 +418,31 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3063").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3217", "Explicit conversions of foreach loops should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3217/")]
+    public async Task WarnOnExplicitForeachConversion()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            namespace test;
+            public static class C
+            {
+                public static void Method()
+                {
+                    var list = new List<long> { 1L, 2L, 3L };
+                    foreach (int item in list)
+                    {
+                        _ = item + 1;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3217").ShouldBeTrue();
+    }
 }
