@@ -651,4 +651,33 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S126").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1264", "A \"while\" loop should be used instead of a \"for\" loop",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1264/")]
+    public async Task WarnOnForLoopUsedAsWhileLoop()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class LoopExample
+            {
+                public static int CountDown(int start)
+                {
+                    int n = start;
+                    for (; n > 0; )
+                    {
+                        n--;
+                    }
+                    return n;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1264").ShouldBeTrue();
+    }
 }

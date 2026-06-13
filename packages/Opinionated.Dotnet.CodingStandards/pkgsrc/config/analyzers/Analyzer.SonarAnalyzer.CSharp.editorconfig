@@ -215,7 +215,7 @@ dotnet_diagnostic.S126.severity = warning
 
 # S1264: A "while" loop should be used instead of a "for" loop
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1264.severity = none
+dotnet_diagnostic.S1264.severity = warning
 
 # S127: "for" loop stop conditions should be invariant
 # Enabled: True, Severity: warning
