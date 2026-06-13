@@ -969,7 +969,7 @@ dotnet_diagnostic.S3451.severity = none
 
 # S3453: Classes should not have only "private" constructors
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3453.severity = none
+dotnet_diagnostic.S3453.severity = warning
 
 # S3456: "string.ToCharArray()" and "ReadOnlySpan<T>.ToArray()" should not be called redundantly
 # Enabled: True, Severity: warning

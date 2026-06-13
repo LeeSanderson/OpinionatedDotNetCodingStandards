@@ -660,4 +660,25 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3444").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3453", "Classes should not have only 'private' constructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3453/")]
+    public async Task WarnOnClassWithOnlyPrivateConstructors()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public sealed class CannotInstantiate
+            {
+                private CannotInstantiate() { }
+                private CannotInstantiate(int value) { }
+                public void DoWork() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3453").ShouldBeTrue();
+    }
 }
