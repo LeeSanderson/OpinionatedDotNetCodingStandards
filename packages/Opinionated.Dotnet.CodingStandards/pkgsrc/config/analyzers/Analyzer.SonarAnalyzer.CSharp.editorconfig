@@ -973,7 +973,7 @@ dotnet_diagnostic.S3453.severity = warning
 
 # S3456: "string.ToCharArray()" and "ReadOnlySpan<T>.ToArray()" should not be called redundantly
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3456.severity = none
+dotnet_diagnostic.S3456.severity = warning
 
 # S3457: Composite format strings should be used correctly
 # Enabled: True, Severity: warning
