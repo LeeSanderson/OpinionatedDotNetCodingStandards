@@ -43,7 +43,7 @@ public static class RuleReferenceGenerator
                 entries.Add(new RuleDocEntry(attr.RuleId, attr, IsClassLevel: true));
             }
 
-            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
             {
                 foreach (var attr in method.GetCustomAttributes<RuleDocAttribute>())
                 {
@@ -121,7 +121,7 @@ public static class RuleReferenceGenerator
                 docs[attr.RuleId] = attr;
             }
 
-            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
             {
                 foreach (var attr in method.GetCustomAttributes<RuleDocAttribute>())
                 {

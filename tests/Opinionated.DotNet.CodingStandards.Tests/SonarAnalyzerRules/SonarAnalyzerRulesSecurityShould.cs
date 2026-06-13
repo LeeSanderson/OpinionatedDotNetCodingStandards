@@ -262,4 +262,25 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2755").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3011", "Reflection should not be used to increase accessibility of classes, methods, or fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3011/")]
+    public async Task ProhibitReflectionAccessibilityBypass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Reflection;
+            namespace test;
+            public class C
+            {
+                public MethodInfo? GetPrivateMethod(Type t) =>
+                    t.GetMethod("secret", BindingFlags.NonPublic | BindingFlags.Instance);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3011").ShouldBeTrue();
+    }
 }

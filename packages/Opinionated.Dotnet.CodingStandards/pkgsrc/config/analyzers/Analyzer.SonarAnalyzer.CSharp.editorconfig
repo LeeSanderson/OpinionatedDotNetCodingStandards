@@ -721,7 +721,7 @@ dotnet_diagnostic.S3010.severity = warning
 
 # S3011: Reflection should not be used to increase accessibility of classes, methods, or fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3011.severity = none
+dotnet_diagnostic.S3011.severity = warning
 
 # S3052: Members should not be initialized to default values
 # Enabled: False, Severity: warning
