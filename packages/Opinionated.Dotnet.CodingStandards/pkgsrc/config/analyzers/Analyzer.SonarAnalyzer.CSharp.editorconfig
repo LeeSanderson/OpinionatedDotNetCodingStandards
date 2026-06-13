@@ -158,7 +158,7 @@ dotnet_diagnostic.S1185.severity = warning
 
 # S1186: Methods should not be empty
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1186.severity = none
+dotnet_diagnostic.S1186.severity = warning
 
 # S1192: String literals should not be duplicated
 # Enabled: False, Severity: warning
