@@ -478,4 +478,30 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3263").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3264", "Events should be invoked",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3264/")]
+    public async Task WarnOnEventNeverInvoked()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Counter
+            {
+                public event EventHandler? ThresholdReached;
+                private int _count;
+                public void Increment()
+                {
+                    _count++;
+                    // ThresholdReached is never invoked — S3264 fires here
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3264").ShouldBeTrue();
+    }
 }

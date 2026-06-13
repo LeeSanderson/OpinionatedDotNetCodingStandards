@@ -853,7 +853,7 @@ dotnet_diagnostic.S3263.severity = warning
 
 # S3264: Events should be invoked
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3264.severity = none
+dotnet_diagnostic.S3264.severity = warning
 
 # S3265: Non-flags enums should not be used in bitwise operations
 # Enabled: True, Severity: warning
