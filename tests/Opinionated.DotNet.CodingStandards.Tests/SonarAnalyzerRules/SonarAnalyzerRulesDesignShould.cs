@@ -579,4 +579,29 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3260").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3398", "“private” methods called only by inner classes should be moved to those classes",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3398/")]
+    public async Task WarnOnPrivateMethodOnlyUsedByInnerClass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Outer
+            {
+                private static int Compute(int x) => x * 2;
+
+                public class Inner
+                {
+                    public int GetValue(int n) => Outer.Compute(n);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3398").ShouldBeTrue();
+    }
 }

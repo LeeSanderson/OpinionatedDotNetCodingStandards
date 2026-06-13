@@ -901,7 +901,7 @@ dotnet_diagnostic.S3397.severity = warning
 
 # S3398: "private" methods called only by inner classes should be moved to those classes
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3398.severity = none
+dotnet_diagnostic.S3398.severity = warning
 
 # S3400: Methods should not return constants
 # Enabled: True, Severity: warning
