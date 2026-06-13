@@ -438,4 +438,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1186").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1192", "String literals should not be duplicated",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1192/")]
+    public async Task WarnOnDuplicatedStringLiterals()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Greeter
+            {
+                public static void A() => System.Console.WriteLine("hello-world");
+                public static void B() => System.Console.WriteLine("hello-world");
+                public static void C() => System.Console.WriteLine("hello-world");
+                public static void D() => System.Console.WriteLine("hello-world");
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1192").ShouldBeTrue();
+    }
 }

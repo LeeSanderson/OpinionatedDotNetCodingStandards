@@ -162,7 +162,7 @@ dotnet_diagnostic.S1186.severity = warning
 
 # S1192: String literals should not be duplicated
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1192.severity = none
+dotnet_diagnostic.S1192.severity = warning
 
 # S1199: Nested code blocks should not be used
 # Enabled: True, Severity: warning
