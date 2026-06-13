@@ -23,7 +23,15 @@ public static class DescriptorExtractor
             {
                 loader.LoadFromPath(path);
             }
-            catch
+            catch (BadImageFormatException)
+            {
+                // Best-effort; dependency may not need all DLLs
+            }
+            catch (FileLoadException)
+            {
+                // Best-effort; dependency may not need all DLLs
+            }
+            catch (IOException)
             {
                 // Best-effort; dependency may not need all DLLs
             }
@@ -53,7 +61,15 @@ public static class DescriptorExtractor
                 CollectFromAnalyzer(analyzer, seen, descriptors);
             }
         }
-        catch (Exception)
+        catch (BadImageFormatException)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+        catch (ReflectionTypeLoadException)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+        catch (InvalidOperationException)
         {
             // Skip DLLs or analyzers that fail to load or instantiate
         }

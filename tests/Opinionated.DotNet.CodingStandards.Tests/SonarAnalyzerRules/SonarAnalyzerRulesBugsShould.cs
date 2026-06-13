@@ -560,4 +560,35 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2198").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2221", "“Exception” should not be caught",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2221/")]
+    public async Task ProhibitCatchingBaseException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Thrower
+            {
+                public static void Do()
+                {
+                    try
+                    {
+                        _ = int.Parse("x");
+                    }
+                    catch (Exception)
+                    {
+                        // swallows all exceptions — violates S2221
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2221").ShouldBeTrue();
+    }
 }

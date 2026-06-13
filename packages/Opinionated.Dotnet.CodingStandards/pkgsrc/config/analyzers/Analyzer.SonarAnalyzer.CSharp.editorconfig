@@ -441,7 +441,7 @@ dotnet_diagnostic.S2219.severity = warning
 
 # S2221: "Exception" should not be caught
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2221.severity = none
+dotnet_diagnostic.S2221.severity = warning
 
 # S2223: Non-constant static fields should not be visible
 # Enabled: True, Severity: warning
