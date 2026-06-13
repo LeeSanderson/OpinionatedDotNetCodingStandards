@@ -392,4 +392,30 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1168").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1172", "Unused method parameters should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1172/")]
+    public async Task WarnOnUnusedMethodParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Calculator
+            {
+                public int Add(int a, int b) => AddImpl(a, b, 0);
+
+                private int AddImpl(int a, int b, int unused)
+                {
+                    return a + b;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1172").ShouldBeTrue();
+    }
 }
