@@ -911,4 +911,28 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2681").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2692", "IndexOf checks should not be for positive numbers",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2692/")]
+    public async Task WarnOnIndexOfCheckedAgainstPositiveNumber()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Searcher
+            {
+                public static bool ContainsValue(string text, string value)
+                {
+                    return text.IndexOf(value) > 0;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2692").ShouldBeTrue();
+    }
 }

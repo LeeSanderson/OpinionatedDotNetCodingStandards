@@ -617,7 +617,7 @@ dotnet_diagnostic.S2688.severity = none
 
 # S2692: "IndexOf" checks should not be for positive numbers
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2692.severity = none
+dotnet_diagnostic.S2692.severity = warning
 
 # S2696: Instance members should not write to "static" fields
 # Enabled: True, Severity: warning
