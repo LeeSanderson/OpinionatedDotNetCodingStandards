@@ -50,7 +50,7 @@ sonar.S107.maximumFunctionParameters = 7
 
 # S1075: URIs should not be hardcoded
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1075.severity = none
+dotnet_diagnostic.S1075.severity = warning
 
 # S108: Nested blocks of code should not be left empty
 # Enabled: True, Severity: warning

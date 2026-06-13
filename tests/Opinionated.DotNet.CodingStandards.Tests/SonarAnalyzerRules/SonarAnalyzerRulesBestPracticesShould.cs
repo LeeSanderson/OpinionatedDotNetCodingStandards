@@ -82,4 +82,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1066").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1075", "URIs should not be hardcoded",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1075/")]
+    public async Task ProhibitHardcodedUris()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    string url = "https://www.example.com/api/v1/data";
+                    return url.Length;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1075").ShouldBeTrue();
+    }
 }
