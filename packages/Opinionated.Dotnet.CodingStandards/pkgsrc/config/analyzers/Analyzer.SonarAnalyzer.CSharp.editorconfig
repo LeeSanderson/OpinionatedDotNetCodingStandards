@@ -417,7 +417,7 @@ dotnet_diagnostic.S2184.severity = warning
 
 # S2187: Test classes should contain at least one test case
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2187.severity = none
+dotnet_diagnostic.S2187.severity = warning
 
 # S2190: Loops and recursions should not be infinite
 # Enabled: True, Severity: warning

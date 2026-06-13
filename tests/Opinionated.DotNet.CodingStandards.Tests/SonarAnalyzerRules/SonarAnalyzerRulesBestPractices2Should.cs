@@ -48,4 +48,23 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2148").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2187", "Test classes should contain at least one test case",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2187/")]
+    public async Task WarnOnEmptyTestClass()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "MSTest.TestFramework", Version: "4.2.3")]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.VisualStudio.TestTools.UnitTesting;
+            namespace test;
+            [TestClass]
+            public class EmptyTestSuite { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2187").ShouldBeTrue();
+    }
 }
