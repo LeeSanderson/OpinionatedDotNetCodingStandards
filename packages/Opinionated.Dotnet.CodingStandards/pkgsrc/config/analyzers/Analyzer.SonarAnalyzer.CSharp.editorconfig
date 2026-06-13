@@ -293,7 +293,7 @@ dotnet_diagnostic.S1659.severity = warning
 
 # S1694: An abstract class should have both abstract and concrete methods
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1694.severity = none
+dotnet_diagnostic.S1694.severity = warning
 
 # S1696: NullReferenceException should not be caught
 # Enabled: True, Severity: warning

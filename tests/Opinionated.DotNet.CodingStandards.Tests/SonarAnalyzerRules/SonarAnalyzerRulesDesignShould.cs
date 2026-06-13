@@ -170,4 +170,25 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1450").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1694", "An abstract class should have both abstract and concrete methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1694/")]
+    public async Task WarnOnAbstractClassWithOnlyAbstractMethods()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public abstract class AllAbstract
+            {
+                public abstract void MethodOne();
+                public abstract void MethodTwo();
+                public abstract int MethodThree();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1694").ShouldBeTrue();
+    }
 }
