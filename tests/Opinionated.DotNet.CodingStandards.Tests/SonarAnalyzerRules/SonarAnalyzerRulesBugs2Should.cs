@@ -621,4 +621,45 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3366").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3397", "base.Equals should not be used to check for reference equality in Equals if base is not object",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3397/")]
+    public async Task WarnOnBaseEqualsUsedForReferenceEqualityInDerivedEquals()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base
+            {
+                private readonly int _value;
+                public Base(int value) => _value = value;
+                public override bool Equals(object? obj) => obj is Base other && _value == other._value;
+                public override int GetHashCode() => _value.GetHashCode();
+            }
+
+            public class Derived : Base
+            {
+                private readonly int _extra;
+                public Derived(int value, int extra) : base(value) { _extra = extra; }
+
+                public override bool Equals(object? obj)
+                {
+                    // S3397: base.Equals is used as a guard condition, but Base.Equals does structural
+                    // equality — not reference equality as the developer likely intended.
+                    if (base.Equals(obj)) return true;
+                    if (obj is not Derived other) return false;
+                    return _extra == other._extra;
+                }
+
+                public override int GetHashCode() => base.GetHashCode();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3397").ShouldBeTrue();
+    }
 }

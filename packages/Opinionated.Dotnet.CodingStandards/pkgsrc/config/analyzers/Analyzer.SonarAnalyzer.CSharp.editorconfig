@@ -897,7 +897,7 @@ dotnet_diagnostic.S3376.severity = warning
 
 # S3397: "base.Equals" should not be used to check for reference equality in "Equals" if "base" is not "object"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3397.severity = none
+dotnet_diagnostic.S3397.severity = warning
 
 # S3398: "private" methods called only by inner classes should be moved to those classes
 # Enabled: True, Severity: warning
