@@ -67,4 +67,28 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2187").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2219", "Runtime type checking should be simplified",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2219/")]
+    public async Task WarnOnVerboseRuntimeTypeChecking()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Base { }
+            public class Derived : Base { }
+            public static class Checker
+            {
+                public static bool Check(object obj)
+                {
+                    return typeof(Derived).IsAssignableFrom(obj.GetType());
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2219").ShouldBeTrue();
+    }
 }

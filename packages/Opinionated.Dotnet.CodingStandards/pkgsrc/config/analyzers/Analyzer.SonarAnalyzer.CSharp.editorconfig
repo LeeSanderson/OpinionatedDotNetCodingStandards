@@ -437,7 +437,7 @@ dotnet_diagnostic.S2201.severity = none
 
 # S2219: Runtime type checking should be simplified
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2219.severity = none
+dotnet_diagnostic.S2219.severity = warning
 
 # S2221: "Exception" should not be caught
 # Enabled: False, Severity: warning
