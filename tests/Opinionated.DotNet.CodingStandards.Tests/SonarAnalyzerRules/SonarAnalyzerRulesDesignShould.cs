@@ -58,4 +58,87 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1185").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1200", "Classes should not be coupled to too many other classes",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1200/")]
+    public async Task ProhibitExcessiveClassCoupling()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public sealed class A01 { public int Value; }
+            public sealed class A02 { public int Value; }
+            public sealed class A03 { public int Value; }
+            public sealed class A04 { public int Value; }
+            public sealed class A05 { public int Value; }
+            public sealed class A06 { public int Value; }
+            public sealed class A07 { public int Value; }
+            public sealed class A08 { public int Value; }
+            public sealed class A09 { public int Value; }
+            public sealed class A10 { public int Value; }
+            public sealed class A11 { public int Value; }
+            public sealed class A12 { public int Value; }
+            public sealed class A13 { public int Value; }
+            public sealed class A14 { public int Value; }
+            public sealed class A15 { public int Value; }
+            public sealed class A16 { public int Value; }
+            public sealed class A17 { public int Value; }
+            public sealed class A18 { public int Value; }
+            public sealed class A19 { public int Value; }
+            public sealed class A20 { public int Value; }
+            public sealed class A21 { public int Value; }
+            public sealed class A22 { public int Value; }
+            public sealed class A23 { public int Value; }
+            public sealed class A24 { public int Value; }
+            public sealed class A25 { public int Value; }
+            public sealed class A26 { public int Value; }
+            public sealed class A27 { public int Value; }
+            public sealed class A28 { public int Value; }
+            public sealed class A29 { public int Value; }
+            public sealed class A30 { public int Value; }
+            public sealed class A31 { public int Value; }
+
+            // References 31 distinct non-primitive types: exceeds the default threshold of 30
+            public sealed class Coupled
+            {
+                private static readonly System.Type T01 = typeof(A01);
+                private static readonly System.Type T02 = typeof(A02);
+                private static readonly System.Type T03 = typeof(A03);
+                private static readonly System.Type T04 = typeof(A04);
+                private static readonly System.Type T05 = typeof(A05);
+                private static readonly System.Type T06 = typeof(A06);
+                private static readonly System.Type T07 = typeof(A07);
+                private static readonly System.Type T08 = typeof(A08);
+                private static readonly System.Type T09 = typeof(A09);
+                private static readonly System.Type T10 = typeof(A10);
+                private static readonly System.Type T11 = typeof(A11);
+                private static readonly System.Type T12 = typeof(A12);
+                private static readonly System.Type T13 = typeof(A13);
+                private static readonly System.Type T14 = typeof(A14);
+                private static readonly System.Type T15 = typeof(A15);
+                private static readonly System.Type T16 = typeof(A16);
+                private static readonly System.Type T17 = typeof(A17);
+                private static readonly System.Type T18 = typeof(A18);
+                private static readonly System.Type T19 = typeof(A19);
+                private static readonly System.Type T20 = typeof(A20);
+                private static readonly System.Type T21 = typeof(A21);
+                private static readonly System.Type T22 = typeof(A22);
+                private static readonly System.Type T23 = typeof(A23);
+                private static readonly System.Type T24 = typeof(A24);
+                private static readonly System.Type T25 = typeof(A25);
+                private static readonly System.Type T26 = typeof(A26);
+                private static readonly System.Type T27 = typeof(A27);
+                private static readonly System.Type T28 = typeof(A28);
+                private static readonly System.Type T29 = typeof(A29);
+                private static readonly System.Type T30 = typeof(A30);
+                private static readonly System.Type T31 = typeof(A31);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1200").ShouldBeTrue();
+    }
 }

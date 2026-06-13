@@ -170,7 +170,8 @@ dotnet_diagnostic.S1199.severity = warning
 
 # S1200: Classes should not be coupled to too many other classes
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1200.severity = none
+dotnet_diagnostic.S1200.severity = warning
+sonar.S1200.max = 30
 
 # S1206: "Equals(Object)" and "GetHashCode()" should be overridden in pairs
 # Enabled: True, Severity: warning
