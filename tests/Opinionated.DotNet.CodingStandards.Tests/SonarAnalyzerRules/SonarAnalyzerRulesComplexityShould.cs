@@ -294,4 +294,45 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S1067").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1151", "“switch case” clauses should not have too many lines of code",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1151/")]
+    public async Task ProhibitExcessiveSwitchCaseLength()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int Process(int x)
+                {
+                    int result = 0;
+                    switch (x)
+                    {
+                        case 1:
+                            result += 1;
+                            result += 2;
+                            result += 3;
+                            result += 4;
+                            result += 5;
+                            result += 6;
+                            result += 7;
+                            result += 8;
+                            result += 9;
+                            result += 10;
+                            break;
+                        default:
+                            break;
+                    }
+                    return result;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1151").ShouldBeTrue();
+    }
 }

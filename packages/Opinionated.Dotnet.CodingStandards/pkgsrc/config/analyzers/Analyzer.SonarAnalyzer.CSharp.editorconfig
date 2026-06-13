@@ -134,7 +134,7 @@ dotnet_diagnostic.S1147.severity = warning
 
 # S1151: "switch case" clauses should not have too many lines of code
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1151.severity = none
+dotnet_diagnostic.S1151.severity = warning
 
 # S1155: "Any()" should be used to test for emptiness
 # Enabled: True, Severity: warning
