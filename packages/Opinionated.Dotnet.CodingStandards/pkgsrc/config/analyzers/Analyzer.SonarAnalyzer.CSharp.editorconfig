@@ -577,7 +577,7 @@ dotnet_diagnostic.S2436.severity = warning
 
 # S2437: Unnecessary bit operations should not be performed
 # Enabled: True, Severity: suggestion
-dotnet_diagnostic.S2437.severity = none
+dotnet_diagnostic.S2437.severity = warning
 
 # S2445: Blocks should be synchronized on read-only fields
 # Enabled: True, Severity: warning

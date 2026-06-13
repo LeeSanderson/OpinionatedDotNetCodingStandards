@@ -809,4 +809,23 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2345").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2437", "Unnecessary bit operations should not be performed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2437/")]
+    public async Task WarnOnUnnecessaryBitOperation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class BitOps
+            {
+                public static int UnnecessaryOr(int x) => x | 0;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2437").ShouldBeTrue();
+    }
 }
