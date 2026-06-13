@@ -114,7 +114,7 @@ dotnet_diagnostic.S113.severity = none
 
 # S1133: Deprecated code should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1133.severity = none
+dotnet_diagnostic.S1133.severity = warning
 
 # S1134: Track uses of "FIXME" tags
 # Enabled: True, Severity: warning
