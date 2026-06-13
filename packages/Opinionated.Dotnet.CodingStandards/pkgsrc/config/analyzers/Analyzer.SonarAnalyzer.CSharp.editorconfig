@@ -553,7 +553,7 @@ dotnet_diagnostic.S2365.severity = warning
 
 # S2368: Public methods should not have multidimensional array parameters
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2368.severity = none
+dotnet_diagnostic.S2368.severity = warning
 
 # S2372: Exceptions should not be thrown from property getters
 # Enabled: True, Severity: warning

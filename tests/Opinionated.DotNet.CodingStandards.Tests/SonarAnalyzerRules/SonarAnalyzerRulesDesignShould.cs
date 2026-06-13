@@ -356,4 +356,23 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2360").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2368", "Public methods should not have multidimensional array parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2368/")]
+    public async Task ProhibitMultidimensionalArrayParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Api
+            {
+                public void Process(int[,] matrix) { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2368").ShouldBeTrue();
+    }
 }
