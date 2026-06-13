@@ -789,7 +789,7 @@ dotnet_diagnostic.S3237.severity = warning
 
 # S3240: The simplest possible condition syntax should be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3240.severity = none
+dotnet_diagnostic.S3240.severity = warning
 
 # S3241: Methods should not return values that are never used
 # Enabled: True, Severity: warning

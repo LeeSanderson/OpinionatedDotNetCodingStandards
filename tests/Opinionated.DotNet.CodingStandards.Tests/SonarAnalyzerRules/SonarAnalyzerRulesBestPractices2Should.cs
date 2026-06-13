@@ -538,4 +538,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3236").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3240", "The simplest possible condition syntax should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3240/")]
+    public async Task WarnOnUnnecessarilyVerboseConditionSyntax()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static object Simplify(object a, object b)
+                {
+                    if (a == null) { a = b; }
+                    return a;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3240").ShouldBeTrue();
+    }
 }
