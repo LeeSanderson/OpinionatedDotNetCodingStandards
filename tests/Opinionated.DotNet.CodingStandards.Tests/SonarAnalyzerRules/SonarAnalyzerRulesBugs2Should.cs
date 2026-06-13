@@ -458,4 +458,24 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3249").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3263", "Static fields should appear in the order they must be initialized",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3263/")]
+    public async Task WarnOnStaticFieldInitializerOutOfOrder()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                static int A = B + 1;
+                static int B = 10;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3263").ShouldBeTrue();
+    }
 }

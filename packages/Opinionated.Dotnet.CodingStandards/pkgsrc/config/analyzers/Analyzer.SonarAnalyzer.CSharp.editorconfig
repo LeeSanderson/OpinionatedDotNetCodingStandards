@@ -847,9 +847,9 @@ dotnet_diagnostic.S3261.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S3262.severity = warning
 
-# S3263: Static fields should appear in the order they must be initialized 
+# S3263: Static fields should appear in the order they must be initialized
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3263.severity = none
+dotnet_diagnostic.S3263.severity = warning
 
 # S3264: Events should be invoked
 # Enabled: True, Severity: warning
