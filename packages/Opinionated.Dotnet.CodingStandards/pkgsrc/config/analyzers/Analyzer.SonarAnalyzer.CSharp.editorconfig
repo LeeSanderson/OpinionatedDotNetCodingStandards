@@ -769,7 +769,7 @@ dotnet_diagnostic.S3218.severity = warning
 
 # S3220: Method calls should not resolve ambiguously to overloads with "params"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3220.severity = none
+dotnet_diagnostic.S3220.severity = warning
 
 # S3234: "GC.SuppressFinalize" should not be invoked for types without destructors
 # Enabled: False, Severity: warning

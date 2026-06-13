@@ -445,4 +445,34 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3217").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3220", "Method calls should not resolve ambiguously to overloads with \"params\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3220/")]
+    public async Task WarnOnAmbiguousParamsOverloadResolution()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Helper
+            {
+                public static void Log(int level, params object[] messages) { _ = level; _ = messages; }
+                public static void Log(double level, object message) { _ = level; _ = message; }
+            }
+
+            public static class Caller
+            {
+                public static void Run()
+                {
+                    Helper.Log(1, null);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3220").ShouldBeTrue();
+    }
 }
