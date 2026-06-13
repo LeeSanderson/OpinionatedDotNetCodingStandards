@@ -925,7 +925,7 @@ dotnet_diagnostic.S3431.severity = warning
 
 # S3433: Test method signatures should be correct
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3433.severity = none
+dotnet_diagnostic.S3433.severity = warning
 
 # S3440: Variables should not be checked against the values they're about to be assigned
 # Enabled: True, Severity: warning

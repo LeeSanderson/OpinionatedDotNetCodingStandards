@@ -890,4 +890,26 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3431").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3433", "Test method signatures should be correct",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3433/")]
+    public async Task WarnOnIncorrectTestMethodSignature()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "NUnit", Version: "3.14.0")]);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using NUnit.Framework;
+            public class SomeTests
+            {
+                [Test]
+                private void PrivateTestMethod() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3433").ShouldBeTrue();
+    }
 }
