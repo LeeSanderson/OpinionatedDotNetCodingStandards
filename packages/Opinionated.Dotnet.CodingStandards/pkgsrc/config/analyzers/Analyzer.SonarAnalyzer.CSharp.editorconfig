@@ -729,7 +729,7 @@ dotnet_diagnostic.S3052.severity = warning
 
 # S3059: Types should not have members with visibility set higher than the type's visibility
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3059.severity = none
+dotnet_diagnostic.S3059.severity = warning
 
 # S3060: "is" should not be used with "this"
 # Enabled: True, Severity: warning

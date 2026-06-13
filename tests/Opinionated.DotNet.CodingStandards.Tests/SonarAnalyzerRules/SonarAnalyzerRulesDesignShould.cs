@@ -428,4 +428,26 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2743").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3059", "Types should not have members with visibility set higher than the type's visibility",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3059/")]
+    public async Task WarnOnMemberVisibilityExceedingTypeVisibility()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            internal class MyService
+            {
+                public void DoWork() { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3059").ShouldBeTrue();
+    }
 }
