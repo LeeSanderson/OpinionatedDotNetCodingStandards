@@ -42,4 +42,28 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S101").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1117", "Local variables should not shadow class fields or properties",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1117/")]
+    public async Task ProhibitLocalVariableShadowingClassField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyClass
+            {
+                private int value = 0;
+                public int Method()
+                {
+                    int value = 42;
+                    return value;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1117").ShouldBeTrue();
+    }
 }

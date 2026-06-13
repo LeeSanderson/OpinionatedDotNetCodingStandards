@@ -82,7 +82,7 @@ dotnet_diagnostic.S1116.severity = warning
 
 # S1117: Local variables should not shadow class fields or properties
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1117.severity = none
+dotnet_diagnostic.S1117.severity = warning
 
 # S1118: Utility classes should not have public constructors
 # Enabled: True, Severity: warning
