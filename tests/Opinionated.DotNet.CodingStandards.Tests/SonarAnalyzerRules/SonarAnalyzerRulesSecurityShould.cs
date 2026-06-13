@@ -167,4 +167,42 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2245").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2257", "Using non-standard cryptographic algorithms is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2257/")]
+    public async Task WarnOnNonstandardCryptographicAlgorithm()
+    {
+        // S2257 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFile("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S2257</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFile("Program.cs", """
+            using System.Security.Cryptography;
+
+            namespace test;
+
+            public class CustomHashAlgorithm : HashAlgorithm
+            {
+                public override void Initialize() => HashValue = new byte[20];
+                protected override void HashCore(byte[] array, int ibStart, int cbSize) { }
+                protected override byte[] HashFinal() => HashValue!;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2257").ShouldBeTrue();
+    }
 }

@@ -469,7 +469,7 @@ dotnet_diagnostic.S2252.severity = warning
 
 # S2257: Using non-standard cryptographic algorithms is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2257.severity = none
+dotnet_diagnostic.S2257.severity = warning
 
 # S2275: Composite format strings should not lead to unexpected behavior at runtime
 # Enabled: True, Severity: warning
