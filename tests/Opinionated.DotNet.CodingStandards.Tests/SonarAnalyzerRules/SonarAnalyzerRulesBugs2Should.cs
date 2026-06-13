@@ -257,4 +257,32 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2996").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2997", "IDisposables created in a 'using' statement should not be returned",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2997/")]
+    public async Task DetectDisposableReturnedFromUsingStatement()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.IO;
+
+            namespace test;
+
+            public sealed class Factory
+            {
+                public static Stream Create()
+                {
+                    using var stream = new MemoryStream();
+                    return stream;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2997").ShouldBeTrue();
+    }
 }
