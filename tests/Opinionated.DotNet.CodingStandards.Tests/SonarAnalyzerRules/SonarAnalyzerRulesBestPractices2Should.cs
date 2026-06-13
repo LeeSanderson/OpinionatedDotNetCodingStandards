@@ -785,4 +785,34 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3267").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3343", "Caller information parameters should come at the end of the parameter list",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3343/")]
+    public async Task WarnOnCallerInfoParameterNotAtEnd()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.CompilerServices;
+
+            namespace test;
+
+            public static class Logger
+            {
+                public static void Log(
+                    [CallerMemberName] string memberName = "",
+                    string message = "")
+                {
+                    _ = memberName;
+                    _ = message;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3343").ShouldBeTrue();
+    }
 }
