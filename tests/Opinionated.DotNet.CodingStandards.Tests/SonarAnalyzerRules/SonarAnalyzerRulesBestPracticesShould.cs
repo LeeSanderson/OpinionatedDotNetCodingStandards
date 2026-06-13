@@ -818,4 +818,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1481").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1607", "Tests should not be ignored",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1607/")]
+    public async Task WarnOnIgnoredTestWithoutReason()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "MSTest.TestFramework", Version: "4.2.3")]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.VisualStudio.TestTools.UnitTesting;
+            namespace test;
+            [TestClass]
+            public sealed class MyTests
+            {
+                [TestMethod]
+                [Ignore]
+                public void IgnoredTest() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1607").ShouldBeTrue();
+    }
 }

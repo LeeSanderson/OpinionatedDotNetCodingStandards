@@ -277,7 +277,7 @@ dotnet_diagnostic.S1541.severity = warning
 
 # S1607: Tests should not be ignored
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1607.severity = none
+dotnet_diagnostic.S1607.severity = warning
 
 # S1643: Strings should not be concatenated using '+' in a loop
 # Enabled: True, Severity: warning
