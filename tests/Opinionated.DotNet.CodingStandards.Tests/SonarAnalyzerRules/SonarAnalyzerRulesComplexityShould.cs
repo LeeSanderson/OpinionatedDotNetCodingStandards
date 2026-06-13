@@ -1,4 +1,4 @@
-// Copyright (c) Codurance. All rights reserved.
+﻿// Copyright (c) Codurance. All rights reserved.
 
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
@@ -336,5 +336,216 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("S1151").ShouldBeTrue();
+    }
+    [Fact]
+    [RuleDoc("S1479", "“switch” statements with many “case” clauses should have only one statement",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1479/")]
+    public async Task ProhibitSwitchWithTooManyCaseClauses()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Classifier
+            {
+                public static int Describe(int n)
+                {
+                    switch (n)
+                    {
+                        case 1:
+                        {
+                            int result = 1;
+                            result += 0;
+                            return result;
+                        }
+                        case 2:
+                        {
+                            int result = 2;
+                            result += 0;
+                            return result;
+                        }
+                        case 3:
+                        {
+                            int result = 3;
+                            result += 0;
+                            return result;
+                        }
+                        case 4:
+                        {
+                            int result = 4;
+                            result += 0;
+                            return result;
+                        }
+                        case 5:
+                        {
+                            int result = 5;
+                            result += 0;
+                            return result;
+                        }
+                        case 6:
+                        {
+                            int result = 6;
+                            result += 0;
+                            return result;
+                        }
+                        case 7:
+                        {
+                            int result = 7;
+                            result += 0;
+                            return result;
+                        }
+                        case 8:
+                        {
+                            int result = 8;
+                            result += 0;
+                            return result;
+                        }
+                        case 9:
+                        {
+                            int result = 9;
+                            result += 0;
+                            return result;
+                        }
+                        case 10:
+                        {
+                            int result = 10;
+                            result += 0;
+                            return result;
+                        }
+                        case 11:
+                        {
+                            int result = 11;
+                            result += 0;
+                            return result;
+                        }
+                        case 12:
+                        {
+                            int result = 12;
+                            result += 0;
+                            return result;
+                        }
+                        case 13:
+                        {
+                            int result = 13;
+                            result += 0;
+                            return result;
+                        }
+                        case 14:
+                        {
+                            int result = 14;
+                            result += 0;
+                            return result;
+                        }
+                        case 15:
+                        {
+                            int result = 15;
+                            result += 0;
+                            return result;
+                        }
+                        case 16:
+                        {
+                            int result = 16;
+                            result += 0;
+                            return result;
+                        }
+                        case 17:
+                        {
+                            int result = 17;
+                            result += 0;
+                            return result;
+                        }
+                        case 18:
+                        {
+                            int result = 18;
+                            result += 0;
+                            return result;
+                        }
+                        case 19:
+                        {
+                            int result = 19;
+                            result += 0;
+                            return result;
+                        }
+                        case 20:
+                        {
+                            int result = 20;
+                            result += 0;
+                            return result;
+                        }
+                        case 21:
+                        {
+                            int result = 21;
+                            result += 0;
+                            return result;
+                        }
+                        case 22:
+                        {
+                            int result = 22;
+                            result += 0;
+                            return result;
+                        }
+                        case 23:
+                        {
+                            int result = 23;
+                            result += 0;
+                            return result;
+                        }
+                        case 24:
+                        {
+                            int result = 24;
+                            result += 0;
+                            return result;
+                        }
+                        case 25:
+                        {
+                            int result = 25;
+                            result += 0;
+                            return result;
+                        }
+                        case 26:
+                        {
+                            int result = 26;
+                            result += 0;
+                            return result;
+                        }
+                        case 27:
+                        {
+                            int result = 27;
+                            result += 0;
+                            return result;
+                        }
+                        case 28:
+                        {
+                            int result = 28;
+                            result += 0;
+                            return result;
+                        }
+                        case 29:
+                        {
+                            int result = 29;
+                            result += 0;
+                            return result;
+                        }
+                        case 30:
+                        {
+                            int result = 30;
+                            result += 0;
+                            return result;
+                        }
+                        case 31:
+                        {
+                            int result = 31;
+                            result += 0;
+                            return result;
+                        }
+                        default:
+                            return 0;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1479").ShouldBeTrue();
     }
 }

@@ -265,7 +265,7 @@ dotnet_diagnostic.S1451.severity = warning
 
 # S1479: "switch" statements with many "case" clauses should have only one statement
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1479.severity = none
+dotnet_diagnostic.S1479.severity = warning
 
 # S1481: Unused local variables should be removed
 # Enabled: True, Severity: warning
