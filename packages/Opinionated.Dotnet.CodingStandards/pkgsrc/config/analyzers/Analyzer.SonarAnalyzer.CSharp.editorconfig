@@ -753,7 +753,7 @@ dotnet_diagnostic.S3172.severity = warning
 
 # S3215: "interface" instances should not be cast to concrete types
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3215.severity = none
+dotnet_diagnostic.S3215.severity = warning
 
 # S3216: "ConfigureAwait(false)" should be used
 # Enabled: False, Severity: warning

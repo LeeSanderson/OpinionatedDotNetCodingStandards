@@ -450,4 +450,34 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3059").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3215", "“interface” instances should not be cast to concrete types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3215/")]
+    public async Task WarnOnInterfaceCastToConcreteType()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public interface IShape { double Area(); }
+            public class Circle : IShape
+            {
+                public double Radius { get; }
+                public Circle(double radius) { Radius = radius; }
+                public double Area() => Math.PI * Radius * Radius;
+            }
+            public class Processor
+            {
+                public static double GetRadius(IShape shape)
+                {
+                    var circle = (Circle)shape; // S3215: casting interface ref to concrete type
+                    return circle.Radius;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3215").ShouldBeTrue();
+    }
 }
