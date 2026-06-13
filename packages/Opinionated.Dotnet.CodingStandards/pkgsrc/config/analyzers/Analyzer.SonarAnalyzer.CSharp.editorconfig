@@ -653,7 +653,7 @@ dotnet_diagnostic.S2760.severity = warning
 
 # S2761: Doubled prefix operators "!!" and "~~" should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2761.severity = none
+dotnet_diagnostic.S2761.severity = warning
 
 # S2857: SQL keywords should be delimited by whitespace
 # Enabled: True, Severity: warning

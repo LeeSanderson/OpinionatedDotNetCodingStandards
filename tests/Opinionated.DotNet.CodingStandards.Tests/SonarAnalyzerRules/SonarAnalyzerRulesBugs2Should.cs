@@ -94,4 +94,23 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2760").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2761", "Doubled prefix operators '!!' and '~~' should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2761/")]
+    public async Task ProhibitDoubledPrefixOperators()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Sample
+            {
+                public static bool DoubleNot(bool x) => !!x;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2761").ShouldBeTrue();
+    }
 }
