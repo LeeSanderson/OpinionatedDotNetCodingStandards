@@ -235,6 +235,10 @@ public static class RuleReferenceGenerator
                 {
                     helpLink = text["Help link:".Length..].Trim();
                 }
+                else
+                {
+                    // Other comment lines (e.g. "Enabled:" metadata) are not extracted
+                }
             }
 
             rules.Add((id, description, severity, helpLink));

@@ -615,4 +615,40 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S125").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S126", "“if ... else if” constructs should end with “else” clauses",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-126/")]
+    public async Task WarnOnIfElseIfWithoutFinalElse()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                public static string Classify(int n)
+                {
+                    if (n < 0)
+                    {
+                        return "negative";
+                    }
+                    else if (n == 0)
+                    {
+                        return "zero";
+                    }
+                    else if (n < 10)
+                    {
+                        return "small";
+                    }
+                    return "large";
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S126").ShouldBeTrue();
+    }
 }

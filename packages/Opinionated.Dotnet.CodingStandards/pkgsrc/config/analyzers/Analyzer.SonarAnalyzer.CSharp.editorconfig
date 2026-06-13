@@ -211,7 +211,7 @@ dotnet_diagnostic.S125.severity = warning
 
 # S126: "if ... else if" constructs should end with "else" clauses
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S126.severity = none
+dotnet_diagnostic.S126.severity = warning
 
 # S1264: A "while" loop should be used instead of a "for" loop
 # Enabled: True, Severity: warning
