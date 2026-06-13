@@ -393,7 +393,7 @@ dotnet_diagnostic.S2139.severity = warning
 
 # S2148: Underscores should be used to make large numbers readable
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2148.severity = none
+dotnet_diagnostic.S2148.severity = warning
 
 # S2156: "sealed" classes should not have "protected" members
 # Enabled: False, Severity: warning

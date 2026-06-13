@@ -28,4 +28,24 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S1940").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2148", "Underscores should be used to make large numbers readable",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2148/")]
+    public async Task WarnOnUnderscorelessLargeNumbers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Constants
+            {
+                public const int MaxUsers = 1000000;
+                public const long MaxBytes = 10000000000;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2148").ShouldBeTrue();
+    }
 }
