@@ -401,7 +401,7 @@ dotnet_diagnostic.S2156.severity = warning
 
 # S2166: Classes named like "Exception" should extend "Exception" or a subclass
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2166.severity = none
+dotnet_diagnostic.S2166.severity = warning
 
 # S2178: Short-circuit logic should be used in boolean contexts
 # Enabled: True, Severity: warning

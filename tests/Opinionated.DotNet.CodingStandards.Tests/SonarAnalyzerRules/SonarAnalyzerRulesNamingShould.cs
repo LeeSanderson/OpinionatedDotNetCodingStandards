@@ -68,4 +68,22 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S1117").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2166", "Classes named like \"Exception\" should extend \"Exception\" or a subclass",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2166/")]
+    public async Task WarnOnExceptionNamedClassNotExtendingException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyException
+            {
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2166").ShouldBeTrue();
+    }
 }
