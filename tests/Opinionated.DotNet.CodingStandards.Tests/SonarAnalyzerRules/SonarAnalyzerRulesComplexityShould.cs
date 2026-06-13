@@ -586,4 +586,20 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S1821").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2436", "Types and methods should not have too many generic parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2436/")]
+    public async Task ProhibitTooManyGenericTypeParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class TooManyTypeParams<T1, T2, T3> { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2436").ShouldBeTrue();
+    }
 }

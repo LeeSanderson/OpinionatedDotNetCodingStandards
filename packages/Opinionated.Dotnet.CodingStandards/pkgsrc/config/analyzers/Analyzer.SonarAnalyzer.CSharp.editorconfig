@@ -573,7 +573,7 @@ dotnet_diagnostic.S2387.severity = warning
 
 # S2436: Types and methods should not have too many generic parameters
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2436.severity = none
+dotnet_diagnostic.S2436.severity = warning
 
 # S2437: Unnecessary bit operations should not be performed
 # Enabled: True, Severity: suggestion
