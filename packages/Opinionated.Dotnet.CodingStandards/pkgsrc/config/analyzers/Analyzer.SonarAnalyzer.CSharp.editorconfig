@@ -207,7 +207,7 @@ dotnet_diagnostic.S1244.severity = warning
 
 # S125: Sections of code should not be commented out
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S125.severity = none
+dotnet_diagnostic.S125.severity = warning
 
 # S126: "if ... else if" constructs should end with "else" clauses
 # Enabled: False, Severity: warning

@@ -1216,12 +1216,11 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         using var project = await CreateProjectBuilder();
 
         // IDE2006's analyzer (ArrowExpressionClausePlacementDiagnosticAnalyzer) returns early
-        // when AllowBlankLineAfterTokenInArrowExpressionClause is true:
-        //   if (option.Value || ShouldSkipAnalysis(...)) return;
-        // The package's CodeStyle.editorconfig ships that option as true (a global_level=-1
-        // config), so by default only IDE0055 fires. A local [*.cs] .editorconfig overrides the
-        // option back to false (file-scoped config wins over the package's global config), which
-        // re-enables IDE2006 so the blank line after => is reported.
+        // when AllowBlankLineAfterTokenInArrowExpressionClause is true. The package's
+        // CodeStyle.editorconfig ships that option as true (a global_level=-1 config), so by
+        // default only IDE0055 fires. A local editorconfig overrides the option back to false
+        // (file-scoped config wins over the package's global config), which re-enables IDE2006
+        // so the blank line after the arrow expression is reported.
         await project.AddFile(
             ".editorconfig",
             """

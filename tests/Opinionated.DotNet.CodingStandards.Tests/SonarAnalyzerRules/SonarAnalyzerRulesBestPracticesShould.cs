@@ -585,4 +585,34 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1227").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S125", "Sections of code should not be commented out",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-125/")]
+    public async Task ProhibitCommentedOutCode()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Calculator
+            {
+                public static int Add(int a, int b)
+                {
+                    // int result = a - b;
+                    // if (result < 0)
+                    // {
+                    //     result = 0;
+                    // }
+                    // return result;
+                    return a + b;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S125").ShouldBeTrue();
+    }
 }

@@ -1208,15 +1208,14 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5363")]
     public async Task ProhibitDisablingRequestValidation()
     {
-        // CA5363's analyzer (DoNotDisableRequestValidation) gates on
-        // Compilation.TryGetOrCreateTypeByMetadataName("System.Web.Mvc.ValidateInputAttribute").
-        // That lookup resolves a type with that metadata name from ANY source visible to the
-        // compilation, INCLUDING one declared in the project's own source - the same self-defined
-        // removed-from-.NET-Core-type pattern used by other rules in this suite. We declare
-        // System.Web.Mvc.ValidateInputAttribute here and apply [ValidateInput(false)] to a method;
-        // the report predicate fires because the single primitive constructor argument is false.
-        // The rule's default severity is Hidden, but the bundled package .editorconfig raises it to
-        // warning (dotnet_diagnostic.CA5363.severity = warning), so it surfaces as a SARIF error.
+        // CA5363's analyzer (DoNotDisableRequestValidation) gates on resolving
+        // System.Web.Mvc.ValidateInputAttribute by metadata name. That lookup resolves any type
+        // with that metadata name visible to the compilation, including one declared in the project's
+        // own source - the same self-defined removed-from-.NET-Core-type pattern used by other rules
+        // in this suite. We declare the attribute type and apply it with false to a method; the report
+        // predicate fires because the single primitive constructor argument is false. The rule's default
+        // severity is Hidden, but the bundled package .editorconfig raises it to warning, so it
+        // surfaces as a SARIF error.
         using var project = await CreateProjectBuilder();
         await project.AddFile(
             "Program.cs",
@@ -1430,10 +1429,10 @@ public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutput
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5387")]
     public async Task ProhibitWeakKeyDerivationFunctionWithInsufficientIterations()
     {
-        // Rfc2898DeriveBytes constructors are [Obsolete(SYSLIB0060)] (a warning, not an error) on net10.0;
-        // suppress that at MSBuild scope via NoWarn so the CA5387 dataflow diagnostic surfaces on its own.
-        // CA5387 flags the constructor whose iterations argument (index 2, here the literal 100) is below the
-        // 100000 threshold, reported at the "GetBytes" hazardous usage.
+        // Rfc2898DeriveBytes constructors carry an obsolete warning on net10.0.
+        // Suppressing that warning at MSBuild scope lets the CA5387 dataflow diagnostic
+        // surface on its own. The rule flags a constructor call where the iteration count
+        // argument is below 100000, reported at the hazardous GetBytes call site.
         using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "SYSLIB0060")]);
         await project.AddFile(
             "Program.cs",

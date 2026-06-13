@@ -42,7 +42,6 @@ internal sealed class ProjectBuilder : IDisposable
                         </configuration>
                         """);
 
-        // File.Copy(Path.Combine(PathHelpers.GetRootDirectory(), "global.json"), this._directory.GetPath("global.json"));
     }
 
     public async ValueTask AddFile(string relativePath, string content)
@@ -161,8 +160,6 @@ internal sealed class ProjectBuilder : IDisposable
     {
         var bytes = await File.ReadAllBytesAsync(_directory.GetPath(BuildOutputFileName));
         var buildOutputFile = JsonSerializer.Deserialize<BuildOutputFile>(bytes) ?? throw new InvalidOperationException("The sarif file is invalid");
-
-        // AppendAdditionalResult(buildOutputFile);
 
         _testOutputHelper.WriteLine("Sarif result:\n" + string.Join("\n", buildOutputFile.AllResults().Select(r => r.ToString())));
         return buildOutputFile;

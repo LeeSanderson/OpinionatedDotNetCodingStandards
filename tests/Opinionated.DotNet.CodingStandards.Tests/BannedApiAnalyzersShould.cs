@@ -144,7 +144,6 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     {
         using var project = await CreateProjectBuilder();
 
-        // Replace with _ = new ValueTuple<int, int>(1, 2);
         await project.AddFile("sample.cs", "_ = new Tuple<int, int>(1, 2);");
         var buildOutput = await project.BuildAndGetOutput();
 
@@ -168,7 +167,6 @@ public class BannedApiAnalyzersShould(PackageFixture fixture, ITestOutputHelper 
     {
         using var project = await CreateProjectBuilder(packageReferences: [(Name: "Newtonsoft.Json", Version: "13.0.4")]);
 
-        // Replace with System.Text.Json.JsonSerializer.Serialize("test");
         await project.AddFile("sample.cs", """_ = Newtonsoft.Json.JsonConvert.SerializeObject("test");""");
         var buildOutput = await project.BuildAndGetOutput();
 
