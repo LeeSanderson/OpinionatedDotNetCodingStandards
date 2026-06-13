@@ -199,7 +199,7 @@ public static class RuleReferenceGenerator
     private static void AppendRuleRow(
         StringBuilder sb,
         (string Id, string Description, string Severity, string HelpLink) rule,
-        Dictionary<string, RuleDocAttribute> ruleDocs)
+        IDictionary<string, RuleDocAttribute> ruleDocs)
     {
         ruleDocs.TryGetValue(rule.Id, out var doc);
         var description = doc?.Description ?? "";

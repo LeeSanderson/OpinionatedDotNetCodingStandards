@@ -506,4 +506,33 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3218").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3242", "Method parameters should be declared with base types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3242/")]
+    public async Task WarnOnParameterDeclaredWithDerivedTypeWhenBaseTypeSuffices()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System.IO;
+            public class StreamProcessor
+            {
+                public static int ReadAllBytes(FileStream stream)
+                {
+                    int total = 0;
+                    int b;
+                    while ((b = stream.ReadByte()) != -1)
+                    {
+                        total++;
+                    }
+                    return total;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3242").ShouldBeTrue();
+    }
 }

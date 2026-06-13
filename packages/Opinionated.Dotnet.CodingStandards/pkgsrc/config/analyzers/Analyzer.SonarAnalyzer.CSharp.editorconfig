@@ -797,7 +797,7 @@ dotnet_diagnostic.S3241.severity = warning
 
 # S3242: Method parameters should be declared with base types
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3242.severity = none
+dotnet_diagnostic.S3242.severity = warning
 
 # S3244: Anonymous delegates should not be used to unsubscribe from Events
 # Enabled: True, Severity: warning

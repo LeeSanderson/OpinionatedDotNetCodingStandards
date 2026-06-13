@@ -133,7 +133,7 @@ public static class AnalyzerResolver
     }
 
     private static List<string> ResolveFullDllPaths(
-        List<string> selected, string packageId, string version, List<string> packageFolders)
+        IEnumerable<string> selected, string packageId, string version, IEnumerable<string> packageFolders)
     {
         var dlls = new List<string>();
         foreach (var relPath in selected)

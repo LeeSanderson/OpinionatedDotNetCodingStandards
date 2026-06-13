@@ -48,8 +48,8 @@ public static class DescriptorExtractor
     private static void CollectFromDll(
         string dllPath,
         IAnalyzerAssemblyLoader loader,
-        HashSet<string> seen,
-        List<RuleDescriptor> descriptors)
+        ISet<string> seen,
+        ICollection<RuleDescriptor> descriptors)
     {
         var reference = new AnalyzerFileReference(dllPath, loader);
         reference.AnalyzerLoadFailed += (_, _) => { };
@@ -77,8 +77,8 @@ public static class DescriptorExtractor
 
     private static void CollectFromAnalyzer(
         DiagnosticAnalyzer analyzer,
-        HashSet<string> seen,
-        List<RuleDescriptor> descriptors)
+        ISet<string> seen,
+        ICollection<RuleDescriptor> descriptors)
     {
         foreach (var diagnostic in analyzer.SupportedDiagnostics)
         {
