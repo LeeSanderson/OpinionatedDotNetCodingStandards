@@ -892,4 +892,47 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1659").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1871", "Two branches in a conditional structure should not have exactly the same implementation",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1871/")]
+    public async Task WarnOnDuplicateConditionalBranchImplementation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Grader
+            {
+                public static string Classify(string category)
+                {
+                    if (category == "A")
+                    {
+                        Console.WriteLine("grade A");
+                        Console.WriteLine("excellent");
+                        return "pass";
+                    }
+                    else if (category == "B")
+                    {
+                        Console.WriteLine("grade B");
+                        Console.WriteLine("good");
+                        return "pass";
+                    }
+                    else if (category == "C")
+                    {
+                        Console.WriteLine("grade A");
+                        Console.WriteLine("excellent");
+                        return "pass";
+                    }
+                    else
+                    {
+                        return "fail";
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1871").ShouldBeTrue();
+    }
 }

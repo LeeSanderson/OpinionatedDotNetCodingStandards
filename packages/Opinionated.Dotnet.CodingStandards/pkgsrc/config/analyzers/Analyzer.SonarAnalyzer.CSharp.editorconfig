@@ -337,7 +337,7 @@ dotnet_diagnostic.S1862.severity = warning
 
 # S1871: Two branches in a conditional structure should not have exactly the same implementation
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1871.severity = none
+dotnet_diagnostic.S1871.severity = warning
 
 # S1905: Redundant casts should not be used
 # Enabled: True, Severity: warning
