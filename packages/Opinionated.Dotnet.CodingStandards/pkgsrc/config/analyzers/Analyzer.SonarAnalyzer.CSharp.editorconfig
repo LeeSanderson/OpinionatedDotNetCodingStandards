@@ -449,7 +449,7 @@ dotnet_diagnostic.S2223.severity = none
 
 # S2225: "ToString()" method should not return null
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2225.severity = none
+dotnet_diagnostic.S2225.severity = warning
 
 # S2234: Arguments should be passed in the same order as the method parameters
 # Enabled: True, Severity: warning

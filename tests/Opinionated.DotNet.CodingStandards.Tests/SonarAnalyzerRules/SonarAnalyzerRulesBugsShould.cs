@@ -591,4 +591,23 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2221").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2225", "ToString() method should not return null",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2225/")]
+    public async Task WarnWhenToStringReturnsNull()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyType
+            {
+                public override string? ToString() => null;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2225").ShouldBeTrue();
+    }
 }
