@@ -921,7 +921,7 @@ dotnet_diagnostic.S3427.severity = warning
 
 # S3431: "[ExpectedException]" should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3431.severity = none
+dotnet_diagnostic.S3431.severity = warning
 
 # S3433: Test method signatures should be correct
 # Enabled: True, Severity: warning

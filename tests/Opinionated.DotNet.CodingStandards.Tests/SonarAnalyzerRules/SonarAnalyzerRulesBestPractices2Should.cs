@@ -861,4 +861,33 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3400").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3431", "[ExpectedException] attribute should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3431/")]
+    public async Task ProhibitExpectedExceptionAttribute()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "MSTest.TestFramework", Version: "2.2.10")]);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+            [TestClass]
+            public class MyTests
+            {
+                [TestMethod]
+                [ExpectedException(typeof(System.InvalidOperationException))]
+                public void ShouldThrow()
+                {
+                    var x = 0;
+                    _ = 1 / x;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3431").ShouldBeTrue();
+    }
 }
