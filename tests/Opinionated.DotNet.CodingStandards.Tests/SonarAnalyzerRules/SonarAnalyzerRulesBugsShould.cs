@@ -90,4 +90,29 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S127").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1656", "Variables should not be self-assigned",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1656/")]
+    public async Task DetectSelfAssignment()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                private int _value;
+                public void SetValue(int value)
+                {
+                    _value = value;
+                    _value = _value;
+                }
+                public int GetValue() => _value;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1656").ShouldBeTrue();
+    }
 }
