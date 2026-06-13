@@ -741,7 +741,7 @@ dotnet_diagnostic.S3063.severity = warning
 
 # S3168: "async" methods should not return "void"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3168.severity = none
+dotnet_diagnostic.S3168.severity = warning
 
 # S3169: Multiple "OrderBy" calls should not be used
 # Enabled: True, Severity: warning

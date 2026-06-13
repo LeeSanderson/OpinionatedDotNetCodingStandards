@@ -332,4 +332,23 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3010").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3168", "async methods should not return void",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3168/")]
+    public async Task WarnOnAsyncVoidMethod()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyClass
+            {
+                public async void DoWork() { await System.Threading.Tasks.Task.Delay(1); }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3168").ShouldBeTrue();
+    }
 }
