@@ -527,4 +527,42 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3265").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3346", "Expressions used in \"Debug.Assert\" should not produce side effects",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3346/")]
+    public async Task WarnOnSideEffectsInDebugAssert()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Diagnostics;
+
+            namespace test;
+
+            public class C
+            {
+                private int _count;
+
+                public bool Add(int x)
+                {
+                    _count += x;
+                    return _count > 0;
+                }
+            }
+
+            public static class Program
+            {
+                public static void Method(int x)
+                {
+                    var c = new C();
+                    Debug.Assert(c.Add(x));
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3346").ShouldBeTrue();
+    }
 }

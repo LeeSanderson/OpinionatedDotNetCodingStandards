@@ -873,7 +873,7 @@ dotnet_diagnostic.S3343.severity = warning
 
 # S3346: Expressions used in "Debug.Assert" should not produce side effects
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3346.severity = none
+dotnet_diagnostic.S3346.severity = warning
 
 # S3353: Unchanged variables should be marked as "const"
 # Enabled: False, Severity: warning
