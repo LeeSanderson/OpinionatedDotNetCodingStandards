@@ -413,7 +413,7 @@ dotnet_diagnostic.S2183.severity = warning
 
 # S2184: Results of integer division should not be assigned to floating point variables
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2184.severity = none
+dotnet_diagnostic.S2184.severity = warning
 
 # S2187: Test classes should contain at least one test case
 # Enabled: True, Severity: warning

@@ -490,4 +490,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2183").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2184", "Results of integer division should not be assigned to floating point variables",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2184/")]
+    public async Task DetectIntegerDivisionAssignedToFloatingPoint()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Calculator
+            {
+                public static double GetRatio(int numerator, int denominator)
+                {
+                    double ratio = numerator / denominator;
+                    return ratio;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2184").ShouldBeTrue();
+    }
 }
