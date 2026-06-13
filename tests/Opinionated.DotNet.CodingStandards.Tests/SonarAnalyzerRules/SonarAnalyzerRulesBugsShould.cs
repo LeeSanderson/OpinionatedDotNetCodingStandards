@@ -365,4 +365,29 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1994").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2114", "Collections should not be passed as arguments to their own methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2114/")]
+    public async Task WarnOnCollectionPassedToOwnMethod()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var set = new System.Collections.Generic.HashSet<int> { 1, 2, 3 };
+                    set.IntersectWith(set);
+                    return 0;
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2114").ShouldBeTrue();
+    }
 }
