@@ -146,4 +146,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1696").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1698", "\"==\" should not be used when \"Equals\" is overridden",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1698/")]
+    public async Task WarnOnEqualityOperatorWhenEqualsIsOverridden()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Money
+            {
+                private readonly int _amount;
+                public Money(int amount) { _amount = amount; }
+                public override bool Equals(object? obj) => obj is Money m && m._amount == _amount;
+                public override int GetHashCode() => _amount.GetHashCode();
+            }
+            public class Checker
+            {
+                public static bool AreEqual(Money a, Money b) => a == b;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1698").ShouldBeTrue();
+    }
 }

@@ -301,7 +301,7 @@ dotnet_diagnostic.S1696.severity = warning
 
 # S1698: "==" should not be used when "Equals" is overridden
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1698.severity = none
+dotnet_diagnostic.S1698.severity = warning
 
 # S1699: Constructors should only call non-overridable methods
 # Enabled: True, Severity: warning
