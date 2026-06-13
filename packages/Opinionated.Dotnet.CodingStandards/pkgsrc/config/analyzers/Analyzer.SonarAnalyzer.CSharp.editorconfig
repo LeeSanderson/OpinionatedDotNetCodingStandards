@@ -481,7 +481,7 @@ dotnet_diagnostic.S2290.severity = none
 
 # S2291: Overflow checking should not be disabled for "Enumerable.Sum"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2291.severity = none
+dotnet_diagnostic.S2291.severity = warning
 
 # S2292: Trivial properties should be auto-implemented
 # Enabled: True, Severity: warning

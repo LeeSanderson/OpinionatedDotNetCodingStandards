@@ -696,4 +696,35 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2252").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2291", "Overflow checking should not be disabled for \"Enumerable.Sum\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2291/")]
+    public async Task WarnOnEnumerableSumInUncheckedContext()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            public static class Totals
+            {
+                public static long ComputeTotal(IEnumerable<long> values)
+                {
+                    unchecked
+                    {
+                        return values.Sum();
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2291").ShouldBeTrue();
+    }
 }
