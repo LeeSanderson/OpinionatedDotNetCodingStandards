@@ -15,6 +15,7 @@ public static class AnalyzerResolver
             ["meziantou.analyzer"] = "Analyzer.Meziantou.Analyzer.editorconfig",
             ["microsoft.codeanalysis.bannedapianalyzers"] = "Analyzer.Microsoft.CodeAnalysis.BannedApiAnalyzers.editorconfig",
             ["microsoft.codeanalysis.netanalyzers"] = "Analyzer.Microsoft.CodeAnalysis.NetAnalyzers.editorconfig",
+            ["sonaranalyzer.csharp"] = "Analyzer.SonarAnalyzer.CSharp.editorconfig",
             ["stylecop.analyzers.unstable"] = "Analyzer.StyleCop.Analyzers.Unstable.editorconfig",
         };
 
@@ -162,8 +163,9 @@ public static class AnalyzerResolver
 
     // Returns relative paths (forward-slash) for C# analyzer DLLs in the package.
     // Accepted patterns:
-    //   analyzers/dotnet/<name>.dll              (platform-neutral)
-    //   analyzers/dotnet/cs/<name>.dll           (direct C#, no sub-folder)
+    //   analyzers/<name>.dll                      (flat legacy layout)
+    //   analyzers/dotnet/<name>.dll               (platform-neutral)
+    //   analyzers/dotnet/cs/<name>.dll            (direct C#, no sub-folder)
     //   analyzers/dotnet/roslyn<X>.<Y>/cs/<name>.dll  (roslyn-versioned C#)
     private static List<string> CollectCsharpAnalyzerFiles(JsonElement files)
     {
@@ -180,25 +182,33 @@ public static class AnalyzerResolver
             }
 
             var parts = filePath.Split('/');
-            if (parts.Length < 3 || parts[0] != "analyzers" || parts[1] != "dotnet")
+            if (parts.Length < 2 || parts[0] != "analyzers")
             {
                 continue;
             }
 
-            if (parts.Length == 3)
+            if (parts.Length == 2)
             {
-                // Platform-neutral: analyzers/dotnet/<name>.dll
+                // Flat legacy layout: analyzers/<name>.dll
                 result.Add(filePath);
             }
-            else if (parts.Length == 4 && parts[2] == "cs")
+            else if (parts.Length >= 3 && parts[1] == "dotnet")
             {
-                // Direct C#: analyzers/dotnet/cs/<name>.dll
-                result.Add(filePath);
-            }
-            else if (parts.Length == 5 && RoslynVersionPattern.IsMatch(parts[2]) && parts[3] == "cs")
-            {
-                // Roslyn-versioned C#: analyzers/dotnet/roslynX.Y/cs/<name>.dll
-                result.Add(filePath);
+                if (parts.Length == 3)
+                {
+                    // Platform-neutral: analyzers/dotnet/<name>.dll
+                    result.Add(filePath);
+                }
+                else if (parts.Length == 4 && parts[2] == "cs")
+                {
+                    // Direct C#: analyzers/dotnet/cs/<name>.dll
+                    result.Add(filePath);
+                }
+                else if (parts.Length == 5 && RoslynVersionPattern.IsMatch(parts[2]) && parts[3] == "cs")
+                {
+                    // Roslyn-versioned C#: analyzers/dotnet/roslynX.Y/cs/<name>.dll
+                    result.Add(filePath);
+                }
             }
         }
 
@@ -206,16 +216,17 @@ public static class AnalyzerResolver
     }
 
     // When there are roslyn-versioned DLLs, keeps only those from the highest roslyn version.
-    // Platform-neutral DLLs (analyzers/dotnet/<name>.dll) are always included.
+    // Flat legacy DLLs (analyzers/<name>.dll) and platform-neutral DLLs are always included.
     private static List<string> SelectBestRoslynVersion(List<string> candidates)
     {
+        var flat = candidates.Where(p => p.Split('/').Length == 2).ToList();
         var platformNeutral = candidates.Where(p => p.Split('/').Length == 3).ToList();
         var versioned = candidates.Where(p => p.Split('/').Length == 5).ToList();
         var direct = candidates.Where(p => p.Split('/').Length == 4).ToList();
 
         if (versioned.Count == 0)
         {
-            return [.. platformNeutral, .. direct];
+            return [.. flat, .. platformNeutral, .. direct];
         }
 
         var bestFolder = versioned
@@ -240,6 +251,7 @@ public static class AnalyzerResolver
         }
 
         return [
+            .. flat,
             .. platformNeutral,
             .. versioned.Where(p => p.Split('/')[2].Equals(bestFolder, StringComparison.OrdinalIgnoreCase)),
         ];

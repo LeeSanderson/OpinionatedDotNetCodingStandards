@@ -64,6 +64,10 @@ Rules set to `none` or `silent` are omitted.
 | `MA0173` | Use LazyInitializer.EnsureInitialize | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0173.md) |
 | `MA0176` | Optimize guid creation | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0176.md) |
 | `MA0178` | Use TimeSpan.Zero instead of TimeSpan.FromXXX(0) | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0178.md) |
+| `MA0179` | Use Attribute.IsDefined instead of GetCustomAttribute(s) | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0179.md) |
+| `MA0180` | ILogger type parameter should match containing type | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0180.md) |
+| `MA0181` | Do not use cast | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0181.md) |
+| `MA0182` | Avoid unused internal types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0182.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
@@ -71,7 +75,7 @@ Rules set to `none` or `silent` are omitted.
 |---------|-------------|----------|------|
 | `RS0030` | Do not use banned APIs | warning | [docs](https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md) |
 | `RS0031` | The list of banned symbols contains a duplicate | warning | [docs](https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md) |
-| `RS0035` | External access to internal symbols outside the restricted namespace(s) is prohibited | error |  |
+| `RS0035` | External access to internal symbols outside the restricted namespace(s) is prohibited | error | [docs](https://github.com/dotnet/roslyn/blob/main/src/RoslynAnalyzers/Microsoft.CodeAnalysis.BannedApiAnalyzers/BannedApiAnalyzers.Help.md) |
 
 ## Microsoft.CodeAnalysis.CSharp.CodeStyle
 
@@ -85,18 +89,18 @@ Rules set to `none` or `silent` are omitted.
 | `IDE0011` | Add braces | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0011) |
 | `IDE0017` | Simplify object initialization | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0017) |
 | `IDE0018` | Inline variable declaration | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0018) |
-| `IDE0019` | Use pattern matching | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0019) |
+| `IDE0019` | Use pattern matching to avoid 'as' followed by a 'null' check | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0019) |
 | `IDE0020` | Use pattern matching | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0020) |
-| `IDE0028` | Simplify collection initialization | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0028) |
+| `IDE0028` | Use collection initializers or expressions | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0028) |
 | `IDE0029` | Use coalesce expression | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0029) |
 | `IDE0030` | Use coalesce expression | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0030) |
 | `IDE0031` | Use null propagation | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031) |
 | `IDE0033` | Use explicitly provided tuple name | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0033) |
 | `IDE0034` | Simplify 'default' expression | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0034) |
 | `IDE0036` | Order modifiers | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0036) |
-| `IDE0039` | Use local function | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0039) |
+| `IDE0039` | Use local function instead of lambda | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0039) |
 | `IDE0040` | Add accessibility modifiers | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0040) |
-| `IDE0043` | Invalid format string | warning |  |
+| `IDE0043` | Format string contains invalid placeholder | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0043) |
 | `IDE0044` | Add readonly modifier | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0044) |
 | `IDE0045` | Convert to conditional expression | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0045) |
 | `IDE0046` | Convert to conditional expression | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0046) |
@@ -109,7 +113,7 @@ Rules set to `none` or `silent` are omitted.
 | `IDE0059` | Unnecessary assignment of a value | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0059) |
 | `IDE0060` | Remove unused parameter | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0060) |
 | `IDE0062` | Make local function 'static' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0062) |
-| `IDE0064` | Make readonly fields writable | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0064) |
+| `IDE0064` | Make struct fields writable | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0064) |
 | `IDE0065` | Misplaced using directive | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0065) |
 | `IDE0066` | Convert switch statement to expression | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0066) |
 | `IDE0070` | Use 'System.HashCode' | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070) |
@@ -285,7 +289,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA2017` | Parameter count mismatch | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2017) |
 | `CA2018` | 'Buffer.BlockCopy' expects the number of bytes to be copied for the 'count' argument | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2018) |
 | `CA2019` | Improper 'ThreadStatic' field initialization | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2019) |
-| `CA2020` | Prevent behavioral change | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020) |
+| `CA2020` | Prevent behavioral change caused by built-in operators of IntPtr and UIntPtr | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2020) |
 | `CA2021` | Do not call Enumerable.Cast<T> or Enumerable.OfType<T> with incompatible types | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2021) |
 | `CA2022` | Avoid inexact read with 'Stream.Read' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2022) |
 | `CA2023` | Invalid braces in message template | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023) |
@@ -310,7 +314,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA2226` | Operators should have symmetrical overloads | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2226) |
 | `CA2231` | Overload operator equals on overriding value type Equals | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2231) |
 | `CA2235` | Mark all non-serializable fields | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2235) |
-| `CA2237` | Mark ISerializable types with serializable | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2237) |
+| `CA2237` | Mark ISerializable types with SerializableAttribute | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2237) |
 | `CA2241` | Provide correct arguments to formatting methods | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2241) |
 | `CA2242` | Test for NaN correctly | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2242) |
 | `CA2243` | Attribute string literals should parse correctly | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2243) |
@@ -388,7 +392,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA5378` | Do not disable ServicePointManagerSecurityProtocols | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5378) |
 | `CA5379` | Ensure Key Derivation Function algorithm is sufficiently strong | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5379) |
 | `CA5380` | Do Not Add Certificates To Root Store | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5380) |
-| `CA5381` | Ensure Certificates Are Not Added To Root Store | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381) |
+| `CA5381` | Ensure Certificates Are Not Added To Root Certificate Store | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5381) |
 | `CA5382` | Use Secure Cookies In ASP.NET Core | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5382) |
 | `CA5383` | Ensure Use Secure Cookies In ASP.NET Core | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5383) |
 | `CA5384` | Do Not Use Digital Signature Algorithm (DSA) | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5384) |

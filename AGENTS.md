@@ -3,11 +3,12 @@
 ## What this is
 
 `Opinionated.DotNet.CodingStandards` is a NuGet **development-dependency package** — not
-a code library. It bundles four Roslyn analyzer packages (Meziantou.Analyzer,
+a code library. It bundles five Roslyn analyzer packages (Meziantou.Analyzer,
 Microsoft.CodeAnalysis.BannedApiAnalyzers, Microsoft.CodeAnalysis.NetAnalyzers,
-StyleCop.Analyzers) plus `.editorconfig` files and MSBuild `.props`/`.targets`. When
-installed it turns on strict compiler settings and enforces code-style, quality, and
-banned-API rules on the consuming project.
+SonarAnalyzer.CSharp, StyleCop.Analyzers) plus `.editorconfig` files and MSBuild
+`.props`/`.targets`. When installed it turns on strict compiler settings and enforces
+code-style, quality, banned-API, and complexity rules on the consuming project.
+`SonarAnalyzer.CSharp` is LGPL-3.0; it runs at build time only and is not redistributed.
 
 The package emits **no production assembly** — the shipped payload is the files under
 `packages/Opinionated.DotNet.CodingStandards/pkgsrc/`.
