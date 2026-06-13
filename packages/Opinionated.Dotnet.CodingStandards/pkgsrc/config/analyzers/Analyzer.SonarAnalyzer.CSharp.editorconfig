@@ -665,7 +665,7 @@ dotnet_diagnostic.S2925.severity = warning
 
 # S2930: "IDisposables" should be disposed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2930.severity = none
+dotnet_diagnostic.S2930.severity = warning
 
 # S2931: Classes with "IDisposable" members should implement "IDisposable"
 # Enabled: False, Severity: warning

@@ -138,4 +138,28 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2857").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2930", "IDisposables should be disposed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2930/")]
+    public async Task WarnOnUndisposedIDisposable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var fs = new System.IO.FileStream("test.txt", System.IO.FileMode.Create);
+                    fs.WriteByte(1);
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2930").ShouldBeTrue();
+    }
 }
