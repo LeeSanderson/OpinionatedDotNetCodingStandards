@@ -845,7 +845,7 @@ dotnet_diagnostic.S3261.severity = warning
 
 # S3262: "params" should be used on overrides
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3262.severity = none
+dotnet_diagnostic.S3262.severity = warning
 
 # S3263: Static fields should appear in the order they must be initialized 
 # Enabled: True, Severity: warning

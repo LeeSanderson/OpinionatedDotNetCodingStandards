@@ -728,4 +728,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3261").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3262", "\"params\" should be used on overrides",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3262/")]
+    public async Task WarnWhenOverrideDropsParamsModifier()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public abstract class Base
+            {
+                public abstract void Method(params int[] values);
+            }
+            public class Derived : Base
+            {
+                public override void Method(int[] values) { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3262").ShouldBeTrue();
+    }
 }
