@@ -71,12 +71,9 @@ public static class RuleReferenceGenerator
         IReadOnlySet<string> activeRules,
         IReadOnlyList<RuleDocEntry> docEntries)
     {
-        var idCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        foreach (var entry in docEntries)
-        {
-            idCounts.TryGetValue(entry.RuleId, out var n);
-            idCounts[entry.RuleId] = n + 1;
-        }
+        var idCounts = docEntries
+            .GroupBy(entry => entry.RuleId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
 
         var duplicateIds = idCounts
             .Where(kvp => kvp.Value > 1)

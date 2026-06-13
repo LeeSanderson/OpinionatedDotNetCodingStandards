@@ -861,7 +861,7 @@ dotnet_diagnostic.S3265.severity = warning
 
 # S3267: Loops should be simplified with "LINQ" expressions
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3267.severity = none
+dotnet_diagnostic.S3267.severity = warning
 
 # S3330: Creating cookies without the "HttpOnly" flag is security-sensitive
 # Enabled: True, Severity: warning

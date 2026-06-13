@@ -751,4 +751,38 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3262").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3267", "Loops should be simplified with \"LINQ\" expressions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3267/")]
+    public async Task WarnOnLoopsThatShouldUseLinq()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+
+            namespace test;
+
+            public static class Example
+            {
+                public static List<int> FilterPositive(IEnumerable<int> source)
+                {
+                    var result = new List<int>();
+                    foreach (var item in source)
+                    {
+                        if (item > 0)
+                        {
+                            result.Add(item);
+                        }
+                    }
+                    return result;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3267").ShouldBeTrue();
+    }
 }
