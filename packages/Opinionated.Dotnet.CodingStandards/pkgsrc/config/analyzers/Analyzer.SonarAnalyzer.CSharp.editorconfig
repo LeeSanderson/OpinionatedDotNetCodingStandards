@@ -933,7 +933,7 @@ dotnet_diagnostic.S3440.severity = warning
 
 # S3441: Redundant property names should be omitted in anonymous classes
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3441.severity = none
+dotnet_diagnostic.S3441.severity = warning
 
 # S3442: "abstract" classes should not have "public" constructors
 # Enabled: True, Severity: warning

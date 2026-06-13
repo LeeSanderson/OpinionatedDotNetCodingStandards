@@ -938,4 +938,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3440").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3441", "Redundant property names should be omitted in anonymous classes",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3441/")]
+    public async Task WarnOnRedundantPropertyNamesInAnonymousClasses()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public object Project(string name, int age)
+                {
+                    // S3441: property name 'name' and 'age' are redundant — C# allows: new { name, age }
+                    return new { name = name, age = age };
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3441").ShouldBeTrue();
+    }
 }
