@@ -565,4 +565,29 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3346").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3363", "Date and time should not be used as a type for primary keys",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3363/")]
+    public async Task WarnOnDateTimeUsedAsPrimaryKey()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace Microsoft.EntityFrameworkCore
+            {
+                public class DbContext { }
+            }
+            namespace test
+            {
+                public class Order
+                {
+                    public System.DateTime OrderId { get; set; }
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3363").ShouldBeTrue();
+    }
 }

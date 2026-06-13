@@ -885,7 +885,7 @@ dotnet_diagnostic.S3358.severity = warning
 
 # S3363: Date and time should not be used as a type for primary keys
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3363.severity = none
+dotnet_diagnostic.S3363.severity = warning
 
 # S3366: "this" should not be exposed from constructors
 # Enabled: False, Severity: warning
