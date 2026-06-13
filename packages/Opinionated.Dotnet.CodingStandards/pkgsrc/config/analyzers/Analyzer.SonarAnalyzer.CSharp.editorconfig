@@ -677,7 +677,7 @@ dotnet_diagnostic.S2933.severity = warning
 
 # S2934: Property assignments should not be made for "readonly" fields not constrained to reference types
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2934.severity = none
+dotnet_diagnostic.S2934.severity = warning
 
 # S2952: Classes should "Dispose" of members from the classes' own "Dispose" methods
 # Enabled: False, Severity: warning

@@ -162,4 +162,29 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2930").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2934", "Property assignments should not be made for 'readonly' fields not constrained to reference types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2934/")]
+    public async Task WarnOnPropertyAssignmentToReadonlyUnconstrainedGenericField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public interface IPoint { int X { get; set; } }
+
+            public class Container<T> where T : IPoint
+            {
+                private readonly T _point;
+                public Container(T point) { _point = point; }
+                public void Update() { _point.X = 42; }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2934").ShouldBeTrue();
+    }
 }
