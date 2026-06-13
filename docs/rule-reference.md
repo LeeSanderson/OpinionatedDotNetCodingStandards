@@ -414,6 +414,12 @@ Rules set to `none` or `silent` are omitted.
 | `CA5404` | Do not disable token validation checks | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5404) |
 | `CA5405` | Do not always skip token validation in delegates | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca5405) |
 
+## SonarCSharp
+
+| Rule ID | Description | Severity | Help |
+|---------|-------------|----------|------|
+| `S3776` |  | warning |  |
+
 ## StyleCop.Analyzers.Unstable
 
 | Rule ID | Description | Severity | Help |

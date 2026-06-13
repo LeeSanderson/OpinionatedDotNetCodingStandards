@@ -114,25 +114,7 @@ public static class AnalyzerResolver
                 continue;
             }
 
-            var dlls = new List<string>();
-            foreach (var relPath in selected)
-            {
-                var relativePart = Path.Combine(
-                    packageId.ToLowerInvariant(),
-                    version,
-                    relPath.Replace('/', Path.DirectorySeparatorChar));
-
-                // Try each package folder in order; use the first that has the file.
-                foreach (var packageFolder in packageFolders)
-                {
-                    var fullPath = Path.Combine(packageFolder, relativePart);
-                    if (File.Exists(fullPath))
-                    {
-                        dlls.Add(fullPath);
-                        break;
-                    }
-                }
-            }
+            var dlls = ResolveFullDllPaths(selected, packageId, version, packageFolders);
 
             if (dlls.Count > 0)
             {
@@ -141,6 +123,32 @@ public static class AnalyzerResolver
         }
 
         return result;
+    }
+
+    private static List<string> ResolveFullDllPaths(
+        List<string> selected, string packageId, string version, List<string> packageFolders)
+    {
+        var dlls = new List<string>();
+        foreach (var relPath in selected)
+        {
+            var relativePart = Path.Combine(
+                packageId.ToLowerInvariant(),
+                version,
+                relPath.Replace('/', Path.DirectorySeparatorChar));
+
+            // Try each package folder in order; use the first that has the file.
+            foreach (var packageFolder in packageFolders)
+            {
+                var fullPath = Path.Combine(packageFolder, relativePart);
+                if (File.Exists(fullPath))
+                {
+                    dlls.Add(fullPath);
+                    break;
+                }
+            }
+        }
+
+        return dlls;
     }
 
     private static List<string> ReadPackageFolders(JsonElement root)
@@ -182,37 +190,43 @@ public static class AnalyzerResolver
             }
 
             var parts = filePath.Split('/');
-            if (parts.Length < 2 || parts[0] != "analyzers")
+            if (parts.Length >= 2 && parts[0] == "analyzers" && IsCsharpAnalyzerLayout(parts))
             {
-                continue;
-            }
-
-            if (parts.Length == 2)
-            {
-                // Flat legacy layout: analyzers/<name>.dll
                 result.Add(filePath);
-            }
-            else if (parts.Length >= 3 && parts[1] == "dotnet")
-            {
-                if (parts.Length == 3)
-                {
-                    // Platform-neutral: analyzers/dotnet/<name>.dll
-                    result.Add(filePath);
-                }
-                else if (parts.Length == 4 && parts[2] == "cs")
-                {
-                    // Direct C#: analyzers/dotnet/cs/<name>.dll
-                    result.Add(filePath);
-                }
-                else if (parts.Length == 5 && RoslynVersionPattern.IsMatch(parts[2]) && parts[3] == "cs")
-                {
-                    // Roslyn-versioned C#: analyzers/dotnet/roslynX.Y/cs/<name>.dll
-                    result.Add(filePath);
-                }
             }
         }
 
         return result;
+    }
+
+    private static bool IsCsharpAnalyzerLayout(string[] parts)
+    {
+        if (parts.Length == 2)
+        {
+            return true; // flat legacy: analyzers/<name>.dll
+        }
+
+        if (parts.Length < 3 || parts[1] != "dotnet")
+        {
+            return false;
+        }
+
+        if (parts.Length == 3)
+        {
+            return true; // platform-neutral: analyzers/dotnet/<name>.dll
+        }
+
+        if (parts.Length == 4 && parts[2] == "cs")
+        {
+            return true; // direct C#: analyzers/dotnet/cs/<name>.dll
+        }
+
+        if (parts.Length == 5 && RoslynVersionPattern.IsMatch(parts[2]) && parts[3] == "cs")
+        {
+            return true; // roslyn-versioned: analyzers/dotnet/roslynX.Y/cs/<name>.dll
+        }
+
+        return false;
     }
 
     // When there are roslyn-versioned DLLs, keeps only those from the highest roslyn version.
