@@ -102,7 +102,7 @@ dotnet_diagnostic.S1123.severity = none
 
 # S1125: Boolean literals should not be redundant
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1125.severity = none
+dotnet_diagnostic.S1125.severity = warning
 
 # S1128: Unnecessary "using" should be removed
 # Enabled: False, Severity: warning

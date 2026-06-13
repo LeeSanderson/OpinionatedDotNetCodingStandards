@@ -222,4 +222,23 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1121").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1125", "Boolean literals should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1125/")]
+    public async Task ProhibitRedundantBooleanLiterals()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Guard
+            {
+                public static bool IsPositive(int value) => value > 0 == true;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1125").ShouldBeTrue();
+    }
 }
