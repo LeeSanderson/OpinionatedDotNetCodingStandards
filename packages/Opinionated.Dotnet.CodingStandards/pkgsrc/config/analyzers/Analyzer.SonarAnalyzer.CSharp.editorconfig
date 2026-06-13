@@ -821,7 +821,7 @@ dotnet_diagnostic.S3251.severity = warning
 
 # S3253: Constructor and destructor declarations should not be redundant
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3253.severity = none
+dotnet_diagnostic.S3253.severity = warning
 
 # S3254: Default parameter values should not be passed as arguments
 # Enabled: False, Severity: warning

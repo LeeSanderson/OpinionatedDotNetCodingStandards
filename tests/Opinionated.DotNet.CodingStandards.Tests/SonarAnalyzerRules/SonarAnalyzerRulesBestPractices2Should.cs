@@ -644,4 +644,28 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3251").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3253", "Constructor and destructor declarations should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3253/")]
+    public async Task WarnOnRedundantConstructorDeclaration()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class MyService
+            {
+                public MyService() { }
+
+                public int GetValue() => 42;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3253").ShouldBeTrue();
+    }
 }
