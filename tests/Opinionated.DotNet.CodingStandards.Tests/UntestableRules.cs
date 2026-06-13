@@ -222,4 +222,17 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         src/Analyzers/Core/Analyzers/RemoveUnnecessaryImports/AbstractRemoveUnnecessaryImportsDiagnosticAnalyzer.cs
         and src/Analyzers/Core/Analyzers/EnforceOnBuild.cs.
         """)]
+[RuleDoc("S3216", "\"ConfigureAwait(false)\" should be used",
+    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3216/",
+    Untestable = """
+        S3216 (TaskConfigureAwait) contains a hard guard at the top of its action:
+        `if (c.Compilation.Options.OutputKind != OutputKind.DynamicallyLinkedLibrary
+             || !c.Compilation.IsNetFrameworkTarget()) return;`
+        (Source: SonarAnalyzer.CSharp/Rules/TaskConfigureAwait.cs on GitHub/SonarSource/sonar-dotnet).
+        The rule therefore only fires on class-library (DLL) projects that target .NET Framework
+        (i.e. `net4x` / `netstandard` targets where mscorlib is present). The test harness targets
+        `net10.0` (a .NET Core target), so `IsNetFrameworkTarget()` is always false and no await
+        expression can trigger S3216 regardless of code pattern, editorconfig severity, or
+        OutputType=Library. Genuine structural untestable on this harness.
+        """)]
 public static class UntestableRules { }

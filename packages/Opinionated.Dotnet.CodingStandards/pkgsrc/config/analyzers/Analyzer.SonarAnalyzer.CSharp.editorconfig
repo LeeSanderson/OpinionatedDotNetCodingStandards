@@ -757,7 +757,7 @@ dotnet_diagnostic.S3215.severity = warning
 
 # S3216: "ConfigureAwait(false)" should be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3216.severity = none
+dotnet_diagnostic.S3216.severity = warning
 
 # S3217: "Explicit" conversions of "foreach" loops should not be used
 # Enabled: True, Severity: warning
