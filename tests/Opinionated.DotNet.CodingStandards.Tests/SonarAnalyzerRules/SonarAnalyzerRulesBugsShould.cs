@@ -828,4 +828,35 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2437").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2445", "Blocks should be synchronized on read-only fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2445/")]
+    public async Task WarnOnLockingNonReadOnlyField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Counter
+            {
+                private object _syncRoot = new object();
+
+                public int Value { get; private set; }
+
+                public void Increment()
+                {
+                    lock (_syncRoot)
+                    {
+                        Value++;
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2445").ShouldBeTrue();
+    }
 }

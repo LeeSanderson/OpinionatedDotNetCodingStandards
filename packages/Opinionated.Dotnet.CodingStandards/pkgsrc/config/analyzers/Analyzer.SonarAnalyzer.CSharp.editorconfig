@@ -581,7 +581,7 @@ dotnet_diagnostic.S2437.severity = warning
 
 # S2445: Blocks should be synchronized on read-only fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2445.severity = none
+dotnet_diagnostic.S2445.severity = warning
 
 # S2479: Whitespace and control characters in string literals should be explicit
 # Enabled: True, Severity: warning
