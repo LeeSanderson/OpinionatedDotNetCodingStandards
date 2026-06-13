@@ -122,7 +122,7 @@ dotnet_diagnostic.S1134.severity = warning
 
 # S1135: Track uses of "TODO" tags
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1135.severity = none
+dotnet_diagnostic.S1135.severity = warning
 
 # S1144: Unused private types or members should be removed
 # Enabled: True, Severity: warning

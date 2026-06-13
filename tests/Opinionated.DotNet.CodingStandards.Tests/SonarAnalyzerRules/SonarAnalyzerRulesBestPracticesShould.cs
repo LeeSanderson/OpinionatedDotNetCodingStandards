@@ -302,4 +302,24 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1134").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1135", "Track uses of \"TODO\" tags",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1135/")]
+    public async Task WarnOnTodoComments()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Greeter
+            {
+                // TODO: implement proper greeting logic
+                public static string Greet(string name) => name;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1135").ShouldBeTrue();
+    }
 }
