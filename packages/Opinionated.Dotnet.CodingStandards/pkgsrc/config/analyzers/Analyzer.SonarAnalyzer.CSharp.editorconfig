@@ -297,7 +297,7 @@ dotnet_diagnostic.S1694.severity = warning
 
 # S1696: NullReferenceException should not be caught
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1696.severity = none
+dotnet_diagnostic.S1696.severity = warning
 
 # S1698: "==" should not be used when "Equals" is overridden
 # Enabled: False, Severity: warning

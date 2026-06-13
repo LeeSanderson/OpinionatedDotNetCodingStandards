@@ -115,4 +115,35 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1656").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1696", "NullReferenceException should not be caught",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1696/")]
+    public async Task ProhibitCatchingNullReferenceException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class NullRefCatcher
+            {
+                public static void Run()
+                {
+                    try
+                    {
+                        _ = ((string)null!).Length;
+                    }
+                    catch (System.NullReferenceException)
+                    {
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1696").ShouldBeTrue();
+    }
 }
