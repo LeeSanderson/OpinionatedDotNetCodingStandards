@@ -691,4 +691,23 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3256").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3257", "Declarations and initializations should be as concise as possible",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3257/")]
+    public async Task WarnOnRedundantDeclarations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static int[] GetNumbers() => new int[] { 1, 2, 3 };
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3257").ShouldBeTrue();
+    }
 }

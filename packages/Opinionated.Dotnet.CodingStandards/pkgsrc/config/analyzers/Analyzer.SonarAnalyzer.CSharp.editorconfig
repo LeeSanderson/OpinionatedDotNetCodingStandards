@@ -833,7 +833,7 @@ dotnet_diagnostic.S3256.severity = warning
 
 # S3257: Declarations and initializations should be as concise as possible
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3257.severity = none
+dotnet_diagnostic.S3257.severity = warning
 
 # S3260: Non-derived "private" classes and records should be "sealed"
 # Enabled: True, Severity: warning
