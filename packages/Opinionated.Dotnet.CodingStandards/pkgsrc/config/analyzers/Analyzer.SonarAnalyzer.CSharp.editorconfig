@@ -154,7 +154,7 @@ dotnet_diagnostic.S1172.severity = warning
 
 # S1185: Overriding members should do more than simply call the same member in the base class
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1185.severity = none
+dotnet_diagnostic.S1185.severity = warning
 
 # S1186: Methods should not be empty
 # Enabled: True, Severity: warning

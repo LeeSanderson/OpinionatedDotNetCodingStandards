@@ -30,4 +30,32 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S110").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1185", "Overriding members should do more than simply call the same member in the base class",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1185/")]
+    public async Task WarnOnTrivialPassThroughOverride()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base
+            {
+                public virtual int Compute(int x) => x * 2;
+                public virtual string Describe(string s) => s;
+            }
+
+            public class Derived : Base
+            {
+                public override int Compute(int x) => base.Compute(x);
+                public override string Describe(string s) => base.Describe(s);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1185").ShouldBeTrue();
+    }
 }
