@@ -369,7 +369,7 @@ dotnet_diagnostic.S2077.severity = none
 
 # S2092: Creating cookies without the "secure" flag is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2092.severity = none
+dotnet_diagnostic.S2092.severity = warning
 
 # S2094: Classes should not be empty
 # Enabled: True, Severity: warning

@@ -62,4 +62,43 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2068").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2092", "Creating cookies without the \"secure\" flag is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2092/")]
+    public async Task WarnOnCookieWithoutSecureFlag()
+    {
+        // S2092 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        // CookieOptions lives in Microsoft.AspNetCore.Http (standalone 2.x package).
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Http", Version: "2.3.10")],
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFile("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S2092</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFile("Program.cs", """
+            using Microsoft.AspNetCore.Http;
+
+            namespace test;
+
+            public static class Program
+            {
+                public static CookieOptions CreateUnsafe() => new CookieOptions();
+
+                public static int Main() => 0;
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2092").ShouldBeTrue();
+    }
 }
