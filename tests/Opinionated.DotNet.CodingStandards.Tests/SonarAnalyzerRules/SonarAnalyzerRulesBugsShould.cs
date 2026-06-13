@@ -339,4 +339,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1944").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1994", "“for” loop increment clauses should modify the loops’ counters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1994/")]
+    public async Task WarnOnForLoopIncrementNotModifyingCounter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static void Method()
+                {
+                    int j = 0;
+                    for (int i = 0; i < 10; j++)
+                    {
+                        i++;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1994").ShouldBeTrue();
+    }
 }

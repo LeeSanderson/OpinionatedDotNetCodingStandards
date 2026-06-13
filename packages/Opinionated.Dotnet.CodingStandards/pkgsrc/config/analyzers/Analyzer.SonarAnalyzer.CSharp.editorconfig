@@ -357,7 +357,7 @@ dotnet_diagnostic.S1944.severity = warning
 
 # S1994: "for" loop increment clauses should modify the loops' counters
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1994.severity = none
+dotnet_diagnostic.S1994.severity = warning
 
 # S2068: Credentials should not be hard-coded
 # Enabled: True, Severity: warning
