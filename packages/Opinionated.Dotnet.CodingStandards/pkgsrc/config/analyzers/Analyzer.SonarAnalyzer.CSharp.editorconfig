@@ -865,7 +865,7 @@ dotnet_diagnostic.S3267.severity = warning
 
 # S3330: Creating cookies without the "HttpOnly" flag is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3330.severity = none
+dotnet_diagnostic.S3330.severity = warning
 
 # S3343: Caller information parameters should come at the end of the parameter list
 # Enabled: True, Severity: warning
