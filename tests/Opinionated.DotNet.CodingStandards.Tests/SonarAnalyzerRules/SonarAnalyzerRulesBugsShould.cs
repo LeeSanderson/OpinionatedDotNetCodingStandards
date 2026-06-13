@@ -412,4 +412,36 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2123").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2139", "Exceptions should be either logged or rethrown but not both",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2139/")]
+    public async Task DetectLogAndRethrowInSameCatch()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public class Service
+            {
+                public static void Process(ILogger logger, string data)
+                {
+                    try
+                    {
+                        _ = int.Parse(data);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.LogError(ex, "Failure");
+                        throw;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2139").ShouldBeTrue();
+    }
 }
