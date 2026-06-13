@@ -427,4 +427,35 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3237").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3249", "Classes directly extending \"object\" should not call \"base\" in \"GetHashCode\" or \"Equals\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3249/")]
+    public async Task WarnOnBaseCallInGetHashCodeOrEqualsForDirectObjectSubclass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class MyValue
+            {
+                private readonly int _id;
+
+                public MyValue(int id) { _id = id; }
+
+                public override bool Equals(object? obj)
+                {
+                    if (obj is not MyValue other) return false;
+                    return base.Equals(other);
+                }
+
+                public override int GetHashCode() => base.GetHashCode();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3249").ShouldBeTrue();
+    }
 }

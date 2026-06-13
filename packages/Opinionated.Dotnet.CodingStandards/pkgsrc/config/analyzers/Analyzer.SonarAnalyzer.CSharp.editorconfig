@@ -813,7 +813,7 @@ dotnet_diagnostic.S3247.severity = warning
 
 # S3249: Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3249.severity = none
+dotnet_diagnostic.S3249.severity = warning
 
 # S3251: Implementations should be provided for "partial" methods
 # Enabled: True, Severity: warning
