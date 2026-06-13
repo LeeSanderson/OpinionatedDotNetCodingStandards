@@ -841,4 +841,24 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3353").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3400", "Methods should not return constants",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3400/")]
+    public async Task WarnOnMethodReturningConstant()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public string GetVersion() => "1.0.0";
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3400").ShouldBeTrue();
+    }
 }

@@ -905,7 +905,7 @@ dotnet_diagnostic.S3398.severity = warning
 
 # S3400: Methods should not return constants
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3400.severity = none
+dotnet_diagnostic.S3400.severity = warning
 
 # S3415: Assertion arguments should be passed in the correct order
 # Enabled: True, Severity: warning
