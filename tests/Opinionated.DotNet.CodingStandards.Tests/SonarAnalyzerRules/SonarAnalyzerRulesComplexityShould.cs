@@ -71,4 +71,38 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S3776").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1541", "Methods and properties should not be too complex",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1541/")]
+    public async Task ProhibitExcessiveCyclomaticComplexity()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                // Cyclomatic complexity deliberately above 10:
+                // each if/else-if adds +1 to the branch count
+                public static string Classify(int n)
+                {
+                    if (n < 0) { return "negative"; }
+                    if (n == 0) { return "zero"; }
+                    if (n < 10) { return "tiny"; }
+                    if (n < 100) { return "small"; }
+                    if (n < 1_000) { return "medium"; }
+                    if (n < 10_000) { return "large"; }
+                    if (n < 100_000) { return "huge"; }
+                    if (n < 1_000_000) { return "massive"; }
+                    if (n < 10_000_000) { return "enormous"; }
+                    if (n < 100_000_000) { return "gigantic"; }
+                    return "astronomical";
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1541").ShouldBeTrue();
+    }
 }

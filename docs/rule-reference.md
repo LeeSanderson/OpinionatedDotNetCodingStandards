@@ -418,6 +418,7 @@ Rules set to `none` or `silent` are omitted.
 
 | Rule ID | Description | Severity | Help |
 |---------|-------------|----------|------|
+| `S1541` |  | warning |  |
 | `S3776` |  | warning |  |
 
 ## StyleCop.Analyzers.Unstable
