@@ -713,7 +713,7 @@ dotnet_diagnostic.S2997.severity = warning
 
 # S3005: "ThreadStatic" should not be used on non-static fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3005.severity = none
+dotnet_diagnostic.S3005.severity = warning
 
 # S3010: Static fields should not be updated in constructors
 # Enabled: True, Severity: warning

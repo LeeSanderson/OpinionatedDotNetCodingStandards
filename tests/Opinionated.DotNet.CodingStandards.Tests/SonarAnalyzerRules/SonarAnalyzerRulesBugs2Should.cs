@@ -285,4 +285,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2997").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3005", "ThreadStatic should not be used on non-static fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3005/")]
+    public async Task WarnOnThreadStaticOnInstanceField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Example
+            {
+                [System.ThreadStatic]
+                public int NonStaticThreadStaticField;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3005").ShouldBeTrue();
+    }
 }
