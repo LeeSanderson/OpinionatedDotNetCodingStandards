@@ -179,7 +179,7 @@ dotnet_diagnostic.S1206.severity = warning
 
 # S121: Control structures should use curly braces
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S121.severity = none
+dotnet_diagnostic.S121.severity = warning
 
 # S1210: "Equals" and the comparison operators should be overridden when implementing "IComparable"
 # Enabled: True, Severity: warning

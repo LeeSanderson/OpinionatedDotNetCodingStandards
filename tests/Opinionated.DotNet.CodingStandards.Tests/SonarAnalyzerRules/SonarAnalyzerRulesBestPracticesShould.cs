@@ -486,4 +486,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1199").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S121", "Control structures should use curly braces",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-121/")]
+    public async Task ProhibitControlStructuresWithoutCurlyBraces()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Check(int n)
+                {
+                    if (n > 0)
+                        System.Console.WriteLine(n);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S121").ShouldBeTrue();
+    }
 }
