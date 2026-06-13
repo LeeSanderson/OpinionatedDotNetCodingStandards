@@ -132,4 +132,39 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2115").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2245", "Using pseudorandom number generators (PRNGs) is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2245/")]
+    public async Task WarnOnPseudorandomNumberGeneratorUsage()
+    {
+        // S2245 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFile("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S2245</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Randomizer
+            {
+                public static int GetValue()
+                {
+                    var rng = new System.Random();
+                    return rng.Next();
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2245").ShouldBeTrue();
+    }
 }

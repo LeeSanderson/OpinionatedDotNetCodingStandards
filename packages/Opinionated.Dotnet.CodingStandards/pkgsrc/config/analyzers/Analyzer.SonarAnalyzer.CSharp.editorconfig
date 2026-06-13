@@ -457,7 +457,7 @@ dotnet_diagnostic.S2234.severity = warning
 
 # S2245: Using pseudorandom number generators (PRNGs) is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2245.severity = none
+dotnet_diagnostic.S2245.severity = warning
 
 # S2251: A "for" loop update clause should move the counter in the right direction
 # Enabled: True, Severity: warning
