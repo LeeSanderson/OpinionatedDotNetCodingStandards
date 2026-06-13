@@ -815,4 +815,30 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3343").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3353", "Unchanged variables should be marked as \"const\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3353/")]
+    public async Task WarnOnUnchangedVariableNotMarkedConst()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Example
+            {
+                public static string Describe()
+                {
+                    string greeting = "Hello, World!";
+                    return greeting;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3353").ShouldBeTrue();
+    }
 }

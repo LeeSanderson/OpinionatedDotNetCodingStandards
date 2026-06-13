@@ -877,7 +877,7 @@ dotnet_diagnostic.S3346.severity = warning
 
 # S3353: Unchanged variables should be marked as "const"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3353.severity = none
+dotnet_diagnostic.S3353.severity = warning
 
 # S3358: Ternary operators should not be nested
 # Enabled: True, Severity: warning
