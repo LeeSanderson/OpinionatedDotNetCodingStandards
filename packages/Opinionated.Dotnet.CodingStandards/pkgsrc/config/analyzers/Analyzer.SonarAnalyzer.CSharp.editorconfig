@@ -945,7 +945,7 @@ dotnet_diagnostic.S3443.severity = none
 
 # S3444: Interfaces should not simply inherit from base interfaces with colliding members
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3444.severity = none
+dotnet_diagnostic.S3444.severity = warning
 
 # S3445: Exceptions should not be explicitly rethrown
 # Enabled: True, Severity: warning

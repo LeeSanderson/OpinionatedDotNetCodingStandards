@@ -630,4 +630,34 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3427").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3444", "Interfaces should not simply inherit from base interfaces with colliding members",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3444/")]
+    public async Task WarnOnCollidingInterfaceMembers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public interface IFirst
+            {
+                void Execute();
+            }
+
+            public interface ISecond
+            {
+                void Execute();
+            }
+
+            // S3444: IThird inherits from two interfaces that both declare Execute(),
+            // creating an ambiguity that the derived interface does not resolve.
+            public interface IThird : IFirst, ISecond { }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3444").ShouldBeTrue();
+    }
 }
