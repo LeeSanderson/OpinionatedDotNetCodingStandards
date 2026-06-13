@@ -685,4 +685,31 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3415").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3447", "[Optional] should not be used on ref or out parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3447/")]
+    public async Task ProhibitOptionalOnRefOrOutParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.InteropServices;
+
+            namespace test;
+
+            public static class Problematic
+            {
+                public static void Fill([Optional] ref int value)
+                {
+                    value = 42;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3447").ShouldBeTrue();
+    }
 }

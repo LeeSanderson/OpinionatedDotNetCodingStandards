@@ -953,7 +953,7 @@ dotnet_diagnostic.S3445.severity = none
 
 # S3447: "[Optional]" should not be used on "ref" or "out" parameters
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3447.severity = none
+dotnet_diagnostic.S3447.severity = warning
 
 # S3449: Right operands of shift operators should be integers
 # Enabled: True, Severity: warning
