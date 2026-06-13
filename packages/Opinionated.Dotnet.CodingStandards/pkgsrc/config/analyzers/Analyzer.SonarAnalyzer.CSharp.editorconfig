@@ -881,7 +881,7 @@ dotnet_diagnostic.S3353.severity = warning
 
 # S3358: Ternary operators should not be nested
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3358.severity = none
+dotnet_diagnostic.S3358.severity = warning
 
 # S3363: Date and time should not be used as a type for primary keys
 # Enabled: True, Severity: warning

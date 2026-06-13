@@ -602,4 +602,24 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S2436").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3358", "Ternary operators should not be nested",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3358/")]
+    public async Task ProhibitNestedTernaryOperators()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static string Classify(int a, int b, int c)
+                    => a > 0 ? (b > 0 ? "both positive" : "a positive") : (c > 0 ? "c positive" : "none");
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3358").ShouldBeTrue();
+    }
 }
