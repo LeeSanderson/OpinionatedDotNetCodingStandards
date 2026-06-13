@@ -516,4 +516,25 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2184").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2197", "Modulus results should not be checked for direct equality",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2197/")]
+    public async Task WarnOnModulusEqualityCheck()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Calculator
+            {
+                public static bool IsOdd(int n) => n % 2 == 1;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2197").ShouldBeTrue();
+    }
 }

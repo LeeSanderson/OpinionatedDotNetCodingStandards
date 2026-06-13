@@ -425,7 +425,7 @@ dotnet_diagnostic.S2190.severity = none
 
 # S2197: Modulus results should not be checked for direct equality
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2197.severity = none
+dotnet_diagnostic.S2197.severity = warning
 
 # S2198: Unnecessary mathematical comparisons should not be made
 # Enabled: True, Severity: warning
