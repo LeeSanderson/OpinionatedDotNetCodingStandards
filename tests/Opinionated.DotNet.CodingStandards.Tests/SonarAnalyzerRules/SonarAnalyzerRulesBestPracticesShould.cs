@@ -282,4 +282,24 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1133").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1134", "Track uses of \"FIXME\" tags",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1134/")]
+    public async Task WarnOnFixmeTag()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                // FIXME: this method is broken and needs to be reimplemented
+                public static int Add(int a, int b) => a + b;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1134").ShouldBeTrue();
+    }
 }

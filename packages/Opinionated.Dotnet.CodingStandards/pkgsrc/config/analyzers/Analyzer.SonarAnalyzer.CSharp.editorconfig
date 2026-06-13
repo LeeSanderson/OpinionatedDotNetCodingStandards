@@ -118,7 +118,7 @@ dotnet_diagnostic.S1133.severity = warning
 
 # S1134: Track uses of "FIXME" tags
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1134.severity = none
+dotnet_diagnostic.S1134.severity = warning
 
 # S1135: Track uses of "TODO" tags
 # Enabled: True, Severity: warning
