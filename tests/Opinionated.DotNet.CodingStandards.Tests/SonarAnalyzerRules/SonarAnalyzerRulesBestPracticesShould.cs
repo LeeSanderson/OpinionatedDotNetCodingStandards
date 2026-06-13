@@ -31,4 +31,25 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1006").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S106", "Standard outputs should not be used directly to log anything",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-106/")]
+    public async Task ProhibitDirectStandardOutputLogging()
+    {
+        using var project = await CreateProjectBuilder(properties: [("OutputType", "Library")]);
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public void Log(string message)
+                {
+                    Console.WriteLine(message);
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S106").ShouldBeTrue();
+    }
 }

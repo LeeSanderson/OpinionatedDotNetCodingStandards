@@ -32,7 +32,7 @@ dotnet_diagnostic.S105.severity = none
 
 # S106: Standard outputs should not be used directly to log anything
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S106.severity = none
+dotnet_diagnostic.S106.severity = warning
 
 # S1066: Mergeable "if" statements should be combined
 # Enabled: True, Severity: warning
