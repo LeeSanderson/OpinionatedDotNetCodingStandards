@@ -52,4 +52,34 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S106").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1066", "Mergeable \"if\" statements should be combined",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1066/")]
+    public async Task WarnOnMergeableIfStatements()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                public static void Method(int a, int b)
+                {
+                    if (a > 0)
+                    {
+                        if (b > 0)
+                        {
+                            System.Console.WriteLine(a + b);
+                        }
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1066").ShouldBeTrue();
+    }
 }

@@ -36,7 +36,7 @@ dotnet_diagnostic.S106.severity = warning
 
 # S1066: Mergeable "if" statements should be combined
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1066.severity = none
+dotnet_diagnostic.S1066.severity = warning
 
 # S1067: Expressions should not be too complex
 # Enabled: False, Severity: warning
