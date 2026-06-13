@@ -785,7 +785,7 @@ dotnet_diagnostic.S3236.severity = warning
 
 # S3237: "value" contextual keyword should be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3237.severity = none
+dotnet_diagnostic.S3237.severity = warning
 
 # S3240: The simplest possible condition syntax should be used
 # Enabled: False, Severity: warning

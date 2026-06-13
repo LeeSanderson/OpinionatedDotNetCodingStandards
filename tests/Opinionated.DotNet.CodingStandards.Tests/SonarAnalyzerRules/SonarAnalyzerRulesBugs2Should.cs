@@ -399,4 +399,32 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3234").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3237", "\"value\" contextual keyword should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3237/")]
+    public async Task WarnWhenSetterIgnoresValueKeyword()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Counter
+            {
+                private int _count;
+
+                public int Count
+                {
+                    get => _count;
+                    set { _count = 0; } // S3237: 'value' is not used; assignment is silently discarded
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3237").ShouldBeTrue();
+    }
 }
