@@ -842,4 +842,31 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1607").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1643", "Strings should not be concatenated using '+' in a loop",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1643/")]
+    public async Task ProhibitStringConcatenationInLoop()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class StringHelper
+            {
+                public static string Join(string[] items)
+                {
+                    string result = string.Empty;
+                    foreach (var item in items)
+                    {
+                        result += item;
+                    }
+                    return result;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1643").ShouldBeTrue();
+    }
 }

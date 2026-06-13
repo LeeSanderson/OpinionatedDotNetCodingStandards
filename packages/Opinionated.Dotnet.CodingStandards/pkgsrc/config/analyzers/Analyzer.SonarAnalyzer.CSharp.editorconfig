@@ -281,7 +281,7 @@ dotnet_diagnostic.S1607.severity = warning
 
 # S1643: Strings should not be concatenated using '+' in a loop
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1643.severity = none
+dotnet_diagnostic.S1643.severity = warning
 
 # S1656: Variables should not be self-assigned
 # Enabled: True, Severity: warning
