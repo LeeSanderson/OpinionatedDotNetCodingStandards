@@ -756,4 +756,31 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2328").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2330", "Array covariance should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2330/")]
+    public async Task WarnOnArrayCovariance()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Animal { }
+            public class Dog : Animal { }
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    Animal[] animals = new Dog[] { new Dog() };
+                    return 0;
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2330").ShouldBeTrue();
+    }
 }

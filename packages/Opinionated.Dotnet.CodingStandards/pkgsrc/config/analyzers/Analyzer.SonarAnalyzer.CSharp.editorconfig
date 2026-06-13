@@ -513,7 +513,7 @@ dotnet_diagnostic.S2328.severity = warning
 
 # S2330: Array covariance should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2330.severity = none
+dotnet_diagnostic.S2330.severity = warning
 
 # S2333: Redundant modifiers should not be used
 # Enabled: False, Severity: warning
