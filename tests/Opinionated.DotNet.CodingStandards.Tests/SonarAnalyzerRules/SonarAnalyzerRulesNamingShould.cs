@@ -86,4 +86,26 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2166").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2306", "“async” and “await” should not be used as identifiers",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2306/")]
+    public async Task ProhibitAsyncAwaitAsIdentifiers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static void Method(int async, int await)
+                {
+                    _ = async + await;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2306").ShouldBeTrue();
+    }
 }

@@ -493,7 +493,7 @@ dotnet_diagnostic.S2302.severity = warning
 
 # S2306: "async" and "await" should not be used as identifiers
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2306.severity = none
+dotnet_diagnostic.S2306.severity = warning
 
 # S2325: Methods and properties that don't access instance data should be static
 # Enabled: True, Severity: warning
