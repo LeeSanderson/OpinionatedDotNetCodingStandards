@@ -166,7 +166,7 @@ dotnet_diagnostic.S1192.severity = warning
 
 # S1199: Nested code blocks should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1199.severity = none
+dotnet_diagnostic.S1199.severity = warning
 
 # S1200: Classes should not be coupled to too many other classes
 # Enabled: False, Severity: warning

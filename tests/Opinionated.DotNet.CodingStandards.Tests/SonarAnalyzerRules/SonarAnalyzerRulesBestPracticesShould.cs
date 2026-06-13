@@ -462,4 +462,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1192").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1199", "Nested code blocks should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1199/")]
+    public async Task ProhibitNestedCodeBlocks()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method()
+                {
+                    {
+                        _ = 0;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1199").ShouldBeTrue();
+    }
 }
