@@ -101,4 +101,35 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S2092").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2115", "A secure password should be used when connecting to a database",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2115/")]
+    public async Task WarnOnEmptyDatabasePassword()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences:
+            [
+                (Name: "Microsoft.EntityFrameworkCore", Version: "8.0.0"),
+                (Name: "Microsoft.EntityFrameworkCore.SqlServer", Version: "8.0.0")
+            ]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.EntityFrameworkCore;
+
+            namespace test;
+
+            public sealed class BadContext : DbContext
+            {
+                protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+                {
+                    optionsBuilder.UseSqlServer("Server=myServer;Database=myDb;User Id=sa;Password=");
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2115").ShouldBeTrue();
+    }
 }

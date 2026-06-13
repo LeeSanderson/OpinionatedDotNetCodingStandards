@@ -381,7 +381,7 @@ dotnet_diagnostic.S2114.severity = warning
 
 # S2115: A secure password should be used when connecting to a database
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2115.severity = none
+dotnet_diagnostic.S2115.severity = warning
 
 # S2123: Values should not be uselessly incremented
 # Enabled: True, Severity: warning
