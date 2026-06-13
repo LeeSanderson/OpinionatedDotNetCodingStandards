@@ -91,4 +91,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2219").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2302", "nameof should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2302/")]
+    public async Task WarnOnHardcodedNameofString()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Validate(string value)
+                {
+                    if (value == null)
+                        throw new System.ArgumentNullException("value");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2302").ShouldBeTrue();
+    }
 }

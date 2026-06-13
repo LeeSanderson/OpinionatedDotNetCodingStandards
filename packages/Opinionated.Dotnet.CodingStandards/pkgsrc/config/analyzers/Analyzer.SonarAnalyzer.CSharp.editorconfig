@@ -489,7 +489,7 @@ dotnet_diagnostic.S2292.severity = warning
 
 # S2302: "nameof" should be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2302.severity = none
+dotnet_diagnostic.S2302.severity = warning
 
 # S2306: "async" and "await" should not be used as identifiers
 # Enabled: True, Severity: warning
