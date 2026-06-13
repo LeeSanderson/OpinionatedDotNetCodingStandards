@@ -239,7 +239,7 @@ dotnet_diagnostic.S1312.severity = warning
 
 # S1313: Using hardcoded IP addresses is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1313.severity = none
+dotnet_diagnostic.S1313.severity = warning
 
 # S134: Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
 # Enabled: False, Severity: warning
