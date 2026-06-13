@@ -312,4 +312,31 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1862").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1944", "Invalid casts should be avoided",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1944/")]
+    public async Task WarnOnInvalidCastToInterface()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public interface IFoo { }
+
+            public class FooImpl : IFoo { }
+
+            public class Unrelated { }
+
+            public static class Usage
+            {
+                public static IFoo Cast(Unrelated u) => (IFoo)u;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1944").ShouldBeTrue();
+    }
 }

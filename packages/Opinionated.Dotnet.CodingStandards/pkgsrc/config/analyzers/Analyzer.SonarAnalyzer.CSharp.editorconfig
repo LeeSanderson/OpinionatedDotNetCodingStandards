@@ -353,7 +353,7 @@ dotnet_diagnostic.S1940.severity = warning
 
 # S1944: Invalid casts should be avoided
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1944.severity = none
+dotnet_diagnostic.S1944.severity = warning
 
 # S1994: "for" loop increment clauses should modify the loops' counters
 # Enabled: True, Severity: warning
