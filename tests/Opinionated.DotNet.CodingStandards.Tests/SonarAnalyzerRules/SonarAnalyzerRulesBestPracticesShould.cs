@@ -710,4 +710,21 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1301").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1309", "Track uses of in-source issue suppressions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1309/")]
+    public async Task WarnOnInSourceIssueSuppressions()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            #pragma warning disable CS0168
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1309").ShouldBeTrue();
+    }
 }
