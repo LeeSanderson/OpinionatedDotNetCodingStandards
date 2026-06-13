@@ -325,7 +325,7 @@ dotnet_diagnostic.S1848.severity = warning
 
 # S1854: Unused assignments should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1854.severity = none
+dotnet_diagnostic.S1854.severity = warning
 
 # S1858: "ToString()" calls should not be redundant
 # Enabled: False, Severity: warning

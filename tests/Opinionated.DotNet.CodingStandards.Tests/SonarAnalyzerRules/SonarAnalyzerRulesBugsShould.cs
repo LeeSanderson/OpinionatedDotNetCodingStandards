@@ -249,4 +249,28 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1848").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1854", "Unused assignments should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1854/")]
+    public async Task DetectDeadStoreAssignment()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public static int Compute(int a, int b)
+                {
+                    int result = a * 2;   // dead store — overwritten before being read
+                    result = a + b;
+                    return result;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1854").ShouldBeTrue();
+    }
 }
