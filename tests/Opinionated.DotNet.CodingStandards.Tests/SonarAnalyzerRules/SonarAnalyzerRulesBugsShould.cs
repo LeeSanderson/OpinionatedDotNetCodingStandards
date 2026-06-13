@@ -727,4 +727,33 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2291").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2328", "GetHashCode should not reference mutable fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2328/")]
+    public async Task WarnOnMutableFieldInGetHashCode()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Person
+            {
+                private string _name;
+
+                public Person(string name) { _name = name; }
+
+                public void Rename(string name) { _name = name; }
+
+                public override int GetHashCode() => _name.GetHashCode();
+
+                public override bool Equals(object? obj) => obj is Person p && p._name == _name;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2328").ShouldBeTrue();
+    }
 }

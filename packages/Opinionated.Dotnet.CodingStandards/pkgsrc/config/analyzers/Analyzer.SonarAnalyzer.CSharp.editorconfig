@@ -509,7 +509,7 @@ dotnet_diagnostic.S2327.severity = warning
 
 # S2328: "GetHashCode" should not reference mutable fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2328.severity = none
+dotnet_diagnostic.S2328.severity = warning
 
 # S2330: Array covariance should not be used
 # Enabled: False, Severity: warning
