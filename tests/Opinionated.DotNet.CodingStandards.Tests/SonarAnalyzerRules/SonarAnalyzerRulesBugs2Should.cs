@@ -208,4 +208,30 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2955").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2970", "Assertions should be complete",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2970/")]
+    public async Task DetectIncompleteFluentAssertion()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "FluentAssertions", Version: "8.10.0")]);
+        await project.AddFile("Program.cs", """
+            using FluentAssertions;
+            namespace test;
+            public static class TestSuite
+            {
+                public static void IncompleteAssertion()
+                {
+                    int value = 42;
+                    value.Should();
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2970").ShouldBeTrue();
+    }
 }

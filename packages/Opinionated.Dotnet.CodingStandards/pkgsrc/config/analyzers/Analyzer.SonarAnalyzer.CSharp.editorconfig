@@ -693,7 +693,7 @@ dotnet_diagnostic.S2955.severity = warning
 
 # S2970: Assertions should be complete
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2970.severity = none
+dotnet_diagnostic.S2970.severity = warning
 
 # S2971: LINQ expressions should be simplified
 # Enabled: True, Severity: warning
