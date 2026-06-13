@@ -321,7 +321,7 @@ dotnet_diagnostic.S1821.severity = warning
 
 # S1848: Objects should not be created to be dropped immediately without being used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1848.severity = none
+dotnet_diagnostic.S1848.severity = warning
 
 # S1854: Unused assignments should be removed
 # Enabled: True, Severity: warning

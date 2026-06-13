@@ -222,4 +222,31 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1764").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1848", "Objects should not be created to be dropped immediately without being used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1848/")]
+    public async Task ProhibitObjectsCreatedAndDroppedImmediately()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Box
+            {
+                public int Value { get; }
+                public Box(int value) { Value = value; }
+            }
+            public class Example
+            {
+                public void Run()
+                {
+                    new Box(42);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1848").ShouldBeTrue();
+    }
 }
