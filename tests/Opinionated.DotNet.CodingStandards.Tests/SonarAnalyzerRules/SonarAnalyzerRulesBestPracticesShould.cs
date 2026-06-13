@@ -1,4 +1,4 @@
-using Opinionated.DotNet.CodingStandards.Tests.Helpers;
+﻿using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
 using Xunit.Abstractions;
 
@@ -679,5 +679,35 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("S1264").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S1301", "\"switch\" statements should have at least 3 \"case\" clauses",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1301/")]
+    public async Task WarnOnSwitchWithFewerThanThreeCases()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static string Describe(int x)
+                {
+                    switch (x)
+                    {
+                        case 0:
+                            return "zero";
+                        default:
+                            return "other";
+                    }
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1301").ShouldBeTrue();
     }
 }

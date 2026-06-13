@@ -223,7 +223,7 @@ dotnet_diagnostic.S127.severity = warning
 
 # S1301: "switch" statements should have at least 3 "case" clauses
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1301.severity = none
+dotnet_diagnostic.S1301.severity = warning
 
 # S1309: Track uses of in-source issue suppressions
 # Enabled: False, Severity: warning
