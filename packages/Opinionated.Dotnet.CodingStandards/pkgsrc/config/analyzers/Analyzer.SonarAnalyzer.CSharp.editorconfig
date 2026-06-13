@@ -245,7 +245,8 @@ sonar.S134.maximumNestingLevel = 3
 
 # S138: Functions should not have too many lines of code
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S138.severity = none
+dotnet_diagnostic.S138.severity = warning
+sonar.S138.maximumMethodLength = 80
 
 # S1449: Culture should be specified for "string" operations
 # Enabled: False, Severity: warning

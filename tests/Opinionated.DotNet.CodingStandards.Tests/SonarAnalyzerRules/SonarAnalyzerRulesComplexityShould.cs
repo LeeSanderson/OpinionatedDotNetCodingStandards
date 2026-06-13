@@ -139,4 +139,118 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S134").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S138", "Functions should not have too many lines of code",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-138/")]
+    public async Task ProhibitExcessiveMethodLength()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                // Method body deliberately exceeds 80 lines to trigger S138
+                public static int LongMethod()
+                {
+                    int result = 0;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    result++;
+                    return result;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S138").ShouldBeTrue();
+    }
 }
