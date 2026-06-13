@@ -253,4 +253,25 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S138").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S107", "Methods should not have too many parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-107/")]
+    public async Task ProhibitTooManyMethodParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                // Exceeds the default threshold of 7 parameters
+                public static int Add(int a, int b, int c, int d, int e, int f, int g, int h)
+                    => a + b + c + d + e + f + g + h;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S107").ShouldBeTrue();
+    }
 }

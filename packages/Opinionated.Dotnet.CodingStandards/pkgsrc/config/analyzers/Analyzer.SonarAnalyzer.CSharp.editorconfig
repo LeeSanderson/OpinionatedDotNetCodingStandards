@@ -44,7 +44,8 @@ dotnet_diagnostic.S1067.severity = none
 
 # S107: Methods should not have too many parameters
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S107.severity = none
+dotnet_diagnostic.S107.severity = warning
+sonar.S107.maximumFunctionParameters = 7
 
 # S1075: URIs should not be hardcoded
 # Enabled: True, Severity: warning
