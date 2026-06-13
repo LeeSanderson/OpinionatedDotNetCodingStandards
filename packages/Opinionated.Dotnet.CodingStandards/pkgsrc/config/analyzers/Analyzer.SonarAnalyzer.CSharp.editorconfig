@@ -829,7 +829,7 @@ dotnet_diagnostic.S3254.severity = none
 
 # S3256: "string.IsNullOrEmpty" should be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3256.severity = none
+dotnet_diagnostic.S3256.severity = warning
 
 # S3257: Declarations and initializations should be as concise as possible
 # Enabled: False, Severity: warning

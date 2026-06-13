@@ -668,4 +668,27 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3253").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3256", "string.IsNullOrEmpty should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3256/")]
+    public async Task WarnOnManualNullOrEmptyStringCheck()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static bool IsEmpty(string s)
+                {
+                    return s.Equals(string.Empty);
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3256").ShouldBeTrue();
+    }
 }
