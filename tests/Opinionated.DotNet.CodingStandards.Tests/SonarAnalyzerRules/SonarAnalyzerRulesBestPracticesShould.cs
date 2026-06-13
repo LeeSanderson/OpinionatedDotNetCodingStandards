@@ -170,4 +170,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1110").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1116", "Empty statements should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1116/")]
+    public async Task ProhibitEmptyStatements()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                public static void Method()
+                {
+                    ; // empty statement — S1116
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1116").ShouldBeTrue();
+    }
 }
