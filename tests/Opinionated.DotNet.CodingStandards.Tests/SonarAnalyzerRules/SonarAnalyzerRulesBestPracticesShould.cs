@@ -346,4 +346,23 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1144").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1147", "Exit methods should not be called",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1147/")]
+    public async Task ProhibitExitMethodCalls()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Exiter
+            {
+                public static void Quit() => System.Environment.Exit(0);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1147").ShouldBeTrue();
+    }
 }

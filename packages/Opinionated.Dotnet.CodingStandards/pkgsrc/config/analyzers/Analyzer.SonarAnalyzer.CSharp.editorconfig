@@ -130,7 +130,7 @@ dotnet_diagnostic.S1144.severity = warning
 
 # S1147: Exit methods should not be called
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1147.severity = none
+dotnet_diagnostic.S1147.severity = warning
 
 # S1151: "switch case" clauses should not have too many lines of code
 # Enabled: False, Severity: warning
