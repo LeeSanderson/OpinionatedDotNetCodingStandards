@@ -501,7 +501,7 @@ dotnet_diagnostic.S2325.severity = warning
 
 # S2326: Unused type parameters should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2326.severity = none
+dotnet_diagnostic.S2326.severity = warning
 
 # S2327: "try" statements with identical "catch" and/or "finally" blocks should be merged
 # Enabled: False, Severity: warning

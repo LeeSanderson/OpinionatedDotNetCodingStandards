@@ -294,4 +294,26 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2325").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2326", "Unused type parameters should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2326/")]
+    public async Task ProhibitUnusedTypeParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public interface IProcessor<T>
+            {
+                void Execute(string data);
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2326").ShouldBeTrue();
+    }
 }
