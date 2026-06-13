@@ -172,4 +172,30 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1698").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1751", "Loops with at most one iteration should be refactored",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1751/")]
+    public async Task WarnOnLoopWithAtMostOneIteration()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Example
+            {
+                public static int First(int[] arr)
+                {
+                    for (int i = 0; i < arr.Length; i++)
+                    {
+                        return arr[i]; // unconditional return — loop runs at most once
+                    }
+                    return -1;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1751").ShouldBeTrue();
+    }
 }

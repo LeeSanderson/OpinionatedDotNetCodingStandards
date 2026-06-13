@@ -309,7 +309,7 @@ dotnet_diagnostic.S1699.severity = none
 
 # S1751: Loops with at most one iteration should be refactored
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1751.severity = none
+dotnet_diagnostic.S1751.severity = warning
 
 # S1764: Identical expressions should not be used on both sides of operators
 # Enabled: True, Severity: warning
