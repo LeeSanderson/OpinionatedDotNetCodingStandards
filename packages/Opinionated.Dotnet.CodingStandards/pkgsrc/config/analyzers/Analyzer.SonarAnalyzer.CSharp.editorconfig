@@ -525,7 +525,7 @@ dotnet_diagnostic.S2339.severity = warning
 
 # S2342: Enumeration types should comply with a naming convention
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2342.severity = none
+dotnet_diagnostic.S2342.severity = warning
 
 # S2344: Enumeration type names should not have "Flags" or "Enum" suffixes
 # Enabled: True, Severity: warning

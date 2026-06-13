@@ -108,4 +108,25 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2306").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2342", "Enumeration types should comply with a naming convention",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2342/")]
+    public async Task WarnOnNonPascalCaseEnumeration()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public enum my_status_code
+            {
+                active,
+                inactive,
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2342").ShouldBeTrue();
+    }
 }
