@@ -110,5 +110,5 @@ public static class EditorConfigMergeGenerator
         _ => "silent",
     };
 
-    private record ParsedRuleBlock(string Id, string CuratedSeverity, List<string> RawLines);
+    private sealed record ParsedRuleBlock(string Id, string CuratedSeverity, List<string> RawLines);
 }

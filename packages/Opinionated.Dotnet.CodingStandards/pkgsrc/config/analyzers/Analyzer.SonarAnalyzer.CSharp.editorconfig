@@ -837,7 +837,7 @@ dotnet_diagnostic.S3257.severity = warning
 
 # S3260: Non-derived "private" classes and records should be "sealed"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3260.severity = none
+dotnet_diagnostic.S3260.severity = warning
 
 # S3261: Namespaces should not be empty
 # Enabled: True, Severity: warning

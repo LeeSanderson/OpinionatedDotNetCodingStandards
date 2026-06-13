@@ -555,4 +555,28 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3246").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3260", "Non-derived 'private' classes and records should be 'sealed'",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3260/")]
+    public async Task WarnOnUnsealedPrivateClass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Outer
+            {
+                private class Inner
+                {
+                    public int Value { get; set; }
+                }
+
+                private static void Use() => new Inner { Value = 1 };
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3260").ShouldBeTrue();
+    }
 }
