@@ -893,7 +893,7 @@ dotnet_diagnostic.S3366.severity = warning
 
 # S3376: Attribute, EventArgs, and Exception type names should end with the type being extended
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3376.severity = none
+dotnet_diagnostic.S3376.severity = warning
 
 # S3397: "base.Equals" should not be used to check for reference equality in "Equals" if "base" is not "object"
 # Enabled: True, Severity: warning

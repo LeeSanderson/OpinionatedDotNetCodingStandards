@@ -171,4 +171,20 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2346").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3376", "Attribute, EventArgs, and Exception type names should end with the type being extended",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3376/")]
+    public async Task WarnOnMissingTypeSuffix()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class BadThing : System.Exception { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3376").ShouldBeTrue();
+    }
 }
