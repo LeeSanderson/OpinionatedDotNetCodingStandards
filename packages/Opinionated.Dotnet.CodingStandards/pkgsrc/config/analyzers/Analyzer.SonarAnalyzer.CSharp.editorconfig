@@ -633,7 +633,7 @@ dotnet_diagnostic.S2701.severity = warning
 
 # S2737: "catch" clauses should do more than rethrow
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2737.severity = none
+dotnet_diagnostic.S2737.severity = warning
 
 # S2743: Static fields should not be used in generic types
 # Enabled: True, Severity: warning
