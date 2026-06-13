@@ -385,7 +385,7 @@ dotnet_diagnostic.S2115.severity = warning
 
 # S2123: Values should not be uselessly incremented
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2123.severity = none
+dotnet_diagnostic.S2123.severity = warning
 
 # S2139: Exceptions should be either logged or rethrown but not both
 # Enabled: True, Severity: warning

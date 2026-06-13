@@ -390,4 +390,26 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2114").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2123", "Values should not be uselessly incremented",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2123/")]
+    public async Task DetectUselessPostfixIncrement()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int GetValue(int x)
+                {
+                    return x++;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2123").ShouldBeTrue();
+    }
 }
