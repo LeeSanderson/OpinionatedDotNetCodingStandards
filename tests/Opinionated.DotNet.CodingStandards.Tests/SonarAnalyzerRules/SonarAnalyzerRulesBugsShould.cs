@@ -887,4 +887,28 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2486").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2681", "Multiline blocks should be enclosed in curly braces",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2681/")]
+    public async Task WarnOnMultilineBlockWithoutCurlyBraces()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Apply(bool flag, System.Action a, System.Action b)
+                {
+                    if (flag)
+                        a();
+                        b();
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2681").ShouldBeTrue();
+    }
 }

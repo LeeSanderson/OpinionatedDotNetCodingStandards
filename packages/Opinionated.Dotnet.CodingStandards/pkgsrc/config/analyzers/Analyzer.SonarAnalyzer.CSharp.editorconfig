@@ -609,7 +609,7 @@ dotnet_diagnostic.S2674.severity = none
 
 # S2681: Multiline blocks should be enclosed in curly braces
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2681.severity = none
+dotnet_diagnostic.S2681.severity = warning
 
 # S2688: "NaN" should not be used in comparisons
 # Enabled: True, Severity: warning
