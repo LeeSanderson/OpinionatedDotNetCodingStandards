@@ -645,7 +645,7 @@ dotnet_diagnostic.S2755.severity = warning
 
 # S2757: Non-existent operators like "=+" should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2757.severity = none
+dotnet_diagnostic.S2757.severity = warning
 
 # S2760: Sequential tests should not check the same condition
 # Enabled: False, Severity: warning

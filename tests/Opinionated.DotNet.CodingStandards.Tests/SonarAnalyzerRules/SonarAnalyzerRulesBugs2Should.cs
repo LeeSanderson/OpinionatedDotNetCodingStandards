@@ -38,4 +38,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2737").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2757", "Non-existent operators like '=+' should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2757/")]
+    public async Task DetectNonExistentOperators()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static int Compute(int x, int y)
+                {
+                    x =+ y;
+                    return x;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2757").ShouldBeTrue();
+    }
 }
