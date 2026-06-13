@@ -105,4 +105,28 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1075").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S108", "Nested blocks of code should not be left empty",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-108/")]
+    public async Task ProhibitEmptyNestedBlock()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Method(int[] items)
+                {
+                    for (int i = 0; i < items.Length; i++)
+                    {
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S108").ShouldBeTrue();
+    }
 }
