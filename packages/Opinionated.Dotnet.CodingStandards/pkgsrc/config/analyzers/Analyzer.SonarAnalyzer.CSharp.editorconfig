@@ -317,7 +317,7 @@ dotnet_diagnostic.S1764.severity = warning
 
 # S1821: "switch" statements should not be nested
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1821.severity = none
+dotnet_diagnostic.S1821.severity = warning
 
 # S1848: Objects should not be created to be dropped immediately without being used
 # Enabled: True, Severity: warning

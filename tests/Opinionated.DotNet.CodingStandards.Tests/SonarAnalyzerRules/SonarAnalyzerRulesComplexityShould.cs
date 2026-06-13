@@ -548,4 +548,42 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S1479").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1821", "“switch” statements should not be nested",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1821/")]
+    public async Task ProhibitNestedSwitchStatements()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static string Classify(int outer, int inner)
+                {
+                    switch (outer)
+                    {
+                        case 1:
+                            switch (inner)
+                            {
+                                case 1:
+                                    return "one-one";
+                                case 2:
+                                    return "one-two";
+                                default:
+                                    return "one-other";
+                            }
+                        case 2:
+                            return "two";
+                        default:
+                            return "other";
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1821").ShouldBeTrue();
+    }
 }
