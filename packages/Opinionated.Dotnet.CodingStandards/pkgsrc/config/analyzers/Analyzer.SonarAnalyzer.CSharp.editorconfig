@@ -39,8 +39,9 @@ dotnet_diagnostic.S106.severity = warning
 dotnet_diagnostic.S1066.severity = warning
 
 # S1067: Expressions should not be too complex
-# Enabled: False, Severity: warning
-dotnet_diagnostic.S1067.severity = none
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S1067.severity = warning
+sonar.S1067.max = 3
 
 # S107: Methods should not have too many parameters
 # Enabled: False, Severity: warning

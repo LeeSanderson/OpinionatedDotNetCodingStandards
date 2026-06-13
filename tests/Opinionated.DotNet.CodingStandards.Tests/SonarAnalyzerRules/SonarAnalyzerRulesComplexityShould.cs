@@ -274,4 +274,24 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("S107").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1067", "Expressions should not be too complex",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1067/")]
+    public async Task ProhibitExcessiveExpressionComplexity()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static bool Evaluate(bool a, bool b, bool c, bool d, bool e) =>
+                    a && b && c && d && e;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1067").ShouldBeTrue();
+    }
 }
