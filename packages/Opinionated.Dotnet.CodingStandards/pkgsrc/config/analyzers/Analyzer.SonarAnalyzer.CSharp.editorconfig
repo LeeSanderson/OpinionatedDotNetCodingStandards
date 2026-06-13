@@ -569,7 +569,7 @@ dotnet_diagnostic.S2386.severity = none
 
 # S2387: Child class fields should not shadow parent class fields
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2387.severity = none
+dotnet_diagnostic.S2387.severity = warning
 
 # S2436: Types and methods should not have too many generic parameters
 # Enabled: False, Severity: warning

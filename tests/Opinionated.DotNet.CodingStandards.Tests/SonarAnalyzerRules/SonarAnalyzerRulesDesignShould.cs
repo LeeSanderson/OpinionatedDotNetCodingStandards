@@ -375,4 +375,31 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S2368").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2387", "Child class fields should not shadow parent class fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2387/")]
+    public async Task WarnWhenChildClassFieldShadowsParentClassField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Parent
+            {
+                protected int value = 0;
+            }
+
+            public class Child : Parent
+            {
+                private int value = 1;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2387").ShouldBeTrue();
+    }
 }
