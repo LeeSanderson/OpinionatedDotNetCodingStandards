@@ -361,7 +361,7 @@ dotnet_diagnostic.S1994.severity = warning
 
 # S2068: Credentials should not be hard-coded
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2068.severity = none
+dotnet_diagnostic.S2068.severity = warning
 
 # S2077: Formatting SQL queries is security-sensitive
 # Enabled: True, Severity: warning

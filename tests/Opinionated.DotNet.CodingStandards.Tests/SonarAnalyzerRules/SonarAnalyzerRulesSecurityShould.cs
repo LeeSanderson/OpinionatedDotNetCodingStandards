@@ -43,4 +43,23 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S1313").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2068", "Credentials should not be hard-coded",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2068/")]
+    public async Task WarnOnHardcodedCredentials()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Config
+            {
+                private static string password = "secret123";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2068").ShouldBeTrue();
+    }
 }
