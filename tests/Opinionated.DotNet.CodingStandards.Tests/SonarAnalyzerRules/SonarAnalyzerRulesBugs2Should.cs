@@ -308,4 +308,28 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3005").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3010", "Static fields should not be updated in constructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3010/")]
+    public async Task WarnOnStaticFieldAssignmentInInstanceConstructor()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Counter
+            {
+                private static int _count;
+                public Counter()
+                {
+                    _count++;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3010").ShouldBeTrue();
+    }
 }

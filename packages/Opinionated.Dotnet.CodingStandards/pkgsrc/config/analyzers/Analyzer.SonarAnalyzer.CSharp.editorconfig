@@ -717,7 +717,7 @@ dotnet_diagnostic.S3005.severity = warning
 
 # S3010: Static fields should not be updated in constructors
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3010.severity = none
+dotnet_diagnostic.S3010.severity = warning
 
 # S3011: Reflection should not be used to increase accessibility of classes, methods, or fields
 # Enabled: True, Severity: warning
