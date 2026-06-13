@@ -175,7 +175,7 @@ sonar.S1200.max = 30
 
 # S1206: "Equals(Object)" and "GetHashCode()" should be overridden in pairs
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1206.severity = none
+dotnet_diagnostic.S1206.severity = warning
 
 # S121: Control structures should use curly braces
 # Enabled: False, Severity: warning
