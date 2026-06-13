@@ -195,7 +195,7 @@ dotnet_diagnostic.S122.severity = none
 
 # S1226: Method parameters, caught exceptions and foreach variables' initial values should not be ignored
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1226.severity = none
+dotnet_diagnostic.S1226.severity = warning
 
 # S1227: break statements should not be used except for switch cases
 # Enabled: False, Severity: warning

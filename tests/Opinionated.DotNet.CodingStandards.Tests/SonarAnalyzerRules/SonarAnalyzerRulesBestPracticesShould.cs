@@ -531,4 +531,27 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S1215").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1226", "Method parameters, caught exceptions and foreach variables' initial values should not be ignored",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1226/")]
+    public async Task WarnOnParameterInitialValueIgnored()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public static int Add(int a, int b)
+                {
+                    a = 0;
+                    return a + b;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1226").ShouldBeTrue();
+    }
 }
