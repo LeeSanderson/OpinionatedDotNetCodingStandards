@@ -198,4 +198,28 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S1751").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1764", "Identical expressions should not be used on both sides of operators",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1764/")]
+    public async Task DetectIdenticalExpressionsOnBothSidesOfOperator()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Checker
+            {
+                public static bool IsRedundant(int x)
+                {
+                    return x == x;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1764").ShouldBeTrue();
+    }
 }

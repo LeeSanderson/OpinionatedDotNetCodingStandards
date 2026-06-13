@@ -313,7 +313,7 @@ dotnet_diagnostic.S1751.severity = warning
 
 # S1764: Identical expressions should not be used on both sides of operators
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S1764.severity = none
+dotnet_diagnostic.S1764.severity = warning
 
 # S1821: "switch" statements should not be nested
 # Enabled: False, Severity: warning
