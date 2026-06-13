@@ -757,4 +757,25 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
 
         buildOutput.HasError("S131").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S1312", "Logger fields should be 'private static readonly'",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1312/")]
+    public async Task WarnOnNonPrivateStaticReadonlyLoggerField()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFile("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public class MyService
+            {
+                public ILogger Logger;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S1312").ShouldBeTrue();
+    }
 }

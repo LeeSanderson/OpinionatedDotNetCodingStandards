@@ -235,7 +235,7 @@ dotnet_diagnostic.S131.severity = warning
 
 # S1312: Logger fields should be "private static readonly"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1312.severity = none
+dotnet_diagnostic.S1312.severity = warning
 
 # S1313: Using hardcoded IP addresses is security-sensitive
 # Enabled: True, Severity: warning
