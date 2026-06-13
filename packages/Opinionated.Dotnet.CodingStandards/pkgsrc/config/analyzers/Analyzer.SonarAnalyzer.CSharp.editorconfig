@@ -689,7 +689,7 @@ dotnet_diagnostic.S2953.severity = none
 
 # S2955: Generic parameters not constrained to reference types should not be compared to "null"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2955.severity = none
+dotnet_diagnostic.S2955.severity = warning
 
 # S2970: Assertions should be complete
 # Enabled: True, Severity: warning

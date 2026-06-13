@@ -187,4 +187,25 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S2934").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2955", "Generic parameters not constrained to reference types should not be compared to \"null\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2955/")]
+    public async Task WarnOnNullComparisonOfUnconstrainedGenericParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Checker
+            {
+                public static bool IsNull<T>(T value) => value == null;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2955").ShouldBeTrue();
+    }
 }
