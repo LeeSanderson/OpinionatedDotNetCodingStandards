@@ -504,4 +504,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3264").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3265", "Non-flags enums should not be used in bitwise operations",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3265/")]
+    public async Task WarnOnBitwiseOperationsOnNonFlagsEnum()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public enum Direction { North, South, East, West }
+
+            public static class Checker
+            {
+                public static Direction Combine(Direction a, Direction b) => a | b;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3265").ShouldBeTrue();
+    }
 }

@@ -857,7 +857,7 @@ dotnet_diagnostic.S3264.severity = warning
 
 # S3265: Non-flags enums should not be used in bitwise operations
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3265.severity = none
+dotnet_diagnostic.S3265.severity = warning
 
 # S3267: Loops should be simplified with "LINQ" expressions
 # Enabled: True, Severity: warning
