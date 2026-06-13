@@ -377,4 +377,26 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3172").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3234", "GC.SuppressFinalize should not be invoked for types without destructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3234/")]
+    public async Task WarnOnSuppressFinalizeWithoutDestructor()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public sealed class NoFinalizer : System.IDisposable
+            {
+                public void Dispose()
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3234").ShouldBeTrue();
+    }
 }
