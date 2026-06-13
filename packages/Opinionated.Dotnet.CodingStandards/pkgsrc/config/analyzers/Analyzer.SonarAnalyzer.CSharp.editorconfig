@@ -733,7 +733,7 @@ dotnet_diagnostic.S3059.severity = warning
 
 # S3060: "is" should not be used with "this"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3060.severity = none
+dotnet_diagnostic.S3060.severity = warning
 
 # S3063: "StringBuilder" data should be used
 # Enabled: True, Severity: warning

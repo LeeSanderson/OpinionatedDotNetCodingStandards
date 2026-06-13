@@ -362,4 +362,31 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3052").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3060", "\"is\" should not be used with \"this\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3060/")]
+    public async Task WarnOnIsCheckWithThis()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Base
+            {
+                public string Describe()
+                {
+                    if (this is Derived)
+                    {
+                        return "derived";
+                    }
+                    return "base";
+                }
+            }
+            public class Derived : Base { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3060").ShouldBeTrue();
+    }
 }
