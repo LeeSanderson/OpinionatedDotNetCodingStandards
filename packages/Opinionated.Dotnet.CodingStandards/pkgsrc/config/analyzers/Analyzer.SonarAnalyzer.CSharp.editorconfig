@@ -517,7 +517,7 @@ dotnet_diagnostic.S2330.severity = warning
 
 # S2333: Redundant modifiers should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S2333.severity = none
+dotnet_diagnostic.S2333.severity = warning
 
 # S2339: Public constant members should not be used
 # Enabled: False, Severity: warning

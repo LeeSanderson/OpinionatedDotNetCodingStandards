@@ -152,4 +152,31 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S2327").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2333", "Redundant modifiers should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2333/")]
+    public async Task WarnOnRedundantModifiers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base
+            {
+                public virtual void Method() { }
+            }
+
+            public sealed class Derived : Base
+            {
+                public sealed override void Method() { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2333").ShouldBeTrue();
+    }
 }
