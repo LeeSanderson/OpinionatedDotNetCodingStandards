@@ -737,7 +737,7 @@ dotnet_diagnostic.S3060.severity = warning
 
 # S3063: "StringBuilder" data should be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3063.severity = none
+dotnet_diagnostic.S3063.severity = warning
 
 # S3168: "async" methods should not return "void"
 # Enabled: True, Severity: warning

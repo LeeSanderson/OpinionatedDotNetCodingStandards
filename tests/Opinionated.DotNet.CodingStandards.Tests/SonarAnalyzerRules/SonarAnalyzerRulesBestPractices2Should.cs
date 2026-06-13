@@ -389,4 +389,33 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3060").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3063", "“StringBuilder” data should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3063/")]
+    public async Task WarnOnUnusedStringBuilderData()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Text;
+
+            namespace test;
+
+            public static class Example
+            {
+                public static void Build()
+                {
+                    var sb = new StringBuilder();
+                    sb.Append("hello");
+                    sb.Append(" world");
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3063").ShouldBeTrue();
+    }
 }
