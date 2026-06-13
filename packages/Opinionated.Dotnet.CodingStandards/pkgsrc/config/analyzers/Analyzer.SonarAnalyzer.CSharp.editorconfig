@@ -589,7 +589,7 @@ dotnet_diagnostic.S2479.severity = warning
 
 # S2486: Generic exceptions should not be ignored
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S2486.severity = none
+dotnet_diagnostic.S2486.severity = warning
 
 # S2551: Shared resources should not be used for locking
 # Enabled: True, Severity: warning

@@ -859,4 +859,32 @@ public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("S2445").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S2486", "Generic exceptions should not be ignored",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2486/")]
+    public async Task WarnOnIgnoredGenericException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Processor
+            {
+                public static void Run()
+                {
+                    try
+                    {
+                        int result = int.Parse("abc");
+                    }
+                    catch (Exception)
+                    {
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S2486").ShouldBeTrue();
+    }
 }
