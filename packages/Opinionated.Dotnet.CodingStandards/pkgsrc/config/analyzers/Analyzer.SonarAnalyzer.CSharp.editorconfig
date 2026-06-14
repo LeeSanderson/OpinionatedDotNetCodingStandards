@@ -1277,7 +1277,7 @@ dotnet_diagnostic.S4035.severity = warning
 
 # S4036: Searching OS commands in PATH is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4036.severity = none
+dotnet_diagnostic.S4036.severity = warning
 
 # S4039: Interface methods should be callable by derived types
 # Enabled: False, Severity: warning

@@ -393,4 +393,40 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4000").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4036", "Searching OS commands in PATH is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4036/")]
+    public async Task WarnOnUnsafeOsCommandPathSearch()
+    {
+        // S4036 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFile("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S4036</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFile("Program.cs", """
+            using System.Diagnostics;
+            namespace test;
+            public static class Launcher
+            {
+                public static void Run()
+                {
+                    // Bare command name with no path prefix — relies on PATH resolution
+                    Process.Start("cmd");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4036").ShouldBeTrue();
+    }
 }
