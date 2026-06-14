@@ -879,4 +879,24 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5443").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5445", "Insecure temporary file creation methods should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5445/")]
+    public async Task ProhibitInsecureTemporaryFileCreation()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.IO;
+            public static class TempFileUsage
+            {
+                public static string GetTemp() => Path.GetTempFileName();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5445").ShouldBeTrue();
+    }
 }
