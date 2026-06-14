@@ -1125,7 +1125,7 @@ dotnet_diagnostic.S3909.severity = none
 
 # S3923: All branches in a conditional structure should not have exactly the same implementation
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3923.severity = none
+dotnet_diagnostic.S3923.severity = warning
 
 # S3925: "ISerializable" should be implemented correctly
 # Enabled: True, Severity: warning

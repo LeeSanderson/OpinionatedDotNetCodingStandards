@@ -890,4 +890,37 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3889").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3923", "All branches in a conditional structure should not have exactly the same implementation",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3923/")]
+    public async Task DetectIdenticalImplementationInAllBranches()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Checker
+            {
+                public static string Classify(int n)
+                {
+                    if (n > 0)
+                    {
+                        return "positive";
+                    }
+                    else if (n < 0)
+                    {
+                        return "positive";
+                    }
+                    else
+                    {
+                        return "positive";
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3923").ShouldBeTrue();
+    }
 }
