@@ -1801,7 +1801,7 @@ dotnet_diagnostic.S8367.severity = warning
 
 # S8368: Identifiers should not conflict with the C# 14 "extension" contextual keyword
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S8368.severity = none
+dotnet_diagnostic.S8368.severity = warning
 
 # S8380: Return types named "partial" should be escaped with "@"
 # Enabled: True, Severity: warning

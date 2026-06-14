@@ -371,4 +371,23 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S8367").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8368", "Identifiers should not conflict with the C# 14 'extension' contextual keyword",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8368/")]
+    public async Task WarnOnExtensionKeywordConflict()
+    {
+        // S8368 only fires when LangVersion < 14; pin to 13 so the Sonar analyzer
+        // reports the issue instead of the compiler emitting errors.
+        using var project = await CreateProjectBuilderAsync(properties: [("LangVersion", "13")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class extension { }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8368").ShouldBeTrue();
+    }
 }
