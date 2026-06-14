@@ -59,4 +59,30 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6618").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6664", "The code block contains too many logging calls",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/")]
+    public async Task ProhibitExcessiveLoggingCallsInBlock()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Service
+            {
+                public static void Process(ILogger logger, string a, string b, string c)
+                {
+                    logger.LogInformation("Starting {Name}", a);
+                    logger.LogInformation("Processing {Name}", b);
+                    logger.LogInformation("Finished {Name}", c);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6664").ShouldBeTrue();
+    }
 }

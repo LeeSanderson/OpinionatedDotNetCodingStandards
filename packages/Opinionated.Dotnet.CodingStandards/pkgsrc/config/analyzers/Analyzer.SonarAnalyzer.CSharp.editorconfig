@@ -1677,7 +1677,7 @@ dotnet_diagnostic.S6640.severity = warning
 
 # S6664: The code block contains too many logging calls
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6664.severity = none
+dotnet_diagnostic.S6664.severity = warning
 
 # S6667: Logging in a catch clause should pass the caught exception as a parameter.
 # Enabled: True, Severity: warning
