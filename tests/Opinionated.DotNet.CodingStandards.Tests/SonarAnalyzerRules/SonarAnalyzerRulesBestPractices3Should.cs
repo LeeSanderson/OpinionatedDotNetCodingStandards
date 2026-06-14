@@ -124,4 +124,26 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3532").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3597", "ServiceContract and OperationContract attributes should be used together",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3597/")]
+    public async Task WarnOnMissingOperationContractOnServiceContractInterface()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "System.ServiceModel.Primitives", Version: "10.0.652802")]);
+        await project.AddFile("Program.cs", """
+            using System.ServiceModel;
+            namespace test;
+            [ServiceContract]
+            public interface IMyService
+            {
+                string GetData(int value);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3597").ShouldBeTrue();
+    }
 }
