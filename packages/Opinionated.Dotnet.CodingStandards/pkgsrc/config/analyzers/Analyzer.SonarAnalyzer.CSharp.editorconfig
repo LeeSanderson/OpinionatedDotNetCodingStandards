@@ -1665,7 +1665,7 @@ dotnet_diagnostic.S6613.severity = warning
 
 # S6617: "Contains" should be used instead of "Any" for simple equality checks
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6617.severity = none
+dotnet_diagnostic.S6617.severity = warning
 
 # S6618: "string.Create" should be used instead of "FormattableString"
 # Enabled: True, Severity: warning
