@@ -1661,7 +1661,7 @@ dotnet_diagnostic.S6612.severity = warning
 
 # S6613: "First" and "Last" properties of "LinkedList" should be used instead of the "First()" and "Last()" extension methods
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6613.severity = none
+dotnet_diagnostic.S6613.severity = warning
 
 # S6617: "Contains" should be used instead of "Any" for simple equality checks
 # Enabled: True, Severity: warning

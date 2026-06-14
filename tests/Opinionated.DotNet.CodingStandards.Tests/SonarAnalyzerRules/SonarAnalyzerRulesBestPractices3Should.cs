@@ -935,4 +935,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6612").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6613", "“First” and “Last” properties of “LinkedList” should be used instead of the “First()” and “Last()” extension methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6613/")]
+    public async Task WarnOnLinkedListExtensionMethodsInsteadOfProperties()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+            namespace test;
+            public class C
+            {
+                public static void Method()
+                {
+                    var list = new LinkedList<int>(new[] { 1, 2, 3 });
+                    var first = list.First();
+                    var last = list.Last();
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6613").ShouldBeTrue();
+    }
 }
