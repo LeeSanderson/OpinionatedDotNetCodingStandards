@@ -1593,7 +1593,7 @@ dotnet_diagnostic.S6507.severity = warning
 
 # S6513: "ExcludeFromCodeCoverage" attributes should include a justification
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6513.severity = none
+dotnet_diagnostic.S6513.severity = warning
 
 # S6561: Avoid using "DateTime.Now" for benchmarking or timing operations
 # Enabled: True, Severity: warning

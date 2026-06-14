@@ -647,4 +647,28 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6354").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6513", "ExcludeFromCodeCoverage attributes should include a justification",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6513/")]
+    public async Task WarnOnExcludeFromCodeCoverageWithoutJustification()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.CodeAnalysis;
+
+            namespace test;
+
+            [ExcludeFromCodeCoverage]
+            public class UncoveredClass
+            {
+                public int Value { get; set; }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6513").ShouldBeTrue();
+    }
 }
