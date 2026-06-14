@@ -113,4 +113,30 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6667").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6668", "Logging arguments should be passed to the correct parameter",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6668/")]
+    public async Task WarnOnLoggingArgumentsPassedToWrongParameter()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class C
+            {
+                public static void Log(ILogger logger)
+                {
+                    var ex = new System.Exception("boom");
+                    // Passing Exception into the params args slot instead of the dedicated exception parameter
+                    logger.LogInformation("Unexpected error: {Message}", ex);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6668").ShouldBeTrue();
+    }
 }

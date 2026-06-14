@@ -1685,7 +1685,7 @@ dotnet_diagnostic.S6667.severity = warning
 
 # S6668: Logging arguments should be passed to the correct parameter
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6668.severity = none
+dotnet_diagnostic.S6668.severity = warning
 
 # S6669: Logger field or property name should comply with a naming convention
 # Enabled: False, Severity: warning
