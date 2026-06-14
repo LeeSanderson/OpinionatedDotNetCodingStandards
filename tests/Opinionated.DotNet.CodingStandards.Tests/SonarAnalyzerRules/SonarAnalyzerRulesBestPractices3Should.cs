@@ -961,4 +961,28 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6613").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6675", "Trace.WriteLineIf should not be used with TraceSwitch levels",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6675/")]
+    public async Task WarnOnTraceWriteLineIfWithTraceSwitchLevels()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics;
+            namespace test;
+            public static class Example
+            {
+                public static void Run()
+                {
+                    var ts = new TraceSwitch("mySwitch", "My switch");
+                    Trace.WriteLineIf(ts.TraceError, "an error occurred");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6675").ShouldBeTrue();
+    }
 }

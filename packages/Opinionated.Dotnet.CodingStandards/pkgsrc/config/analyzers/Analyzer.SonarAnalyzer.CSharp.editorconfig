@@ -1709,7 +1709,7 @@ dotnet_diagnostic.S6674.severity = warning
 
 # S6675: "Trace.WriteLineIf" should not be used with "TraceSwitch" levels
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6675.severity = none
+dotnet_diagnostic.S6675.severity = warning
 
 # S6677: Message template placeholders should be unique
 # Enabled: True, Severity: warning
