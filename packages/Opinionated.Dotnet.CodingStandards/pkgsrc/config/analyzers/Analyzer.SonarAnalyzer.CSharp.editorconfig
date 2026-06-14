@@ -1733,7 +1733,7 @@ dotnet_diagnostic.S6800.severity = warning
 
 # S6802: Using lambda expressions in loops should be avoided in Blazor markup section
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6802.severity = none
+dotnet_diagnostic.S6802.severity = warning
 
 # S6803: Parameters with SupplyParameterFromQuery attribute should be used only in routable components
 # Enabled: False, Severity: warning
