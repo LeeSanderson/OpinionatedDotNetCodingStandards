@@ -299,4 +299,28 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4049").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4136", "Method overloads should be grouped together",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4136/")]
+    public async Task WarnOnUngroupedMethodOverloads()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public int Add(int a, int b) => a + b;
+
+                public int Subtract(int a, int b) => a - b;
+
+                public int Add(int a, int b, int c) => a + b + c;
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4136").ShouldBeTrue();
+    }
 }

@@ -1345,7 +1345,7 @@ dotnet_diagnostic.S4070.severity = none
 
 # S4136: Method overloads should be grouped together
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4136.severity = none
+dotnet_diagnostic.S4136.severity = warning
 
 # S4143: Collection elements should not be replaced unconditionally
 # Enabled: True, Severity: warning
