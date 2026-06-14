@@ -1417,7 +1417,7 @@ dotnet_diagnostic.S4423.severity = none
 
 # S4426: Cryptographic keys should be robust
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4426.severity = none
+dotnet_diagnostic.S4426.severity = warning
 
 # S4428: "PartCreationPolicyAttribute" should be used with "ExportAttribute"
 # Enabled: True, Severity: warning

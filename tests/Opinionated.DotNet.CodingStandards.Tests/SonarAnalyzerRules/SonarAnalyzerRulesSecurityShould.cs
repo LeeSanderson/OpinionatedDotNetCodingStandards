@@ -525,4 +525,24 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4212").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4426", "Cryptographic keys should be robust",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4426/")]
+    public async Task WarnOnWeakCryptographicKeySize()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Security.Cryptography;
+            namespace test;
+            public static class WeakKeyExample
+            {
+                public static RSACryptoServiceProvider Create() => new RSACryptoServiceProvider(1024);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4426").ShouldBeTrue();
+    }
 }
