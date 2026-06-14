@@ -1737,7 +1737,7 @@ dotnet_diagnostic.S6802.severity = warning
 
 # S6803: Parameters with SupplyParameterFromQuery attribute should be used only in routable components
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6803.severity = none
+dotnet_diagnostic.S6803.severity = warning
 
 # S6930: Backslash should be avoided in route templates
 # Enabled: True, Severity: warning

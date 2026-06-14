@@ -491,4 +491,34 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6800").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6803", "Parameters with SupplyParameterFromQuery attribute should be used only in routable components",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6803/")]
+    public async Task WarnOnSupplyParameterFromQueryInNonRoutableComponent()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Components", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Components;
+
+            namespace test;
+
+            public class NonRoutableComponent : ComponentBase
+            {
+                [Parameter]
+                [SupplyParameterFromQuery]
+                public int PageNumber { get; set; }
+
+                [Parameter]
+                [SupplyParameterFromQuery]
+                public string? Filter { get; set; }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6803").ShouldBeTrue();
+    }
 }
