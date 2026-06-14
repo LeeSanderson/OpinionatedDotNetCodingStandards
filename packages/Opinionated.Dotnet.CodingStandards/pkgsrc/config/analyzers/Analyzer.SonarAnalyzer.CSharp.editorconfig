@@ -1793,7 +1793,7 @@ dotnet_diagnostic.S7039.severity = warning
 
 # S818: Literal suffixes should be upper case
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S818.severity = none
+dotnet_diagnostic.S818.severity = warning
 
 # S8367: Identifiers should not conflict with the C# 14 "field" contextual keyword
 # Enabled: True, Severity: warning

@@ -317,4 +317,30 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S6669").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S818", "Literal suffixes should be upper case",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-818/")]
+    public async Task WarnOnLowercaseLiteralSuffix()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    long a = 1l;
+                    float b = 1f;
+                    double c = 1d;
+                    ulong e = 1ul;
+                    return (int)(a + b + c + (double)e);
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S818").ShouldBeTrue();
+    }
 }
