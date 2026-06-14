@@ -1537,7 +1537,7 @@ dotnet_diagnostic.S5693.severity = warning
 
 # S5753: Disabling ASP.NET "Request Validation" feature is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5753.severity = none
+dotnet_diagnostic.S5753.severity = warning
 
 # S5766: Creating Serializable objects without data validation checks is security-sensitive
 # Enabled: True, Severity: warning
