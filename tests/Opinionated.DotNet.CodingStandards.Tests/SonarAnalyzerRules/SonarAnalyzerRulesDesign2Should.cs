@@ -458,4 +458,47 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S6931").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6934", "A Route attribute should be added to the controller when a route template is specified at the action level",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6934/")]
+    public async Task WarnOnMissingControllerRouteAttributeWhenActionSpecifiesRouteTemplate()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Mvc.Routing
+            {
+                public interface IRouteTemplateProvider
+                {
+                    string? Template { get; }
+                }
+                public abstract class HttpMethodAttribute : System.Attribute, IRouteTemplateProvider
+                {
+                    public string? Template { get; }
+                    protected HttpMethodAttribute(string template) { Template = template; }
+                    string? IRouteTemplateProvider.Template => Template;
+                }
+            }
+            namespace Microsoft.AspNetCore.Mvc
+            {
+                public class ControllerBase { }
+                public sealed class HttpGetAttribute : Routing.HttpMethodAttribute
+                {
+                    public HttpGetAttribute(string template) : base(template) { }
+                }
+            }
+            namespace test
+            {
+                public class HomeController : Microsoft.AspNetCore.Mvc.ControllerBase
+                {
+                    [Microsoft.AspNetCore.Mvc.HttpGet("items")]
+                    public int GetItems() => 0;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6934").ShouldBeTrue();
+    }
 }

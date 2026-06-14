@@ -1753,7 +1753,7 @@ dotnet_diagnostic.S6932.severity = warning
 
 # S6934: A Route attribute should be added to the controller when a route template is specified at the action level
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6934.severity = none
+dotnet_diagnostic.S6934.severity = warning
 
 # S6960: Controllers should not have mixed responsibilities
 # Enabled: True, Severity: warning
