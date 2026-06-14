@@ -1429,7 +1429,7 @@ dotnet_diagnostic.S4433.severity = warning
 
 # S4456: Parameter validation in yielding methods should be wrapped
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4456.severity = none
+dotnet_diagnostic.S4456.severity = warning
 
 # S4457: Parameter validation in "async"/"await" methods should be wrapped
 # Enabled: False, Severity: warning

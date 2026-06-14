@@ -271,4 +271,36 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4275").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4456", "Parameter validation in yielding methods should be wrapped",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4456/")]
+    public async Task WarnOnParameterValidationInYieldingMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System;
+            using System.Collections.Generic;
+
+            namespace test;
+
+            public static class Items
+            {
+                public static IEnumerable<int> GetPositive(int[] values)
+                {
+                    if (values == null) throw new ArgumentNullException(nameof(values));
+                    foreach (var v in values)
+                    {
+                        if (v > 0)
+                            yield return v;
+                    }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4456").ShouldBeTrue();
+    }
 }
