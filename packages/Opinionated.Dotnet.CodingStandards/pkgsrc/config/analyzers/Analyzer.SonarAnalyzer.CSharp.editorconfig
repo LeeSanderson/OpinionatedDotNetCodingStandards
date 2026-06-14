@@ -1477,7 +1477,7 @@ dotnet_diagnostic.S4635.severity = warning
 
 # S4663: Comments should not be empty
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4663.severity = none
+dotnet_diagnostic.S4663.severity = warning
 
 # S4790: Using weak hashing algorithms is security-sensitive
 # Enabled: True, Severity: warning

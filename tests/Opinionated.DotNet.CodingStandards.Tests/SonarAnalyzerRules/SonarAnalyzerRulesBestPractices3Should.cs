@@ -607,4 +607,24 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4635").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4663", "Comments should not be empty",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4663/")]
+    public async Task ProhibitEmptyComments()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                //
+                public static int Main() => 0;
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4663").ShouldBeTrue();
+    }
 }
