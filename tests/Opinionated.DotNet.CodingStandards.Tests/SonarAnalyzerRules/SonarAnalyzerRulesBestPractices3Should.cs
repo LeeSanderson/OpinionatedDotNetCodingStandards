@@ -733,4 +733,26 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6563").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6566", "Use \"DateTimeOffset\" instead of \"DateTime\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6566/")]
+    public async Task WarnOnDateTimeUsedInsteadOfDateTimeOffset()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Recorder
+            {
+                public void Record()
+                {
+                    var now = System.DateTime.UtcNow; // S6566: use DateTimeOffset instead
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6566").ShouldBeTrue();
+    }
 }
