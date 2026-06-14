@@ -199,4 +199,44 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4159").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4260", "ConstructorArgument parameters should exist in constructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4260/")]
+    public async Task DetectInvalidConstructorArgumentParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace System.Windows.Markup
+            {
+                [AttributeUsage(AttributeTargets.Property)]
+                public sealed class ConstructorArgumentAttribute : Attribute
+                {
+                    public ConstructorArgumentAttribute(string argumentName) { }
+                }
+            }
+
+            namespace test
+            {
+                using System.Windows.Markup;
+
+                [AttributeUsage(AttributeTargets.Class)]
+                public sealed class MyAttribute : Attribute
+                {
+                    [ConstructorArgument("nonExistentParam")]
+                    public string Value { get; }
+
+                    public MyAttribute(string actualParam)
+                    {
+                        Value = actualParam;
+                    }
+                }
+
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4260").ShouldBeTrue();
+    }
 }

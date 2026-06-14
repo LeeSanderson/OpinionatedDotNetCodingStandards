@@ -1397,7 +1397,7 @@ dotnet_diagnostic.S4226.severity = warning
 
 # S4260: "ConstructorArgument" parameters should exist in constructors
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4260.severity = none
+dotnet_diagnostic.S4260.severity = warning
 
 # S4261: Methods should be named according to their synchronicities
 # Enabled: False, Severity: warning
