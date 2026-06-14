@@ -681,4 +681,23 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3453").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3464", "Type inheritance should not be recursive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3464/")]
+    public async Task ProhibitRecursiveTypeInheritance()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public interface IBase<T> { }
+            public interface IWrapper<T> { }
+            public interface IBad<T> : IBase<IBad<IWrapper<T>>> { }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3464").ShouldBeTrue();
+    }
 }

@@ -989,7 +989,7 @@ dotnet_diagnostic.S3459.severity = warning
 
 # S3464: Type inheritance should not be recursive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3464.severity = none
+dotnet_diagnostic.S3464.severity = warning
 
 # S3466: Optional parameters should be passed to "base" calls
 # Enabled: True, Severity: warning
