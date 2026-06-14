@@ -1029,7 +1029,7 @@ dotnet_diagnostic.S3626.severity = warning
 
 # S3717: Track use of "NotImplementedException"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3717.severity = none
+dotnet_diagnostic.S3717.severity = warning
 
 # S3776: Cognitive Complexity of methods should not be too high
 # Enabled: False, Severity: warning

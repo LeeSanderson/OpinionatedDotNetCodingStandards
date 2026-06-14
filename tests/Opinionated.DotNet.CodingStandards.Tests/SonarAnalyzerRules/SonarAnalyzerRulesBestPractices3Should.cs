@@ -229,4 +229,23 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3626").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3717", "Track use of \"NotImplementedException\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3717/")]
+    public async Task WarnOnNotImplementedException()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Service
+            {
+                public void DoWork() => throw new System.NotImplementedException();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3717").ShouldBeTrue();
+    }
 }
