@@ -1465,7 +1465,7 @@ dotnet_diagnostic.S4581.severity = none
 
 # S4583: Calls to delegate's method "BeginInvoke" should be paired with calls to "EndInvoke"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4583.severity = none
+dotnet_diagnostic.S4583.severity = warning
 
 # S4586: Non-async "Task/Task<T>" methods should not return null
 # Enabled: True, Severity: warning

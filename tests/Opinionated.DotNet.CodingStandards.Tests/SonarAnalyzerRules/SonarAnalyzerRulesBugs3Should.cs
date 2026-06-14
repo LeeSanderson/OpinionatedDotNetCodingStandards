@@ -303,4 +303,32 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4456").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4583", "Calls to delegate's method \"BeginInvoke\" should be paired with calls to \"EndInvoke\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4583/")]
+    public async Task WarnOnUnpairedBeginInvoke()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public delegate int Calculate(int x, int y);
+
+            public static class DelegateUser
+            {
+                public static void Run()
+                {
+                    Calculate calc = (x, y) => x + y;
+                    // BeginInvoke called without a matching EndInvoke — S4583 violation
+                    calc.BeginInvoke(1, 2, null, null);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4583").ShouldBeTrue();
+    }
 }
