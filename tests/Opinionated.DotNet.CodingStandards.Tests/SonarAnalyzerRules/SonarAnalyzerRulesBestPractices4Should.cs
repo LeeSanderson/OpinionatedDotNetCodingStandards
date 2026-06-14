@@ -224,4 +224,28 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S881").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S907", "goto statement should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-907/")]
+    public async Task ProhibitGotoStatement()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int Compute(int x)
+                {
+                    goto end;
+                    end:
+                    return x;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S907").ShouldBeTrue();
+    }
 }

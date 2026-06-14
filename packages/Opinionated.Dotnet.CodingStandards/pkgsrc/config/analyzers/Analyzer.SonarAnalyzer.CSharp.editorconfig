@@ -1817,7 +1817,7 @@ dotnet_diagnostic.S881.severity = warning
 
 # S907: "goto" statement should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S907.severity = none
+dotnet_diagnostic.S907.severity = warning
 
 # S927: Parameter names should match base declaration and other partial definitions
 # Enabled: True, Severity: warning
