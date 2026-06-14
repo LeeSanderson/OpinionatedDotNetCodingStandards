@@ -85,4 +85,32 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6664").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6667", "Logging in a catch clause should pass the caught exception as a parameter",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6667/")]
+    public async Task WarnOnMissingExceptionInCatchLogging()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static void Run(ILogger logger)
+                {
+                    try { _ = int.Parse("x"); }
+                    catch (Exception)
+                    {
+                        logger.LogError("Something went wrong");
+                    }
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6667").ShouldBeTrue();
+    }
 }

@@ -1681,7 +1681,7 @@ dotnet_diagnostic.S6664.severity = warning
 
 # S6667: Logging in a catch clause should pass the caught exception as a parameter.
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6667.severity = none
+dotnet_diagnostic.S6667.severity = warning
 
 # S6668: Logging arguments should be passed to the correct parameter
 # Enabled: True, Severity: warning
