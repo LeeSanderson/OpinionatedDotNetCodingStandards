@@ -735,4 +735,35 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3449").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3466", "Optional parameters should be passed to \"base\" calls",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3466/")]
+    public async Task WarnOnOptionalParameterNotPassedToBaseCall()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base
+            {
+                public virtual void Method(int required, string optional = "default")
+                {
+                }
+            }
+
+            public class Derived : Base
+            {
+                public override void Method(int required, string optional = "default")
+                {
+                    base.Method(required); // S3466: optional not forwarded to base
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3466").ShouldBeTrue();
+    }
 }
