@@ -322,4 +322,56 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S3330").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3884", "CoSetProxyBlanket and CoInitializeSecurity should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3884/")]
+    public async Task WarnOnCoSetProxyBlanketAndCoInitializeSecurity()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.InteropServices;
+
+            namespace test;
+
+            public static class Program
+            {
+                [DllImport("ole32.dll")]
+                [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+                public static extern int CoSetProxyBlanket(
+                    nint pProxy,
+                    uint dwAuthnSvc,
+                    uint dwAuthzSvc,
+                    nint pServerPrincName,
+                    uint dwAuthnLevel,
+                    uint dwImpLevel,
+                    nint pAuthInfo,
+                    uint dwCapabilities);
+
+                [DllImport("ole32.dll")]
+                [DefaultDllImportSearchPaths(DllImportSearchPath.System32)]
+                public static extern int CoInitializeSecurity(
+                    nint pSecDesc,
+                    int cAuthSvc,
+                    nint asAuthSvc,
+                    nint pReserved1,
+                    uint dwAuthnLevel,
+                    uint dwImpLevel,
+                    nint pAuthList,
+                    uint dwCapabilities,
+                    nint pReserved3);
+
+                public static int Main()
+                {
+                    var r1 = CoInitializeSecurity(nint.Zero, -1, nint.Zero, nint.Zero, 0, 0, nint.Zero, 0, nint.Zero);
+                    var r2 = CoSetProxyBlanket(nint.Zero, 0, 0, nint.Zero, 0, 0, nint.Zero, 0);
+                    return r1 + r2;
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3884").ShouldBeTrue();
+    }
 }
