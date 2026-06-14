@@ -1597,7 +1597,7 @@ dotnet_diagnostic.S6513.severity = warning
 
 # S6561: Avoid using "DateTime.Now" for benchmarking or timing operations
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6561.severity = none
+dotnet_diagnostic.S6561.severity = warning
 
 # S6562: Always set the "DateTimeKind" when creating new "DateTime" instances
 # Enabled: True, Severity: warning

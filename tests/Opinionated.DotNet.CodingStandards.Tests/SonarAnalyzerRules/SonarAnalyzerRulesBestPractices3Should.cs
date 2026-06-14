@@ -671,4 +671,28 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6513").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6561", "Avoid using \"DateTime.Now\" for benchmarking or timing operations",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6561/")]
+    public async Task WarnOnDateTimeNowUsedForTiming()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Benchmarker
+            {
+                public static System.TimeSpan Measure(System.Action action)
+                {
+                    var start = System.DateTime.Now;
+                    action();
+                    return System.DateTime.Now - start;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6561").ShouldBeTrue();
+    }
 }
