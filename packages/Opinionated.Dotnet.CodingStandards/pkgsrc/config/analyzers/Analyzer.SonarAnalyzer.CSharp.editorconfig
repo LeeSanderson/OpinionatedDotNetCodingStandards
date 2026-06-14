@@ -1293,7 +1293,7 @@ dotnet_diagnostic.S4041.severity = warning
 
 # S4047: Generics should be used when appropriate
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4047.severity = none
+dotnet_diagnostic.S4047.severity = warning
 
 # S4049: Properties should be preferred
 # Enabled: False, Severity: warning

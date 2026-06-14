@@ -254,4 +254,28 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4035").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4047", "Generics should be used when appropriate",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4047/")]
+    public async Task WarnOnRefObjectParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static void Swap(ref object a, ref object b)
+                {
+                    object temp = a;
+                    a = b;
+                    b = temp;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4047").ShouldBeTrue();
+    }
 }
