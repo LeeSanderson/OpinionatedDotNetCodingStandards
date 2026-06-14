@@ -456,4 +456,73 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4211").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4212", "Serialization constructors should be secured",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4212/")]
+    public async Task WarnOnUnsecuredSerializationConstructor()
+    {
+        using var project = await CreateProjectBuilder(
+            properties: [(Name: "NoWarn", Value: "SYSLIB0003;SYSLIB0051")],
+            packageReferences: [(Name: "System.Security.Permissions", Version: "10.0.9")]);
+        await project.AddFile("Program.cs", """
+            // Requires packageReferences: [("System.Security.Permissions", "10.0.9")]
+            // and properties: [("NoWarn", "SYSLIB0003;SYSLIB0051")]
+            //
+            // REFUTATION: The claim that CAS types are absent from net10.0 is wrong.
+            // System.Security.AllowPartiallyTrustedCallersAttribute lives in System.Runtime (no extra package needed).
+            // System.Security.Permissions.CodeAccessSecurityAttribute and its subtypes (FileIOPermissionAttribute, etc.)
+            // are in the System.Security.Permissions NuGet package (v10.0.9), which targets net10.0.
+            // All three predicates in FindPossibleViolations can be satisfied:
+            //   1) isAssemblyIsPartiallyTrusted — [assembly: AllowPartiallyTrustedCallers] resolves at net10.0.
+            //   2) IsSerializationConstructor — SerializationInfo + StreamingContext exist in net10.0.
+            //   3) isConstructorMissingAttributes — public Foo() has [FileIOPermissionAttribute] (a CAS subtype);
+            //      the serialization constructor lacks it, so the diagnostic fires.
+            // The types are marked [Obsolete(SYSLIB0003)] but that is a warning, not a compile error;
+            // NoWarn=SYSLIB0003 keeps the build green and lets the SARIF diagnostic surface.
+            // The rule is only silent in this harness because the package editorconfig sets
+            // dotnet_diagnostic.S4212.severity = none (deprecated rule). Promoting it to warning unblocks it.
+
+            using System;
+            using System.Runtime.Serialization;
+            using System.Security;
+            using System.Security.Permissions;
+
+            [assembly: AllowPartiallyTrustedCallersAttribute()]
+            namespace MyLibrary
+            {
+                [Serializable]
+                public class Foo : ISerializable
+                {
+                    private int n;
+
+                    [FileIOPermissionAttribute(SecurityAction.Demand, Unrestricted = true)]
+                    public Foo()
+                    {
+                        n = -1;
+                    }
+
+                    // Noncompliant: serialization constructor is missing the [FileIOPermission] CAS attribute
+                    // that the regular constructor carries. S4212 fires here.
+                    protected Foo(SerializationInfo info, StreamingContext context)
+                    {
+                        n = (int)info.GetValue("n", typeof(int));
+                    }
+
+                    void ISerializable.GetObjectData(SerializationInfo info, StreamingContext context)
+                    {
+                        info.AddValue("n", n);
+                    }
+                }
+
+                public static class Program
+                {
+                    public static int Main() => 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4212").ShouldBeTrue();
+    }
 }

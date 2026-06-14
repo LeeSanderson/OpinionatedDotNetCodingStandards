@@ -1377,7 +1377,7 @@ dotnet_diagnostic.S4211.severity = warning
 
 # S4212: Serialization constructors should be secured
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4212.severity = none
+dotnet_diagnostic.S4212.severity = warning
 
 # S4214: "P/Invoke" methods should not be visible
 # Enabled: False, Severity: warning
