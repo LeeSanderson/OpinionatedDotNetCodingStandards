@@ -1117,7 +1117,7 @@ dotnet_diagnostic.S3906.severity = warning
 
 # S3908: Generic event handlers should be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3908.severity = none
+dotnet_diagnostic.S3908.severity = warning
 
 # S3909: Collections should implement the generic interface
 # Enabled: False, Severity: warning

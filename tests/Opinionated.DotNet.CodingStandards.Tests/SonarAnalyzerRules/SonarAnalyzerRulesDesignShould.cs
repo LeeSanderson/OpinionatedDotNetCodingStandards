@@ -822,4 +822,37 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3906").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3908", "Generic event handlers should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3908/")]
+    public async Task WarnOnCustomEventHandlerDelegate()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            using System;
+
+            // Noncompliant: custom delegate with event-handler signature should be replaced by EventHandler<T>
+            public delegate void CustomEventHandler(object sender, CustomEventArgs e);
+
+            public class CustomEventArgs : EventArgs
+            {
+                public string Info { get; set; } = string.Empty;
+            }
+
+            public class Publisher
+            {
+                public event CustomEventHandler? SomeEvent;
+
+                protected virtual void OnSomeEvent(CustomEventArgs e) => SomeEvent?.Invoke(this, e);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3908").ShouldBeTrue();
+    }
 }
