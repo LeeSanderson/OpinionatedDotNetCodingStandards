@@ -1393,7 +1393,7 @@ dotnet_diagnostic.S4225.severity = warning
 
 # S4226: Extensions should be in separate namespaces
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4226.severity = none
+dotnet_diagnostic.S4226.severity = warning
 
 # S4260: "ConstructorArgument" parameters should exist in constructors
 # Enabled: True, Severity: warning

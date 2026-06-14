@@ -369,4 +369,25 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4225").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4226", "Extensions should be in separate namespaces",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4226/")]
+    public async Task WarnOnExtensionMethodInSameNamespaceAsExtendedType()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Foo { }
+            public static class FooExtensions
+            {
+                public static void Bar(this Foo foo) { }
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4226").ShouldBeTrue();
+    }
 }
