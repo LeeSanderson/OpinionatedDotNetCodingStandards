@@ -1657,7 +1657,7 @@ dotnet_diagnostic.S6610.severity = none
 
 # S6612: The lambda parameter should be used instead of capturing arguments in "ConcurrentDictionary" methods
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6612.severity = none
+dotnet_diagnostic.S6612.severity = warning
 
 # S6613: "First" and "Last" properties of "LinkedList" should be used instead of the "First()" and "Last()" extension methods
 # Enabled: True, Severity: warning

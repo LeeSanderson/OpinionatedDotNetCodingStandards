@@ -908,4 +908,31 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6609").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6612", "The lambda parameter should be used instead of capturing arguments in ConcurrentDictionary methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6612/")]
+    public async Task WarnOnCapturedArgumentInConcurrentDictionaryLambda()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Concurrent;
+
+            namespace test;
+
+            public static class Cache
+            {
+                private static readonly ConcurrentDictionary<string, int> store = new();
+
+                public static int GetOrCreate(string key)
+                    => store.GetOrAdd(key, _ => key.Length); // S6612: use the lambda parameter instead of capturing 'key'
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6612").ShouldBeTrue();
+    }
 }
