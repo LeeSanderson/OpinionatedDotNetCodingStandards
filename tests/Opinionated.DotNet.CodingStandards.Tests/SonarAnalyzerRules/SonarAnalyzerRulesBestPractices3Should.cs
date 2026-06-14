@@ -777,4 +777,24 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6575").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6585", "Don't hardcode the format when turning dates and times to strings",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6585/")]
+    public async Task WarnOnHardcodedDateTimeFormatString()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class DateFormatter
+            {
+                public static string Format(System.DateTime dt) =>
+                    dt.ToString("dd/MM/yyyy HH:mm:ss");
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6585").ShouldBeTrue();
+    }
 }

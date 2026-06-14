@@ -1621,7 +1621,7 @@ dotnet_diagnostic.S6580.severity = none
 
 # S6585: Don't hardcode the format when turning dates and times to strings
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6585.severity = none
+dotnet_diagnostic.S6585.severity = warning
 
 # S6588: Use the "UnixEpoch" field instead of creating "DateTime" instances that point to the beginning of the Unix epoch
 # Enabled: True, Severity: warning
