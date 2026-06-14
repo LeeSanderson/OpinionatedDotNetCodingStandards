@@ -771,4 +771,27 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3897").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3898", "Value types should implement \"IEquatable<T>\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3898/")]
+    public async Task WarnOnValueTypeWithoutIEquatable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public struct Point
+            {
+                public int X { get; init; }
+                public int Y { get; init; }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3898").ShouldBeTrue();
+    }
 }

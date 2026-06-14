@@ -1097,7 +1097,7 @@ dotnet_diagnostic.S3897.severity = warning
 
 # S3898: Value types should implement "IEquatable<T>"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3898.severity = none
+dotnet_diagnostic.S3898.severity = warning
 
 # S3902: "Assembly.GetExecutingAssembly" should not be called
 # Enabled: False, Severity: warning
