@@ -812,4 +812,34 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5332").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5344", "Passwords should not be stored in plaintext or with a fast hashing algorithm",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5344/")]
+    public async Task WarnOnWeakPasswordHashingAlgorithm()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Security.Cryptography;
+
+            namespace test;
+
+            public static class PasswordStore
+            {
+                public static byte[] HashPassword(string password)
+                {
+                    byte[] salt = new byte[16];
+                    using var rng = RandomNumberGenerator.Create();
+                    rng.GetBytes(salt);
+                    // Only 1000 iterations — far too few for PBKDF2 password hashing
+                    return Rfc2898DeriveBytes.Pbkdf2(password, salt, 1000, HashAlgorithmName.SHA256, 32);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5344").ShouldBeTrue();
+    }
 }
