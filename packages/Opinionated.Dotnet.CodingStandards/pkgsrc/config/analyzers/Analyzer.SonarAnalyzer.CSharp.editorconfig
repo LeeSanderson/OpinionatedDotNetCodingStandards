@@ -1333,7 +1333,7 @@ dotnet_diagnostic.S4060.severity = none
 
 # S4061: "params" should be used instead of "varargs"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4061.severity = none
+dotnet_diagnostic.S4061.severity = warning
 
 # S4069: Operator overloads should have named alternatives
 # Enabled: False, Severity: warning
