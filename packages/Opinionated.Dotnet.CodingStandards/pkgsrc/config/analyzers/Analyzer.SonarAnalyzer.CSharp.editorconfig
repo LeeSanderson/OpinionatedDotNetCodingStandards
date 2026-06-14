@@ -1781,7 +1781,7 @@ dotnet_diagnostic.S6966.severity = warning
 
 # S6967: ModelState.IsValid should be called in controller actions
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6967.severity = none
+dotnet_diagnostic.S6967.severity = warning
 
 # S6968: Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type
 # Enabled: True, Severity: warning

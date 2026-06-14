@@ -115,4 +115,41 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6962").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6967", "ModelState.IsValid should be called in controller actions",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6967/")]
+    public async Task WarnWhenControllerActionOmitsModelStateValidation()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.ComponentModel.DataAnnotations;
+            using Microsoft.AspNetCore.Mvc;
+
+            public class HomeController : ControllerBase
+            {
+                [HttpPost]
+                public IActionResult Create([Required] int id)
+                {
+                    return Ok(id);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6967").ShouldBeTrue();
+    }
 }
