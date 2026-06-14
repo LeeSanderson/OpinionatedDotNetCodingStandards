@@ -1773,7 +1773,7 @@ dotnet_diagnostic.S6964.severity = warning
 
 # S6965: REST API actions should be annotated with an HTTP verb attribute
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6965.severity = none
+dotnet_diagnostic.S6965.severity = warning
 
 # S6966: Awaitable method should be used
 # Enabled: True, Severity: warning

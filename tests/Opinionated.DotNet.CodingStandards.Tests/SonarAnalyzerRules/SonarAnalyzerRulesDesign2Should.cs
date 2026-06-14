@@ -575,4 +575,39 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S6961").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6965", "REST API actions should be annotated with an HTTP verb attribute",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6965/")]
+    public async Task WarnOnMissingHttpVerbAttributeOnApiControllerAction()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Mvc.Routing
+            {
+                public abstract class HttpMethodAttribute : System.Attribute { }
+            }
+
+            namespace Microsoft.AspNetCore.Mvc
+            {
+                public class ControllerBase { }
+                public sealed class ApiControllerAttribute : System.Attribute { }
+                public sealed class HttpGetAttribute : Routing.HttpMethodAttribute { }
+            }
+
+            namespace test
+            {
+                [Microsoft.AspNetCore.Mvc.ApiController]
+                public class OrdersController : Microsoft.AspNetCore.Mvc.ControllerBase
+                {
+                    // Missing [HttpGet] / [HttpPost] / etc. — S6965 fires here
+                    public string GetAll() => "[]";
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6965").ShouldBeTrue();
+    }
 }
