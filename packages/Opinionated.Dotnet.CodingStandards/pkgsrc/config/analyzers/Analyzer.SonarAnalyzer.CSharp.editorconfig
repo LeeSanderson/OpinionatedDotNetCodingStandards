@@ -1545,7 +1545,7 @@ dotnet_diagnostic.S5766.severity = warning
 
 # S5856: Regular expressions should be syntactically valid
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5856.severity = none
+dotnet_diagnostic.S5856.severity = warning
 
 # S6354: Use a testable date/time provider
 # Enabled: False, Severity: warning

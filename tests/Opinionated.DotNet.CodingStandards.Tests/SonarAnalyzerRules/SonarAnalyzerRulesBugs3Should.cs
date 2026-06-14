@@ -331,4 +331,24 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4583").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5856", "Regular expressions should be syntactically valid",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5856/")]
+    public async Task DetectInvalidRegexSyntax()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.RegularExpressions;
+            namespace test;
+            public sealed class C
+            {
+                public static Regex BadPattern() => new Regex("[A");
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5856").ShouldBeTrue();
+    }
 }
