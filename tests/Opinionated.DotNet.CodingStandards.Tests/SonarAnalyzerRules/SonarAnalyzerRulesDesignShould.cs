@@ -723,4 +723,26 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3874").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3887", "Mutable, non-private fields should not be \"readonly\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3887/")]
+    public async Task WarnOnPublicReadonlyMutableField()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            namespace test;
+            public class C
+            {
+                // public readonly on a List<T>: readonly only prevents reassigning the reference,
+                // not mutation of the list contents — violates S3887
+                public readonly List<int> Values = new List<int> { 1, 2, 3 };
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3887").ShouldBeTrue();
+    }
 }

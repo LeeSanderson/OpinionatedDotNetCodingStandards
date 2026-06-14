@@ -1085,7 +1085,7 @@ dotnet_diagnostic.S3885.severity = warning
 
 # S3887: Mutable, non-private fields should not be "readonly"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3887.severity = none
+dotnet_diagnostic.S3887.severity = warning
 
 # S3889: "Thread.Resume" and "Thread.Suspend" should not be used
 # Enabled: True, Severity: warning
