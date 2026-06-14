@@ -390,4 +390,35 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4226").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4277", "Shared parts should not be created with new",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4277/")]
+    public async Task WarnOnDirectInstantiationOfSharedPart()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "System.ComponentModel.Composition", Version: "8.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using System.ComponentModel.Composition;
+
+            namespace test;
+
+            [Export]
+            [PartCreationPolicy(CreationPolicy.Shared)]
+            public class MySharedService
+            {
+                public int GetValue() => 42;
+            }
+
+            public static class Consumer
+            {
+                public static MySharedService Create() => new MySharedService();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4277").ShouldBeTrue();
+    }
 }

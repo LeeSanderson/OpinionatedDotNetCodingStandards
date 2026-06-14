@@ -1409,7 +1409,7 @@ dotnet_diagnostic.S4275.severity = warning
 
 # S4277: "Shared" parts should not be created with "new"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4277.severity = none
+dotnet_diagnostic.S4277.severity = warning
 
 # S4423: Weak SSL/TLS protocols should not be used
 # Enabled: True, Severity: warning
