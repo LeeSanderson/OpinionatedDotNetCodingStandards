@@ -1701,7 +1701,7 @@ dotnet_diagnostic.S6672.severity = none
 
 # S6673: Log message template placeholders should be in the right order
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6673.severity = none
+dotnet_diagnostic.S6673.severity = warning
 
 # S6674: Log message template should be syntactically correct
 # Enabled: True, Severity: warning

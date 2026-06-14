@@ -376,4 +376,30 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6507").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6673", "Log message template placeholders should be in the right order",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6673/")]
+    public async Task WarnOnMiorderedLogMessageTemplatePlaceholders()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using Microsoft.Extensions.Logging;
+            public static class Service
+            {
+                public static void Log(ILogger logger, string name, string timestamp)
+                {
+                    // Template has {Name} first and {Timestamp} second,
+                    // but arguments are passed as (timestamp, name) — reversed.
+                    logger.LogInformation("User {Name} logged in at {Timestamp}", timestamp, name);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6673").ShouldBeTrue();
+    }
 }
