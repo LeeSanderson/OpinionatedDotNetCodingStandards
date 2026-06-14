@@ -664,4 +664,44 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4502").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4792", "Configuring loggers is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4792/")]
+    public async Task WarnOnLoggerConfiguration()
+    {
+        // S4792 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "log4net", Version: "2.0.17")],
+            properties:
+            [
+                (Name: "NuGetAudit", Value: "false"),
+                (Name: "NoWarn", Value: "NU1902;NU1903")
+            ],
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S4792</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Setup
+            {
+                public static void ConfigureLogging() => log4net.Config.XmlConfigurator.Configure();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4792").ShouldBeTrue();
+    }
 }

@@ -1485,7 +1485,7 @@ dotnet_diagnostic.S4790.severity = none
 
 # S4792: Configuring loggers is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4792.severity = none
+dotnet_diagnostic.S4792.severity = warning
 
 # S4830: Server certificates should be verified during SSL/TLS connections
 # Enabled: True, Severity: warning
