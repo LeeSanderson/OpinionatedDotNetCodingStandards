@@ -1673,7 +1673,7 @@ dotnet_diagnostic.S6618.severity = warning
 
 # S6640: Using unsafe code blocks is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6640.severity = none
+dotnet_diagnostic.S6640.severity = warning
 
 # S6664: The code block contains too many logging calls
 # Enabled: False, Severity: warning

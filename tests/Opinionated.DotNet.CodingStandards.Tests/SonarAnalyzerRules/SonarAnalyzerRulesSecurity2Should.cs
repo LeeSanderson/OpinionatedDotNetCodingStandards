@@ -232,4 +232,46 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S6444").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6640", "Using unsafe code blocks is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6640/")]
+    public async Task WarnOnUnsafeCodeBlock()
+    {
+        // S6640 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilderAsync(
+            properties: [(Name: "AllowUnsafeBlocks", Value: "true")],
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S6640</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int GetValue()
+                {
+                    int x = 42;
+                    unsafe
+                    {
+                        int* p = &x;
+                        *p = 100;
+                    }
+                    return x;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6640").ShouldBeTrue();
+    }
 }
