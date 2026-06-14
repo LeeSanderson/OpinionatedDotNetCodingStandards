@@ -1557,7 +1557,7 @@ dotnet_diagnostic.S6377.severity = warning
 
 # S6418: Secrets should not be hard-coded
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6418.severity = none
+dotnet_diagnostic.S6418.severity = warning
 
 # S6419: Azure Functions should be stateless
 # Enabled: True, Severity: warning

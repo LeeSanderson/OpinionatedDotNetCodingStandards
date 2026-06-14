@@ -175,4 +175,25 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S6377").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6418", "Secrets should not be hard-coded",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6418/")]
+    public async Task WarnOnHardCodedSecret()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public class Secrets
+            {
+                private string api_key = "1IfHMPanImzX8ZxC-Ud6+YhXiLwlXq$f_-3v~.=";
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6418").ShouldBeTrue();
+    }
 }
