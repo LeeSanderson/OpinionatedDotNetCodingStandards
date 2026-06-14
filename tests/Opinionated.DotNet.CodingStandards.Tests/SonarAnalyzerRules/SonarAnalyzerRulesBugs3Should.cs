@@ -179,4 +179,24 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4144").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4159", "Classes should implement their \"ExportAttribute\" interfaces",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4159/")]
+    public async Task WarnOnExportAttributeWithUnimplementedInterface()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "System.ComponentModel.Composition", Version: "8.0.0")]);
+        await project.AddFile("Program.cs", """
+            using System.ComponentModel.Composition;
+            namespace test;
+            public interface IMyService { }
+            [Export(typeof(IMyService))]
+            public class MyService { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4159").ShouldBeTrue();
+    }
 }
