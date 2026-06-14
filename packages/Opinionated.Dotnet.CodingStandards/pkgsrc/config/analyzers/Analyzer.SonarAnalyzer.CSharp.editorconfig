@@ -1137,7 +1137,7 @@ dotnet_diagnostic.S3926.severity = warning
 
 # S3927: Serialization event handlers should be implemented correctly
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3927.severity = none
+dotnet_diagnostic.S3927.severity = warning
 
 # S3928: Parameter names used into ArgumentException constructors should match an existing one 
 # Enabled: True, Severity: warning
