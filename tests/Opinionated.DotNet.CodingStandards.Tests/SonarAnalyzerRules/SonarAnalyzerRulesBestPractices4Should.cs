@@ -176,4 +176,29 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S8380").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8381", "\"scoped\" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8381/")]
+    public async Task WarnOnUnescapedScopedInLambdaParameter()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("LangVersion", "13"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class @scoped { }
+            public static class C
+            {
+                public static void Use(System.Action<@scoped> f) { }
+                public static void Trigger() => Use((scoped a) => { });
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8381").ShouldBeTrue();
+    }
 }

@@ -1809,7 +1809,7 @@ dotnet_diagnostic.S8380.severity = warning
 
 # S8381: "scoped" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S8381.severity = none
+dotnet_diagnostic.S8381.severity = warning
 
 # S881: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
 # Enabled: False, Severity: warning
