@@ -1225,7 +1225,7 @@ dotnet_diagnostic.S4002.severity = none
 
 # S4004: Collection properties should be readonly
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4004.severity = none
+dotnet_diagnostic.S4004.severity = warning
 
 # S4005: "System.Uri" arguments should be used instead of strings
 # Enabled: False, Severity: warning

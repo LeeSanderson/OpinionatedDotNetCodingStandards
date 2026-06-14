@@ -77,4 +77,24 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S3997").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4004", "Collection properties should be readonly",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4004/")]
+    public async Task ProhibitMutableCollectionProperties()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System.Collections.Generic;
+            public class Model
+            {
+                public List<int> Items { get; set; } = new();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4004").ShouldBeTrue();
+    }
 }
