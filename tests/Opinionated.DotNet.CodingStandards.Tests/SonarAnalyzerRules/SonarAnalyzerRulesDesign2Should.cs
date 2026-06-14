@@ -278,4 +278,25 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4047").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4049", "Properties should be preferred",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4049/")]
+    public async Task WarnOnGetMethodThatShouldBeProperty()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Sample
+            {
+                private readonly string _value = "hello";
+                public string GetValue() => _value;
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4049").ShouldBeTrue();
+    }
 }

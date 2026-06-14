@@ -1297,7 +1297,7 @@ dotnet_diagnostic.S4047.severity = warning
 
 # S4049: Properties should be preferred
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4049.severity = none
+dotnet_diagnostic.S4049.severity = warning
 
 # S4050: Operators should be overloaded consistently
 # Enabled: True, Severity: warning
