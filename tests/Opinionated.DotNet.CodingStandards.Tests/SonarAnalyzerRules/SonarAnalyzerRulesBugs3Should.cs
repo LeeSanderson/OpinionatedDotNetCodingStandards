@@ -402,4 +402,28 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6673").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6674", "Log message template should be syntactically correct",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6674/")]
+    public async Task ProhibitSyntacticallyIncorrectLogMessageTemplate()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Example
+            {
+                public static void Run(ILogger logger, string user)
+                {
+                    logger.LogError("Login failed for {User", user);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6674").ShouldBeTrue();
+    }
 }

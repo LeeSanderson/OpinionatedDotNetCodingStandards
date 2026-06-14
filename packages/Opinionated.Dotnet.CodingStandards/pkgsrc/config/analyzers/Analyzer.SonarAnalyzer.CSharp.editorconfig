@@ -1705,7 +1705,7 @@ dotnet_diagnostic.S6673.severity = warning
 
 # S6674: Log message template should be syntactically correct
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6674.severity = none
+dotnet_diagnostic.S6674.severity = warning
 
 # S6675: "Trace.WriteLineIf" should not be used with "TraceSwitch" levels
 # Enabled: True, Severity: warning
