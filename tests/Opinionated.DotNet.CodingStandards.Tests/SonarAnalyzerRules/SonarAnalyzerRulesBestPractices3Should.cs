@@ -555,4 +555,34 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4457").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4524", "“default” clauses should be first or last",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4524/")]
+    public async Task WarnOnDefaultClauseNotFirstOrLast()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static string Classify(int n)
+                {
+                    switch (n)
+                    {
+                        case 1:
+                            return "one";
+                        default:
+                            return "other";
+                        case 2:
+                            return "two";
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4524").ShouldBeTrue();
+    }
 }

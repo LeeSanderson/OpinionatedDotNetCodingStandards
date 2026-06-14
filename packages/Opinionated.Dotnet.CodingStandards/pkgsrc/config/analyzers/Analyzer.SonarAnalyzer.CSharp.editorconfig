@@ -1453,7 +1453,7 @@ dotnet_diagnostic.S4507.severity = warning
 
 # S4524: "default" clauses should be first or last
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4524.severity = none
+dotnet_diagnostic.S4524.severity = warning
 
 # S4545: "DebuggerDisplayAttribute" strings should reference existing members
 # Enabled: True, Severity: warning
