@@ -148,4 +148,27 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4017").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4018", "All type parameters should be used in the parameter list to enable type inference",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4018/")]
+    public async Task WarnOnTypeParameterAbsentFromParameterList()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Factory
+            {
+                // T appears only in the return type, not in any parameter — S4018 fires
+                public static T Create<T>() => default!;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4018").ShouldBeTrue();
+    }
 }

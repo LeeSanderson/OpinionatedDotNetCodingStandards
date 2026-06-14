@@ -1245,7 +1245,7 @@ dotnet_diagnostic.S4017.severity = warning
 
 # S4018: All type parameters should be used in the parameter list to enable type inference
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4018.severity = none
+dotnet_diagnostic.S4018.severity = warning
 
 # S4019: Base class methods should not be hidden
 # Enabled: True, Severity: warning
