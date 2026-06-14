@@ -1449,7 +1449,7 @@ dotnet_diagnostic.S4502.severity = warning
 
 # S4507: Delivering code in production with debug features activated is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4507.severity = none
+dotnet_diagnostic.S4507.severity = warning
 
 # S4524: "default" clauses should be first or last
 # Enabled: True, Severity: warning

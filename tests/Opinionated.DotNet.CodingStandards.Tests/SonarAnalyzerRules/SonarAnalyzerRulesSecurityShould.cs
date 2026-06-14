@@ -572,6 +572,62 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
     }
 
     [Fact]
+    [RuleDoc("S4507", "Delivering code in production with debug features activated is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4507/")]
+    public async Task WarnOnDebugFeaturesInProduction()
+    {
+        // S4507 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        // The analyzer checks for calls to UseDeveloperExceptionPage() that are not
+        // guarded by an IsDevelopment() check in the same method scope, and where the
+        // class is not named StartupDevelopment.
+        // Stub types work here because MemberDescriptor resolves by FQN via SemanticModel.
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S4507</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Builder
+            {
+                public interface IApplicationBuilder { }
+
+                public static class DeveloperExceptionPageExtensions
+                {
+                    public static IApplicationBuilder UseDeveloperExceptionPage(
+                        this IApplicationBuilder app) => app;
+                }
+            }
+
+            namespace test
+            {
+                using Microsoft.AspNetCore.Builder;
+
+                public class Startup
+                {
+                    // Noncompliant: UseDeveloperExceptionPage() called unconditionally,
+                    // no IsDevelopment() guard in this method scope, class is not StartupDevelopment.
+                    public void Configure(IApplicationBuilder app)
+                    {
+                        app.UseDeveloperExceptionPage();
+                    }
+                }
+
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4507").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("S4502", "Disabling CSRF protections is security-sensitive",
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4502/")]
     public async Task WarnOnDisabledCsrfProtection()
