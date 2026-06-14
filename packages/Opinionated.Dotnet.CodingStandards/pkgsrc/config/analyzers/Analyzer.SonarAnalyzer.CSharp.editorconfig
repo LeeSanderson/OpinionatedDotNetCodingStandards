@@ -981,7 +981,7 @@ dotnet_diagnostic.S3457.severity = none
 
 # S3458: Empty "case" clauses that fall through to the "default" should be omitted
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3458.severity = none
+dotnet_diagnostic.S3458.severity = warning
 
 # S3459: Unassigned members should be removed
 # Enabled: True, Severity: warning

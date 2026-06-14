@@ -36,4 +36,40 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3456").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3458", "Empty 'case' clauses that fall through to the 'default' should be omitted",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3458/")]
+    public async Task WarnOnEmptyCaseClausesFallingThroughToDefault()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Switcher
+            {
+                public static void Classify(int value)
+                {
+                    string result;
+                    switch (value)
+                    {
+                        case 1:
+                            result = "one";
+                            break;
+                        case 2:
+                        case 3:
+                        default:
+                            result = "other";
+                            break;
+                    }
+                    _ = result;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3458").ShouldBeTrue();
+    }
 }
