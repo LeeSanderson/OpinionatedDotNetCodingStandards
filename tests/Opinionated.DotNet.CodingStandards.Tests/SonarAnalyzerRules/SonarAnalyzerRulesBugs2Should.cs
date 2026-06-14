@@ -923,4 +923,33 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3923").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3926", "Deserialization methods should be provided for OptionalField members",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3926/")]
+    public async Task WarnOnOptionalFieldWithoutDeserializationCallback()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System;
+            using System.Runtime.Serialization;
+
+            namespace test;
+
+            [Serializable]
+            public class MyData
+            {
+                public string Name { get; set; } = string.Empty;
+
+                [OptionalField]
+                public string? Description;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3926").ShouldBeTrue();
+    }
 }

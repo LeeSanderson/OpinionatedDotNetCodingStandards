@@ -1133,7 +1133,7 @@ dotnet_diagnostic.S3925.severity = warning
 
 # S3926: Deserialization methods should be provided for "OptionalField" members
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3926.severity = none
+dotnet_diagnostic.S3926.severity = warning
 
 # S3927: Serialization event handlers should be implemented correctly
 # Enabled: True, Severity: warning
