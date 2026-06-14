@@ -1241,7 +1241,7 @@ dotnet_diagnostic.S4016.severity = warning
 
 # S4017: Method signatures should not contain nested generic types
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4017.severity = none
+dotnet_diagnostic.S4017.severity = warning
 
 # S4018: All type parameters should be used in the parameter list to enable type inference
 # Enabled: False, Severity: warning

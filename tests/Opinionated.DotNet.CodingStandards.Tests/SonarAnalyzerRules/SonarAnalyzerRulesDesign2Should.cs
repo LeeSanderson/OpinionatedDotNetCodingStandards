@@ -125,4 +125,27 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4015").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4017", "Method signatures should not contain nested generic types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4017/")]
+    public async Task ProhibitNestedGenericTypesInMethodSignatures()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System.Collections.Generic;
+
+            public class Api
+            {
+                public static IEnumerable<IEnumerable<string>> GetNestedGroups(
+                    IEnumerable<IEnumerable<int>> input) => new List<List<string>>();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4017").ShouldBeTrue();
+    }
 }
