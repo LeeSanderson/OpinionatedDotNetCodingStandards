@@ -274,4 +274,25 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3878").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3885", "Assembly.Load should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3885/")]
+    public async Task WarnOnAssemblyLoadFromOrLoadFile()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Reflection;
+            namespace test;
+            public static class Loader
+            {
+                public static Assembly Load(string path) =>
+                    Assembly.LoadFrom(path); // S3885: should use Assembly.Load
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3885").ShouldBeTrue();
+    }
 }

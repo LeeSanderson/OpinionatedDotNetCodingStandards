@@ -1077,11 +1077,11 @@ dotnet_diagnostic.S3881.severity = none
 
 # S3884: "CoSetProxyBlanket" and "CoInitializeSecurity" should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3884.severity = none
+dotnet_diagnostic.S3884.severity = warning
 
 # S3885: "Assembly.Load" should be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3885.severity = none
+dotnet_diagnostic.S3885.severity = warning
 
 # S3887: Mutable, non-private fields should not be "readonly"
 # Enabled: True, Severity: warning
