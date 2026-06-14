@@ -1253,7 +1253,7 @@ dotnet_diagnostic.S4019.severity = none
 
 # S4022: Enumerations should have "Int32" storage
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4022.severity = none
+dotnet_diagnostic.S4022.severity = warning
 
 # S4023: Interfaces should not be empty
 # Enabled: False, Severity: warning
