@@ -206,4 +206,27 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3604").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3626", "Jump statements should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3626/")]
+    public async Task WarnOnRedundantJumpStatement()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public void Method()
+                {
+                    System.Console.WriteLine("hello");
+                    return; // redundant: return at end of void method triggers S3626
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3626").ShouldBeTrue();
+    }
 }

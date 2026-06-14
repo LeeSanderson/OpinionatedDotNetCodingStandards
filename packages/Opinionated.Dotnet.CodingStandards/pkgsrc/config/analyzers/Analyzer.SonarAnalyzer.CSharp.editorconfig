@@ -1025,7 +1025,7 @@ dotnet_diagnostic.S3610.severity = warning
 
 # S3626: Jump statements should not be redundant
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3626.severity = none
+dotnet_diagnostic.S3626.severity = warning
 
 # S3717: Track use of "NotImplementedException"
 # Enabled: False, Severity: warning
