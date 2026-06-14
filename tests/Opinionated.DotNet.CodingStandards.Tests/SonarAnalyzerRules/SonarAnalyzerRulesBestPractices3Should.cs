@@ -797,4 +797,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6585").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6602", "Find method should be used instead of the FirstOrDefault extension on List<T>",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6602/")]
+    public async Task WarnOnFirstOrDefaultExtensionOnList()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            public static class Example
+            {
+                public static int? GetFirstEven(List<int> numbers)
+                    => numbers.FirstOrDefault(n => n % 2 == 0);
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6602").ShouldBeTrue();
+    }
 }
