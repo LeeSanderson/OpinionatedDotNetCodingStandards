@@ -1501,7 +1501,7 @@ dotnet_diagnostic.S5042.severity = warning
 
 # S5122: Having a permissive Cross-Origin Resource Sharing policy is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5122.severity = none
+dotnet_diagnostic.S5122.severity = warning
 
 # S5332: Using clear-text protocols is security-sensitive
 # Enabled: True, Severity: warning

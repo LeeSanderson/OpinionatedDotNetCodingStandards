@@ -727,4 +727,47 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5042").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5122", "Having a permissive Cross-Origin Resource Sharing policy is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5122/")]
+    public async Task WarnOnPermissiveCorsPolicy()
+    {
+        // S5122 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        // CorsPolicyBuilder lives in Microsoft.AspNetCore.Cors (standalone 2.x package).
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Cors", Version: "2.3.10")],
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S5122</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Cors.Infrastructure;
+
+            namespace test;
+
+            public static class CorsSetup
+            {
+                public static void Configure()
+                {
+                    var builder = new CorsPolicyBuilder();
+                    builder.AllowAnyOrigin();
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5122").ShouldBeTrue();
+    }
 }
