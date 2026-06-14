@@ -1365,7 +1365,7 @@ dotnet_diagnostic.S4200.severity = warning
 
 # S4201: Null checks should not be combined with "is" operator checks
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4201.severity = none
+dotnet_diagnostic.S4201.severity = warning
 
 # S4210: Windows Forms entry points should be marked with STAThread
 # Enabled: True, Severity: warning

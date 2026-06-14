@@ -455,4 +455,32 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4061").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4201", "Null checks should not be combined with 'is' operator checks",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4201/")]
+    public async Task WarnOnRedundantNullCheckWithIsOperator()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                public static string Describe(object obj)
+                {
+                    if (obj != null && obj is string)
+                    {
+                        return "string";
+                    }
+                    return "other";
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4201").ShouldBeTrue();
+    }
 }
