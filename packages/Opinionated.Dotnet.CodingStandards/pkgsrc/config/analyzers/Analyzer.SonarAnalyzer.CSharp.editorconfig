@@ -997,7 +997,7 @@ dotnet_diagnostic.S3466.severity = warning
 
 # S3532: Empty "default" clauses should be removed
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3532.severity = none
+dotnet_diagnostic.S3532.severity = warning
 
 # S3597: "ServiceContract" and "OperationContract" attributes should be used together
 # Enabled: True, Severity: warning

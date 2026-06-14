@@ -93,4 +93,35 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3459").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3532", "Empty default clauses should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3532/")]
+    public async Task WarnOnEmptyDefaultClause()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static string Classify(int n)
+                {
+                    switch (n)
+                    {
+                        case 1:
+                            return "one";
+                        case 2:
+                            return "two";
+                        default:
+                            break;
+                    }
+                    return "other";
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3532").ShouldBeTrue();
+    }
 }
