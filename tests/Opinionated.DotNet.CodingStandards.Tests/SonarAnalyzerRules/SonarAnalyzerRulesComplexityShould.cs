@@ -1,4 +1,4 @@
-﻿// Copyright (c) Codurance. All rights reserved.
+// Copyright (c) Codurance. All rights reserved.
 
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
@@ -15,8 +15,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3776/")]
     public async Task ProhibitExcessiveCognitiveComplexity()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -69,7 +69,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3776").ShouldBeTrue();
     }
@@ -79,8 +79,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1541/")]
     public async Task ProhibitExcessiveCyclomaticComplexity()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -103,7 +103,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1541").ShouldBeTrue();
     }
@@ -113,8 +113,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-134/")]
     public async Task ProhibitExcessiveNestingDepth()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -137,7 +137,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S134").ShouldBeTrue();
     }
@@ -147,8 +147,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-138/")]
     public async Task ProhibitExcessiveMethodLength()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -251,7 +251,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S138").ShouldBeTrue();
     }
@@ -261,8 +261,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-107/")]
     public async Task ProhibitTooManyMethodParameters()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -272,7 +272,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S107").ShouldBeTrue();
     }
@@ -282,8 +282,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1067/")]
     public async Task ProhibitExcessiveExpressionComplexity()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class C
             {
@@ -292,7 +292,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1067").ShouldBeTrue();
     }
@@ -302,8 +302,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1151/")]
     public async Task ProhibitExcessiveSwitchCaseLength()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -333,7 +333,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1151").ShouldBeTrue();
     }
@@ -342,8 +342,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1479/")]
     public async Task ProhibitSwitchWithTooManyCaseClauses()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class Classifier
             {
@@ -544,7 +544,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1479").ShouldBeTrue();
     }
@@ -554,8 +554,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1821/")]
     public async Task ProhibitNestedSwitchStatements()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -582,7 +582,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1821").ShouldBeTrue();
     }
@@ -592,13 +592,13 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2436/")]
     public async Task ProhibitTooManyGenericTypeParameters()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class TooManyTypeParams<T1, T2, T3> { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2436").ShouldBeTrue();
     }
@@ -608,8 +608,8 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3358/")]
     public async Task ProhibitNestedTernaryOperators()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -618,7 +618,7 @@ public class SonarAnalyzerRulesComplexityShould(PackageFixture fixture, ITestOut
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3358").ShouldBeTrue();
     }

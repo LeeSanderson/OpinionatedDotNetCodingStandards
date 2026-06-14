@@ -15,8 +15,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2737/")]
     public async Task WarnOnCatchClauseThatOnlyRethrows()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Example
             {
@@ -34,7 +34,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2737").ShouldBeTrue();
     }
@@ -44,8 +44,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2757/")]
     public async Task DetectNonExistentOperators()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class C
             {
@@ -57,7 +57,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2757").ShouldBeTrue();
     }
@@ -67,8 +67,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2760/")]
     public async Task DetectSequentialTestsWithSameCondition()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -90,7 +90,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2760").ShouldBeTrue();
     }
@@ -100,8 +100,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2761/")]
     public async Task ProhibitDoubledPrefixOperators()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Sample
             {
@@ -109,7 +109,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2761").ShouldBeTrue();
     }
@@ -119,8 +119,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2857/")]
     public async Task DetectSqlKeywordsNotDelimitedByWhitespace()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Data;
 
             namespace test;
@@ -134,7 +134,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2857").ShouldBeTrue();
     }
@@ -144,8 +144,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2930/")]
     public async Task WarnOnUndisposedIDisposable()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public static class Program
@@ -158,7 +158,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2930").ShouldBeTrue();
     }
@@ -168,8 +168,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2934/")]
     public async Task WarnOnPropertyAssignmentToReadonlyUnconstrainedGenericField()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public interface IPoint { int X { get; set; } }
@@ -183,7 +183,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2934").ShouldBeTrue();
     }
@@ -193,8 +193,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2955/")]
     public async Task WarnOnNullComparisonOfUnconstrainedGenericParameter()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Checker
@@ -204,7 +204,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2955").ShouldBeTrue();
     }
@@ -214,9 +214,9 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2970/")]
     public async Task DetectIncompleteFluentAssertion()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "FluentAssertions", Version: "8.10.0")]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using FluentAssertions;
             namespace test;
             public static class TestSuite
@@ -230,7 +230,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2970").ShouldBeTrue();
     }
@@ -240,8 +240,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2996/")]
     public async Task WarnOnThreadStaticFieldWithInitializer()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class C
@@ -253,7 +253,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2996").ShouldBeTrue();
     }
@@ -263,8 +263,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2997/")]
     public async Task DetectDisposableReturnedFromUsingStatement()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.IO;
 
             namespace test;
@@ -281,7 +281,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2997").ShouldBeTrue();
     }
@@ -291,8 +291,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3005/")]
     public async Task WarnOnThreadStaticOnInstanceField()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Example
@@ -304,7 +304,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3005").ShouldBeTrue();
     }
@@ -314,8 +314,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3010/")]
     public async Task WarnOnStaticFieldAssignmentInInstanceConstructor()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Counter
             {
@@ -328,7 +328,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3010").ShouldBeTrue();
     }
@@ -338,8 +338,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3168/")]
     public async Task WarnOnAsyncVoidMethod()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class MyClass
             {
@@ -347,7 +347,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3168").ShouldBeTrue();
     }
@@ -357,8 +357,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3172/")]
     public async Task DetectDelegateSubtraction()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public delegate void MyDelegate();
             public static class Program
@@ -373,7 +373,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3172").ShouldBeTrue();
     }
@@ -383,8 +383,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3234/")]
     public async Task WarnOnSuppressFinalizeWithoutDestructor()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public sealed class NoFinalizer : System.IDisposable
             {
@@ -395,7 +395,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3234").ShouldBeTrue();
     }
@@ -405,8 +405,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3237/")]
     public async Task WarnWhenSetterIgnoresValueKeyword()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Counter
@@ -423,7 +423,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3237").ShouldBeTrue();
     }
@@ -433,8 +433,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3249/")]
     public async Task WarnOnBaseCallInGetHashCodeOrEqualsForDirectObjectSubclass()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class MyValue
@@ -454,7 +454,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3249").ShouldBeTrue();
     }
@@ -464,8 +464,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3263/")]
     public async Task WarnOnStaticFieldInitializerOutOfOrder()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -474,7 +474,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3263").ShouldBeTrue();
     }
@@ -484,8 +484,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3264/")]
     public async Task WarnOnEventNeverInvoked()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Counter
             {
@@ -500,7 +500,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3264").ShouldBeTrue();
     }
@@ -510,8 +510,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3265/")]
     public async Task WarnOnBitwiseOperationsOnNonFlagsEnum()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public enum Direction { North, South, East, West }
@@ -523,7 +523,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3265").ShouldBeTrue();
     }
@@ -533,8 +533,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3346/")]
     public async Task WarnOnSideEffectsInDebugAssert()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Diagnostics;
 
             namespace test;
@@ -561,7 +561,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3346").ShouldBeTrue();
     }
@@ -571,8 +571,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3363/")]
     public async Task WarnOnDateTimeUsedAsPrimaryKey()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace Microsoft.EntityFrameworkCore
             {
                 public class DbContext { }
@@ -586,7 +586,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
                 public static class Program { public static int Main() => 0; }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3363").ShouldBeTrue();
     }
@@ -596,8 +596,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3366/")]
     public async Task WarnOnThisExposedFromConstructor()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Registry
@@ -617,7 +617,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3366").ShouldBeTrue();
     }
@@ -627,8 +627,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3397/")]
     public async Task WarnOnBaseEqualsUsedForReferenceEqualityInDerivedEquals()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Base
@@ -658,7 +658,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3397").ShouldBeTrue();
     }
@@ -668,9 +668,9 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3415/")]
     public async Task WarnOnSwappedAssertionArguments()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "NUnit", Version: "3.14.0")]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -681,7 +681,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3415").ShouldBeTrue();
     }
@@ -691,8 +691,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3447/")]
     public async Task ProhibitOptionalOnRefOrOutParameter()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Runtime.InteropServices;
 
             namespace test;
@@ -708,7 +708,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3447").ShouldBeTrue();
     }
@@ -718,8 +718,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3449/")]
     public async Task WarnOnShiftWithNonIntegerRightOperand()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -731,7 +731,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3449").ShouldBeTrue();
     }
@@ -741,8 +741,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3466/")]
     public async Task WarnOnOptionalParameterNotPassedToBaseCall()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Base
@@ -762,7 +762,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3466").ShouldBeTrue();
     }
@@ -772,9 +772,9 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3598/")]
     public async Task WarnOnNonVoidOneWayOperationContract()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "System.ServiceModel.Primitives", Version: "10.0.652802")]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using System.ServiceModel;
 
             namespace test;
@@ -789,7 +789,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3598").ShouldBeTrue();
     }
@@ -799,8 +799,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3603/")]
     public async Task DetectPureAttributeOnVoidMethod()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Diagnostics.Contracts;
             namespace test;
             public class C
@@ -810,7 +810,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3603").ShouldBeTrue();
     }
@@ -820,8 +820,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3610/")]
     public async Task DetectRedundantNullableTypeComparison()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class Checker
             {
@@ -833,7 +833,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3610").ShouldBeTrue();
     }
@@ -843,8 +843,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3869/")]
     public async Task WarnOnDangerousGetHandleCall()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Runtime.InteropServices;
             namespace test;
             public sealed class MyHandle : SafeHandle
@@ -859,7 +859,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3869").ShouldBeTrue();
     }
@@ -869,8 +869,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3889/")]
     public async Task ProhibitThreadSuspendAndResume()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Threading;
             namespace test;
             public static class Example
@@ -886,7 +886,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3889").ShouldBeTrue();
     }
@@ -896,8 +896,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3923/")]
     public async Task DetectIdenticalImplementationInAllBranches()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class Checker
             {
@@ -919,7 +919,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3923").ShouldBeTrue();
     }
@@ -929,8 +929,8 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3926/")]
     public async Task WarnOnOptionalFieldWithoutDeserializationCallback()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System;
             using System.Runtime.Serialization;
 
@@ -948,7 +948,7 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3926").ShouldBeTrue();
     }

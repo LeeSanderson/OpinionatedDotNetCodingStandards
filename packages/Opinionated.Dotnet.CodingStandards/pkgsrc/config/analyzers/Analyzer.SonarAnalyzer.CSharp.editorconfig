@@ -1401,7 +1401,7 @@ dotnet_diagnostic.S4260.severity = warning
 
 # S4261: Methods should be named according to their synchronicities
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4261.severity = none
+dotnet_diagnostic.S4261.severity = warning
 
 # S4275: Getters and setters should access the expected fields
 # Enabled: True, Severity: warning

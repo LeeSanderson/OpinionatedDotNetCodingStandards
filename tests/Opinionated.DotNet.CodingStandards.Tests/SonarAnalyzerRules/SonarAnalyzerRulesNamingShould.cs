@@ -15,8 +15,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-100/")]
     public async Task WarnOnNonPascalCaseMethodName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class MyClass
             {
@@ -24,7 +24,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S100").ShouldBeTrue();
     }
@@ -34,13 +34,13 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-101/")]
     public async Task WarnOnNonPascalCaseTypeName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class myClass { public int Value { get; set; } }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S101").ShouldBeTrue();
     }
@@ -50,8 +50,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1117/")]
     public async Task ProhibitLocalVariableShadowingClassField()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class MyClass
             {
@@ -64,7 +64,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1117").ShouldBeTrue();
     }
@@ -74,15 +74,15 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2166/")]
     public async Task WarnOnExceptionNamedClassNotExtendingException()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class MyException
             {
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2166").ShouldBeTrue();
     }
@@ -92,8 +92,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2306/")]
     public async Task ProhibitAsyncAwaitAsIdentifiers()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class C
             {
@@ -104,7 +104,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2306").ShouldBeTrue();
     }
@@ -114,8 +114,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2342/")]
     public async Task WarnOnNonPascalCaseEnumeration()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public enum my_status_code
             {
@@ -125,7 +125,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2342").ShouldBeTrue();
     }
@@ -135,15 +135,15 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2344/")]
     public async Task ProhibitFlagsOrEnumSuffixOnEnumerationTypes()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public enum StatusEnum { Active, Inactive }
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2344").ShouldBeTrue();
     }
@@ -153,8 +153,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2346/")]
     public async Task WarnOnFlagsEnumZeroValueMemberNotNamedNone()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             [System.Flags]
@@ -167,7 +167,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2346").ShouldBeTrue();
     }
@@ -177,13 +177,13 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3376/")]
     public async Task WarnOnMissingTypeSuffix()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class BadThing : System.Exception { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3376").ShouldBeTrue();
     }
@@ -193,8 +193,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3872/")]
     public async Task WarnOnParameterNameDuplicatingMethodName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -203,7 +203,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3872").ShouldBeTrue();
     }
@@ -213,8 +213,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4016/")]
     public async Task WarnOnReservedEnumMemberName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public enum Status
@@ -226,7 +226,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4016").ShouldBeTrue();
     }
@@ -236,8 +236,8 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4025/")]
     public async Task WarnOnChildFieldNameDifferingFromParentByCapitalizationOnly()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public class Parent
@@ -252,7 +252,7 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4025").ShouldBeTrue();
     }
@@ -262,14 +262,37 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4041/")]
     public async Task WarnOnTypeNameMatchingNamespace()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Collections { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4041").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S4261", "Methods should be named according to their synchronicities",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4261/")]
+    public async Task WarnOnMissingAsyncSuffix()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.Threading.Tasks;
+            public class Worker
+            {
+                public Task DoWork()
+                {
+                    return Task.CompletedTask;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4261").ShouldBeTrue();
     }
 }

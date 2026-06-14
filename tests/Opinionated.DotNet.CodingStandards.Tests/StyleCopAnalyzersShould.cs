@@ -15,11 +15,11 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
         HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md")]
     public async Task RequireFileNameToMatchFirstTypeName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("sample.cs", "class Program { static int Main() => 0; }");
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("sample.cs", "class Program { static int Main() => 0; }");
         // File is named WrongName.cs but the first type is RightName — SA1649 fires.
-        await project.AddFile("WrongName.cs", "public class RightName { }");
-        var buildOutput = await project.BuildAndGetOutput();
+        await project.AddFileAsync("WrongName.cs", "public class RightName { }");
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("SA1649").ShouldBeTrue();
     }

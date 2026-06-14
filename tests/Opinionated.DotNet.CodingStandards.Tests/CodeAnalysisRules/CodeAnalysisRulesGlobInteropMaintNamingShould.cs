@@ -15,8 +15,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1304")]
     public async Task RequireCultureInfoInStringComparisons()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -29,7 +29,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1304").ShouldBeTrue();
     }
@@ -39,8 +39,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1305")]
     public async Task RequireIFormatProviderInFormatting()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -54,7 +54,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1305").ShouldBeTrue();
     }
@@ -64,8 +64,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1307")]
     public async Task RequireStringComparisonForClarity()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -78,7 +78,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1307").ShouldBeTrue();
     }
@@ -88,8 +88,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1309")]
     public async Task RequireOrdinalStringComparison()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -102,7 +102,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1309").ShouldBeTrue();
     }
@@ -112,8 +112,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1310")]
     public async Task RequireStringComparisonForCorrectness()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -126,7 +126,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1310").ShouldBeTrue();
     }
@@ -136,8 +136,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1311")]
     public async Task RequireCultureInStringCaseConversion()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -150,7 +150,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1311").ShouldBeTrue();
     }
@@ -160,8 +160,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1401")]
     public async Task ProhibitPublicPInvokeDeclarations()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.InteropServices;
@@ -173,7 +173,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1401").ShouldBeTrue();
     }
@@ -183,8 +183,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1416")]
     public async Task RequirePlatformGuardForPlatformSpecificCode()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.Versioning;
@@ -197,7 +197,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1416").ShouldBeTrue();
     }
@@ -207,8 +207,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1417")]
     public async Task ProhibitOutAttributeOnStringPInvokeParameters()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.InteropServices;
@@ -220,7 +220,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1417").ShouldBeTrue();
     }
@@ -230,8 +230,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1418")]
     public async Task RequireValidPlatformStringInAttributes()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.Versioning;
@@ -240,7 +240,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             public static class MyPlatformClass { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1418").ShouldBeTrue();
     }
@@ -250,8 +250,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1422")]
     public async Task RequirePlatformVersionGuardForObsoletedPlatformApis()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.Versioning;
@@ -270,7 +270,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1422").ShouldBeTrue();
     }
@@ -280,8 +280,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1510")]
     public async Task RequireArgumentNullExceptionThrowHelper()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -298,7 +298,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1510").ShouldBeTrue();
     }
@@ -308,8 +308,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1512")]
     public async Task RequireArgumentOutOfRangeExceptionThrowHelper()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System;
@@ -324,7 +324,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1512").ShouldBeTrue();
     }
@@ -334,8 +334,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1513")]
     public async Task RequireObjectDisposedExceptionThrowHelper()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System;
@@ -355,7 +355,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1513").ShouldBeTrue();
     }
@@ -365,8 +365,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1514")]
     public async Task ProhibitRedundantLengthArgument()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -380,7 +380,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1514").ShouldBeTrue();
     }
@@ -390,15 +390,15 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1700")]
     public async Task ProhibitReservedEnumValues()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
             public enum Status { Active = 1, Reserved = 2 }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1700").ShouldBeTrue();
     }
@@ -408,8 +408,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1708")]
     public async Task RequireIdentifiersToDifferByMoreThanCase()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -417,7 +417,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             public class utilities { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1708").ShouldBeTrue();
     }
@@ -427,15 +427,15 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1712")]
     public async Task ProhibitEnumValuesPrefixedWithTypeName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
             public enum Status { StatusActive = 1, StatusInactive = 2 }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1712").ShouldBeTrue();
     }
@@ -445,8 +445,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1713")]
     public async Task ProhibitBeforeOrAfterPrefixOnEvents()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -456,7 +456,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1713").ShouldBeTrue();
     }
@@ -466,15 +466,15 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1715")]
     public async Task RequireIPrefixOnInterfaces()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
             public interface Vehicle { void Move(); }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1715").ShouldBeTrue();
     }
@@ -484,8 +484,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1721")]
     public async Task ProhibitPropertyNameMatchingGetMethod()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -496,7 +496,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1721").ShouldBeTrue();
     }
@@ -506,8 +506,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1725")]
     public async Task RequireParameterNamesToMatchBaseDeclaration()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -521,7 +521,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1725").ShouldBeTrue();
     }
@@ -545,8 +545,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         // CA1419 ships at RuleLevel.IdeSuggestion, but the package's editorconfig sets
         // dotnet_diagnostic.CA1419.severity = warning, and TreatWarningsAsErrors=true
         // promotes it to an error in SARIF -> HasError.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.InteropServices;
@@ -563,7 +563,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1419").ShouldBeTrue();
     }
@@ -573,8 +573,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1511")]
     public async Task UseArgumentExceptionThrowHelper()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -590,7 +590,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         // CA1511 fires on `if (string.IsNullOrEmpty(arg)) throw new ArgumentException(...)`, recommending
         // ArgumentException.ThrowIfNullOrEmpty(arg). The old probe used a *meaningful* message
@@ -612,8 +612,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1420")]
     public async Task RejectRuntimeMarshallingFeaturesWhenMarshallingDisabled()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.CompilerServices;
@@ -635,7 +635,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 private static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1420").ShouldBeTrue();
     }
@@ -654,8 +654,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         // isolated single-file project. CA1421 ships at RuleLevel.IdeSuggestion, but the package editorconfig
         // sets dotnet_diagnostic.CA1421.severity = warning, and TreatWarningsAsErrors=true promotes it to an
         // error in SARIF -> HasError.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.CompilerServices;
@@ -677,7 +677,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 public int field;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1421").ShouldBeTrue();
     }
@@ -687,8 +687,8 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516")]
     public async Task ProhibitPlatformSpecificIntrinsics()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Runtime.Intrinsics;
@@ -702,7 +702,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 public static int Main() => Add(default, default) == default ? 0 : 1;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1516").ShouldBeTrue();
     }
@@ -723,9 +723,9 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
         // CA2017 does not also fire. CA1727 ships at RuleLevel.IdeHidden_BulkConfigurable
         // (hidden), but the package editorconfig sets dotnet_diagnostic.CA1727.severity =
         // warning, and TreatWarningsAsErrors=true promotes it to a SARIF error.
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             using Microsoft.Extensions.Logging;
@@ -743,7 +743,7 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1727").ShouldBeTrue();
     }

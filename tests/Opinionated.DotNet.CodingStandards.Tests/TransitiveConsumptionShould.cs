@@ -18,7 +18,7 @@ public class TransitiveConsumptionShould(PackageFixture fixture, ITestOutputHelp
         // The buildTransitive assets must flow from the package → lib → app.
         using var project = new ProjectBuilder(Fixture, TestOutputHelper);
 
-        await project.AddFile("lib/lib.csproj",
+        await project.AddFileAsync("lib/lib.csproj",
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
@@ -32,9 +32,9 @@ public class TransitiveConsumptionShould(PackageFixture fixture, ITestOutputHelp
             </Project>
             """);
 
-        await project.AddFile("lib/Lib.cs", "// placeholder\r\n");
+        await project.AddFileAsync("lib/Lib.cs", "// placeholder\r\n");
 
-        await project.AddFile("test.csproj",
+        await project.AddFileAsync("test.csproj",
             """
             <Project Sdk="Microsoft.NET.Sdk">
               <PropertyGroup>
@@ -50,9 +50,9 @@ public class TransitiveConsumptionShould(PackageFixture fixture, ITestOutputHelp
             </Project>
             """);
 
-        await project.AddFile("Program.cs", "_ = System.DateTime.Now;");
+        await project.AddFileAsync("Program.cs", "_ = System.DateTime.Now;");
 
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("RS0030").ShouldBeTrue();
     }
 }

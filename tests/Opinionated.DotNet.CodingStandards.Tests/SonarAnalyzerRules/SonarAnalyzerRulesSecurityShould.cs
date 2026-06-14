@@ -17,8 +17,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
     {
         // S1313 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
-        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -28,7 +28,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public static class Program
@@ -39,7 +39,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1313").ShouldBeTrue();
     }
@@ -49,8 +49,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2068/")]
     public async Task WarnOnHardcodedCredentials()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class Config
             {
@@ -58,7 +58,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2068").ShouldBeTrue();
     }
@@ -71,10 +71,10 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         // S2092 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
         // CookieOptions lives in Microsoft.AspNetCore.Http (standalone 2.x package).
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "Microsoft.AspNetCore.Http", Version: "2.3.10")],
             additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -84,7 +84,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using Microsoft.AspNetCore.Http;
 
             namespace test;
@@ -97,7 +97,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2092").ShouldBeTrue();
     }
@@ -107,13 +107,13 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2115/")]
     public async Task WarnOnEmptyDatabasePassword()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences:
             [
                 (Name: "Microsoft.EntityFrameworkCore", Version: "8.0.0"),
                 (Name: "Microsoft.EntityFrameworkCore.SqlServer", Version: "8.0.0")
             ]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using Microsoft.EntityFrameworkCore;
 
             namespace test;
@@ -128,7 +128,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2115").ShouldBeTrue();
     }
@@ -140,8 +140,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
     {
         // S2245 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
-        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -151,7 +151,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public static class Randomizer
             {
@@ -163,7 +163,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2245").ShouldBeTrue();
     }
@@ -175,8 +175,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
     {
         // S2257 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
-        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -186,7 +186,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using System.Security.Cryptography;
 
             namespace test;
@@ -201,7 +201,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2257").ShouldBeTrue();
     }
@@ -211,8 +211,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2612/")]
     public async Task WarnOnWorldAccessibleFilePermissions()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             using System.Security.AccessControl;
             using System.Security.Principal;
@@ -233,7 +233,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             public static class Program { public static int Main() => 0; }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2612").ShouldBeTrue();
     }
@@ -243,8 +243,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-2755/")]
     public async Task WarnOnXxeVulnerableXmlParser()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Xml;
             namespace test;
             public static class Vulnerable
@@ -258,7 +258,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S2755").ShouldBeTrue();
     }
@@ -268,8 +268,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3011/")]
     public async Task ProhibitReflectionAccessibilityBypass()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Reflection;
             namespace test;
             public class C
@@ -279,7 +279,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3011").ShouldBeTrue();
     }
@@ -292,10 +292,10 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         // S3330 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
         // CookieOptions lives in Microsoft.AspNetCore.Http (standalone 2.x package).
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "Microsoft.AspNetCore.Http", Version: "2.3.10")],
             additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -305,7 +305,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using Microsoft.AspNetCore.Http;
 
             namespace test;
@@ -318,7 +318,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3330").ShouldBeTrue();
     }
@@ -328,8 +328,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3884/")]
     public async Task WarnOnCoSetProxyBlanketAndCoInitializeSecurity()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Runtime.InteropServices;
 
             namespace test;
@@ -370,7 +370,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
 
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S3884").ShouldBeTrue();
     }
@@ -380,8 +380,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4000/")]
     public async Task ProhibitPublicUnmanagedPointerMembers()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class MyResource
             {
@@ -389,7 +389,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4000").ShouldBeTrue();
     }
@@ -401,8 +401,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
     {
         // S4036 is a Sonar security hotspot — it only fires when the rule is listed
         // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
-        using var project = await CreateProjectBuilder(additionalFiles: ["SonarLint.xml"]);
-        await project.AddFile("SonarLint.xml", """
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
             <?xml version="1.0" encoding="UTF-8"?>
             <AnalysisInput>
               <Rules>
@@ -412,7 +412,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
               </Rules>
             </AnalysisInput>
             """);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using System.Diagnostics;
             namespace test;
             public static class Launcher
@@ -425,7 +425,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4036").ShouldBeTrue();
     }
@@ -435,8 +435,8 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4211/")]
     public async Task WarnOnConflictingTransparencyAnnotations()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Security;
 
             namespace test;
@@ -452,7 +452,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4211").ShouldBeTrue();
     }
@@ -462,10 +462,10 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4212/")]
     public async Task WarnOnUnsecuredSerializationConstructor()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             properties: [(Name: "NoWarn", Value: "SYSLIB0003;SYSLIB0051")],
             packageReferences: [(Name: "System.Security.Permissions", Version: "10.0.9")]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             // Requires packageReferences: [("System.Security.Permissions", "10.0.9")]
             // and properties: [("NoWarn", "SYSLIB0003;SYSLIB0051")]
             //
@@ -521,7 +521,7 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S4212").ShouldBeTrue();
     }

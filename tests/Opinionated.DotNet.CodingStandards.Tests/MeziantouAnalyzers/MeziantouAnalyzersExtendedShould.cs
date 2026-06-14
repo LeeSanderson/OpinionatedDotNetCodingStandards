@@ -15,8 +15,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0082.md")]
     public async Task DoNotUseNaNInComparisons()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -24,7 +24,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0082").ShouldBeTrue();
     }
@@ -34,8 +34,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0085.md")]
     public async Task DoNotUnsubscribeFromEventWithAnonymousDelegate()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -44,7 +44,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0085").ShouldBeTrue();
     }
@@ -54,8 +54,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0086.md")]
     public async Task DoNotThrowFromFinalizer()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -63,7 +63,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0086").ShouldBeTrue();
     }
@@ -73,8 +73,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0087.md")]
     public async Task DefaultParameterValueShouldAlsoBeMarkedOptional()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Runtime.InteropServices;
             namespace test;
             public class C
@@ -83,7 +83,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0087").ShouldBeTrue();
     }
@@ -93,8 +93,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0088.md")]
     public async Task UseDefaultParameterValueInsteadOfDefaultValue()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.ComponentModel;
             namespace test;
             public class C
@@ -103,7 +103,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0088").ShouldBeTrue();
     }
@@ -113,8 +113,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0090.md")]
     public async Task RemoveEmptyElseFinallyBlock()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -126,7 +126,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0090").ShouldBeTrue();
     }
@@ -136,8 +136,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0093.md")]
     public async Task EventArgsShouldNotBeNull()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -146,7 +146,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0093").ShouldBeTrue();
     }
@@ -156,8 +156,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0099.md")]
     public async Task UseExplicitEnumValueInsteadOfZero()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public enum Status { None, Active }
             public class C
@@ -166,7 +166,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0099").ShouldBeTrue();
     }
@@ -176,8 +176,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0100.md")]
     public async Task AwaitTaskBeforeDisposingResources()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Res : System.IDisposable { public void Dispose() { } }
             public class C
@@ -190,7 +190,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0100").ShouldBeTrue();
     }
@@ -200,8 +200,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0103.md")]
     public async Task UseSequenceEqualInsteadOfEqualityOperator()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -209,7 +209,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0103").ShouldBeTrue();
     }
@@ -219,8 +219,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0108.md")]
     public async Task RemoveRedundantArgumentValue()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -231,7 +231,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0108").ShouldBeTrue();
     }
@@ -241,8 +241,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0113.md")]
     public async Task UseDateTimeUnixEpoch()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -251,7 +251,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0113").ShouldBeTrue();
     }
@@ -261,8 +261,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0114.md")]
     public async Task UseDateTimeOffsetUnixEpoch()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -271,7 +271,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0114").ShouldBeTrue();
     }
@@ -281,8 +281,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0128.md")]
     public async Task UseIsOperatorInsteadOfSequenceEqual()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -290,7 +290,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0128").ShouldBeTrue();
     }
@@ -300,8 +300,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0129.md")]
     public async Task AwaitTaskInUsingStatement()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -312,7 +312,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0129").ShouldBeTrue();
     }
@@ -322,8 +322,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0134.md")]
     public async Task ObserveResultOfAsyncCalls()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -336,7 +336,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0134").ShouldBeTrue();
     }
@@ -346,8 +346,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0140.md")]
     public async Task BothBranchesHaveIdenticalCode()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -359,7 +359,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0140").ShouldBeTrue();
     }
@@ -369,8 +369,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0143.md")]
     public async Task PrimaryConstructorParametersShouldBeReadonly()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C(int x)
             {
@@ -378,7 +378,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0143").ShouldBeTrue();
     }
@@ -388,8 +388,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0144.md")]
     public async Task UseSystemOperatingSystemToCheckOs()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Runtime.InteropServices;
             namespace test;
             public class C
@@ -398,7 +398,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0144").ShouldBeTrue();
     }
@@ -408,8 +408,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0145.md")]
     public async Task UnsafeAccessorSignatureMustBeValid()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public struct MyStruct { private int _x; }
             public class C
@@ -419,7 +419,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0145").ShouldBeTrue();
     }
@@ -429,8 +429,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0146.md")]
     public async Task UnsafeAccessorLocalFunctionNameMustBeSetExplicitly()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class Target { private int _x; }
             public static class Accessor
@@ -444,7 +444,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0146").ShouldBeTrue();
     }
@@ -454,14 +454,14 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0151.md")]
     public async Task DebuggerDisplayMustContainValidMembers()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             [System.Diagnostics.DebuggerDisplay("{NonExistentMember}")]
             public class C { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0151").ShouldBeTrue();
     }
@@ -471,8 +471,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0152.md")]
     public async Task UseUnwrapInsteadOfDoubleAwait()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -485,7 +485,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0152").ShouldBeTrue();
     }
@@ -495,8 +495,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0158.md")]
     public async Task UseSystemThreadingLock()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -508,7 +508,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0158").ShouldBeTrue();
     }
@@ -518,8 +518,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0159.md")]
     public async Task UseOrderInsteadOfOrderBy()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -528,7 +528,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0159").ShouldBeTrue();
     }
@@ -538,8 +538,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0160.md")]
     public async Task UseContainsKeyInsteadOfTryGetValue()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -550,7 +550,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0160").ShouldBeTrue();
     }
@@ -560,8 +560,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0166.md")]
     public async Task ForwardTimeProviderToMethodsThatTakeOne()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -572,7 +572,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0166").ShouldBeTrue();
     }
@@ -582,8 +582,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0173.md")]
     public async Task UseLazyInitializerEnsureInitialize()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -596,7 +596,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0173").ShouldBeTrue();
     }
@@ -606,8 +606,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0176.md")]
     public async Task OptimizeGuidCreation()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -615,7 +615,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0176").ShouldBeTrue();
     }
@@ -625,8 +625,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0178.md")]
     public async Task UseTimeSpanZeroInsteadOfFromXxx()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -634,7 +634,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0178").ShouldBeTrue();
     }
@@ -644,11 +644,11 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0054.md")]
     public async Task EmbedCaughtExceptionAsInnerException()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
         // Throwing a NEW System.Exception from inside a catch block without passing the
         // caught exception as innerException fires MA0054: System.Exception declares an
         // (string, Exception) overload, so the analyzer's HasOverloadWithAdditionalParameterOfType guard is satisfied.
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             namespace test;
 
             public static class Program
@@ -667,7 +667,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0054").ShouldBeTrue();
     }
@@ -677,11 +677,11 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0070.md")]
     public async Task ObsoleteAttributesShouldIncludeExplanations()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
         // [System.Obsolete] with no constructor argument => ConstructorArguments.Length == 0,
         // which is exactly what ObsoleteAttributesShouldIncludeExplanationsAnalyzer reports.
         // MA0070 ships with default severity Info, so it surfaces in SARIF as level "note" (not "error").
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -690,7 +690,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("MA0070").ShouldBeTrue();
     }
@@ -700,8 +700,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md")]
     public async Task ShouldNotCallGetTypeOnTypeInstance()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -709,7 +709,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0130").ShouldBeTrue();
     }
@@ -719,8 +719,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0179.md")]
     public async Task UseAttributeIsDefinedInsteadOfGetCustomAttribute()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             using System.Reflection;
             namespace test;
             public class C
@@ -729,7 +729,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0179").ShouldBeTrue();
     }
@@ -739,9 +739,9 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0180.md")]
     public async Task LoggerTypeParameterShouldMatchContainingType()
     {
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
-        await project.AddFile("Program.cs", """
+        await project.AddFileAsync("Program.cs", """
             using Microsoft.Extensions.Logging;
             namespace test;
             public class MyService
@@ -751,7 +751,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             public class OtherService { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0180").ShouldBeTrue();
     }
@@ -761,8 +761,8 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0181.md")]
     public async Task DoNotUseCast()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             public class C
             {
@@ -770,7 +770,7 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0181").ShouldBeTrue();
     }
@@ -780,13 +780,13 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0182.md")]
     public async Task AvoidUnusedInternalTypes()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs", """
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
             namespace test;
             internal class Unused { }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("MA0182").ShouldBeTrue();
     }
