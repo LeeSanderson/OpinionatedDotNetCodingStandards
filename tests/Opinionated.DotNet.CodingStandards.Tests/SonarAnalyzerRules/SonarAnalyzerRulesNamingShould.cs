@@ -343,4 +343,32 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S818").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8367", "Identifiers should not conflict with the C# 14 'field' contextual keyword",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8367/")]
+    public async Task WarnOnIdentifiersConflictingWithFieldContextualKeyword()
+    {
+        // S8367 only fires when LangVersion < 14; pin to 13 so the Sonar analyzer
+        // reports the issue instead of the compiler emitting CS9258/CS9273.
+        using var project = await CreateProjectBuilderAsync(properties: [("LangVersion", "13")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class MyClass
+            {
+                public static int Value
+                {
+                    get
+                    {
+                        int field = 0;
+                        return field;
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8367").ShouldBeTrue();
+    }
 }

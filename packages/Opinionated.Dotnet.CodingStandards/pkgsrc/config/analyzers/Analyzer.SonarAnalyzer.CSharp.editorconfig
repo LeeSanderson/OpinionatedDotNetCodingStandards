@@ -1797,7 +1797,7 @@ dotnet_diagnostic.S818.severity = warning
 
 # S8367: Identifiers should not conflict with the C# 14 "field" contextual keyword
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S8367.severity = none
+dotnet_diagnostic.S8367.severity = warning
 
 # S8368: Identifiers should not conflict with the C# 14 "extension" contextual keyword
 # Enabled: True, Severity: warning
