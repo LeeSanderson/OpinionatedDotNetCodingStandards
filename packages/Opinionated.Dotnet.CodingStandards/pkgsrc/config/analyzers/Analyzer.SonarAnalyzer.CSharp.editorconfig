@@ -1129,7 +1129,7 @@ dotnet_diagnostic.S3923.severity = warning
 
 # S3925: "ISerializable" should be implemented correctly
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3925.severity = none
+dotnet_diagnostic.S3925.severity = warning
 
 # S3926: Deserialization methods should be provided for "OptionalField" members
 # Enabled: True, Severity: warning

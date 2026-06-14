@@ -855,4 +855,30 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3908").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3925", "ISerializable should be implemented correctly",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3925/")]
+    public async Task WarnOnIncorrectISerializableImplementation()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.Serialization;
+
+            namespace test;
+
+            // Public class lists ISerializable in its base type list (opts in for serialization),
+            // but is missing [Serializable] attribute and the required serialization constructor.
+            public class BadSerializable : ISerializable
+            {
+                public void GetObjectData(SerializationInfo info, StreamingContext context) { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3925").ShouldBeTrue();
+    }
 }
