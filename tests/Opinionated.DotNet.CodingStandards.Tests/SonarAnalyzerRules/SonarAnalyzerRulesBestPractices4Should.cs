@@ -139,4 +139,31 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6668").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6670", "Trace.Write and Trace.WriteLine should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6670/")]
+    public async Task ProhibitTraceWriteAndWriteLine()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics;
+
+            namespace test;
+
+            public static class Logger
+            {
+                public static void Log(string message)
+                {
+                    Trace.Write(message);
+                    Trace.WriteLine(message);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6670").ShouldBeTrue();
+    }
 }

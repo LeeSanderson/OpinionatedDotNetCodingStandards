@@ -1693,7 +1693,7 @@ dotnet_diagnostic.S6669.severity = warning
 
 # S6670: "Trace.Write" and "Trace.WriteLine" should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6670.severity = none
+dotnet_diagnostic.S6670.severity = warning
 
 # S6672: Generic logger injection should match enclosing type
 # Enabled: True, Severity: warning
