@@ -1233,7 +1233,7 @@ dotnet_diagnostic.S4005.severity = warning
 
 # S4015: Inherited member visibility should not be decreased
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4015.severity = none
+dotnet_diagnostic.S4015.severity = warning
 
 # S4016: Enumeration members should not be named "Reserved"
 # Enabled: False, Severity: warning

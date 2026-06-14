@@ -97,4 +97,32 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4004").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4015", "Inherited member visibility should not be decreased",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4015/")]
+    public async Task ProhibitDecreasingInheritedMemberVisibility()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Base
+            {
+                public virtual int Value => 1;
+            }
+
+            public class Derived : Base
+            {
+                // No 'new' keyword — decreases visibility of inherited public property — triggers S4015
+                private int Value => 2;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4015").ShouldBeTrue();
+    }
 }
