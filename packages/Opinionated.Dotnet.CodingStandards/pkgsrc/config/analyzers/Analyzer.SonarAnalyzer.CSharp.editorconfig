@@ -1045,7 +1045,7 @@ dotnet_diagnostic.S3871.severity = none
 
 # S3872: Parameter names should not duplicate the names of their methods
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3872.severity = none
+dotnet_diagnostic.S3872.severity = warning
 
 # S3874: "out" and "ref" parameters should not be used
 # Enabled: False, Severity: warning

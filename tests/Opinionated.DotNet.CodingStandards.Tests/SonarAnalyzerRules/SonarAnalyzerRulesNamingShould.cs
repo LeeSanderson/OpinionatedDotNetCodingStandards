@@ -187,4 +187,24 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3376").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3872", "Parameter names should not duplicate the names of their methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3872/")]
+    public async Task WarnOnParameterNameDuplicatingMethodName()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static int Calculate(int calculate) => calculate;
+            }
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3872").ShouldBeTrue();
+    }
 }
