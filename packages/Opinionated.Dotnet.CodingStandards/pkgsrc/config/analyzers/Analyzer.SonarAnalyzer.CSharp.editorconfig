@@ -1181,7 +1181,7 @@ dotnet_diagnostic.S3981.severity = warning
 
 # S3984: Exceptions should not be created without being thrown
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3984.severity = none
+dotnet_diagnostic.S3984.severity = warning
 
 # S3990: Assemblies should be marked as CLS compliant
 # Enabled: False, Severity: warning

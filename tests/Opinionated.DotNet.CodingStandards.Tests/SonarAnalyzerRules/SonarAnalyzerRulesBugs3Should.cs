@@ -91,4 +91,28 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3981").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3984", "Exceptions should not be created without being thrown",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3984/")]
+    public async Task WarnOnExceptionCreatedWithoutBeingThrown()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class Factory
+            {
+                public static void CreateAndIgnoreException()
+                {
+                    new System.InvalidOperationException("This exception is created but never thrown");
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3984").ShouldBeTrue();
+    }
 }
