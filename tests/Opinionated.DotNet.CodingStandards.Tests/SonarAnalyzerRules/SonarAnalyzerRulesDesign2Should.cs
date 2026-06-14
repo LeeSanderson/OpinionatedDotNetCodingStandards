@@ -231,4 +231,27 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4027").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4035", "Classes implementing \"IEquatable<T>\" should be sealed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4035/")]
+    public async Task WarnOnNonSealedIEquatableClass()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyValue : System.IEquatable<MyValue>
+            {
+                private readonly int _value;
+                public MyValue(int value) { _value = value; }
+                public bool Equals(MyValue? other) => other is not null && _value == other._value;
+                public override bool Equals(object? obj) => Equals(obj as MyValue);
+                public override int GetHashCode() => _value.GetHashCode();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4035").ShouldBeTrue();
+    }
 }

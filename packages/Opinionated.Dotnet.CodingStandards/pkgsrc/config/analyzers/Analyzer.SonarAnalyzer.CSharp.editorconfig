@@ -1273,7 +1273,7 @@ dotnet_diagnostic.S4027.severity = warning
 
 # S4035: Classes implementing "IEquatable<T>" should be sealed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4035.severity = none
+dotnet_diagnostic.S4035.severity = warning
 
 # S4036: Searching OS commands in PATH is security-sensitive
 # Enabled: True, Severity: warning
