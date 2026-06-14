@@ -1713,7 +1713,7 @@ dotnet_diagnostic.S6675.severity = warning
 
 # S6677: Message template placeholders should be unique
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6677.severity = none
+dotnet_diagnostic.S6677.severity = warning
 
 # S6678: Use PascalCase for named placeholders
 # Enabled: True, Severity: warning

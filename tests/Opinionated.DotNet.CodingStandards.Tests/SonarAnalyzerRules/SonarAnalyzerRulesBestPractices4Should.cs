@@ -166,4 +166,29 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6670").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6677", "Message template placeholders should be unique",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6677/")]
+    public async Task WarnOnDuplicateMessageTemplatePlaceholders()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public static class Program
+            {
+                public static void Run(ILogger logger)
+                {
+                    // S6677: placeholder {foo} appears twice in the same template
+                    logger.LogInformation("Value {foo} and again {foo}", 1, 2);
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6677").ShouldBeTrue();
+    }
 }
