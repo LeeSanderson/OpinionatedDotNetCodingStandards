@@ -141,4 +141,42 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4143").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4144", "Methods should not have identical implementations",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4144/")]
+    public async Task DetectIdenticalMethodImplementations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Calculator
+            {
+                private readonly int _offset;
+
+                public Calculator(int offset)
+                {
+                    _offset = offset;
+                }
+
+                public int Add(int a, int b)
+                {
+                    var result = a + b;
+                    return result + _offset;
+                }
+
+                public int Sum(int a, int b)
+                {
+                    var result = a + b;
+                    return result + _offset;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4144").ShouldBeTrue();
+    }
 }

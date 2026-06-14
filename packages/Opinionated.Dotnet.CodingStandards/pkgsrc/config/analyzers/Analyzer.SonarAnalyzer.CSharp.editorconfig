@@ -1353,7 +1353,7 @@ dotnet_diagnostic.S4143.severity = warning
 
 # S4144: Methods should not have identical implementations
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4144.severity = none
+dotnet_diagnostic.S4144.severity = warning
 
 # S4159: Classes should implement their "ExportAttribute" interfaces
 # Enabled: True, Severity: warning
