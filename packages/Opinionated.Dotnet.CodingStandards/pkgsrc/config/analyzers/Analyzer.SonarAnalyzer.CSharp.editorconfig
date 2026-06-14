@@ -1361,7 +1361,7 @@ dotnet_diagnostic.S4159.severity = warning
 
 # S4200: Native methods should be wrapped
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4200.severity = none
+dotnet_diagnostic.S4200.severity = warning
 
 # S4201: Null checks should not be combined with "is" operator checks
 # Enabled: True, Severity: warning
