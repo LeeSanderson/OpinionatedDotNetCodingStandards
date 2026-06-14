@@ -823,4 +823,29 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6602").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6603", "The collection-specific TrueForAll method should be used instead of the All extension on List<T>",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6603/")]
+    public async Task WarnOnAllExtensionInsteadOfTrueForAll()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            public static class C
+            {
+                public static bool Check(List<int> items) =>
+                    items.All(x => x > 0);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6603").ShouldBeTrue();
+    }
 }

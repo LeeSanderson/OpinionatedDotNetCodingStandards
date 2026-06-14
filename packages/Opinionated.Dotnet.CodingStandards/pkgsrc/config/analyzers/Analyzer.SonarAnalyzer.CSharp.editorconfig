@@ -1633,7 +1633,7 @@ dotnet_diagnostic.S6602.severity = warning
 
 # S6603: The collection-specific "TrueForAll" method should be used instead of the "All" extension
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6603.severity = none
+dotnet_diagnostic.S6603.severity = warning
 
 # S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
 # Enabled: False, Severity: warning
