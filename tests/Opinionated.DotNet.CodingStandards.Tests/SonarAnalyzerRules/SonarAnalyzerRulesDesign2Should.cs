@@ -421,4 +421,41 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4277").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6931", "ASP.NET controller actions should not have a route template starting with \"/\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6931/")]
+    public async Task WarnOnControllerActionsWithAbsoluteRoutePaths()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Mvc;
+
+            namespace test;
+
+            public class HomeController : ControllerBase
+            {
+                [Route("/home/index")]
+                public IActionResult Index() => Ok();
+
+                [Route("/home/about")]
+                public IActionResult About() => Ok();
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6931").ShouldBeTrue();
+    }
 }
