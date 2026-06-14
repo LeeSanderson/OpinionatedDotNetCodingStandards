@@ -196,4 +196,40 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S6418").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6444", "Not specifying a timeout for regular expressions is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6444/")]
+    public async Task WarnOnRegexWithoutTimeout()
+    {
+        // S6444 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S6444</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.RegularExpressions;
+
+            namespace test;
+
+            public class RegexExample
+            {
+                public bool IsMatch(string input) =>
+                    Regex.IsMatch(input, "some pattern"); // S6444: no timeout specified
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6444").ShouldBeTrue();
+    }
 }

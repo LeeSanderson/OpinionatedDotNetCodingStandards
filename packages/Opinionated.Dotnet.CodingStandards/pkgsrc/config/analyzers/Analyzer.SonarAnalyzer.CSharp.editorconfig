@@ -1585,7 +1585,7 @@ dotnet_diagnostic.S6424.severity = none
 
 # S6444: Not specifying a timeout for regular expressions is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6444.severity = none
+dotnet_diagnostic.S6444.severity = warning
 
 # S6507: Blocks should not be synchronized on local variables
 # Enabled: False, Severity: warning
