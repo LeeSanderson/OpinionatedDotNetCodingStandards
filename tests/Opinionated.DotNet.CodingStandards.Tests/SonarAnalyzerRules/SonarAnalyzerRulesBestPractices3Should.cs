@@ -387,4 +387,23 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4040").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4055", "Literals should not be passed as localized parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4055/")]
+    public async Task WarnOnLiteralPassedToLocalizedParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Dialog
+            {
+                public static void Show(string message) { }
+            }
+            public static class Program { public static int Main() { Dialog.Show("Hello, world!"); return 0; } }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4055").ShouldBeTrue();
+    }
 }

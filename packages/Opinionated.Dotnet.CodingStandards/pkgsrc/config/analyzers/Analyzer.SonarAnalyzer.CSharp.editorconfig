@@ -1309,7 +1309,7 @@ dotnet_diagnostic.S4052.severity = none
 
 # S4055: Literals should not be passed as localized parameters
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4055.severity = none
+dotnet_diagnostic.S4055.severity = warning
 
 # S4056: Overloads with a "CultureInfo" or an "IFormatProvider" parameter should be used
 # Enabled: False, Severity: warning
