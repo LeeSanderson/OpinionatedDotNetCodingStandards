@@ -146,4 +146,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3597").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3600", "params should not be introduced on overrides",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3600/")]
+    public async Task WarnOnParamsIntroducedOnOverride()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public abstract class Base
+            {
+                public abstract void DoWork(int[] values);
+            }
+
+            public class Derived : Base
+            {
+                public override void DoWork(params int[] values) { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3600").ShouldBeTrue();
+    }
 }

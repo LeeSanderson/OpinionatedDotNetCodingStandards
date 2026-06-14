@@ -1009,7 +1009,7 @@ dotnet_diagnostic.S3598.severity = warning
 
 # S3600: "params" should not be introduced on overrides
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3600.severity = none
+dotnet_diagnostic.S3600.severity = warning
 
 # S3603: Methods with "Pure" attribute should return a value 
 # Enabled: True, Severity: warning
