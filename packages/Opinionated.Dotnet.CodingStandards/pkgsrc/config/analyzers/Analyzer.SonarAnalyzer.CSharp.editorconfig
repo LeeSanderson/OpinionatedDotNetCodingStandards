@@ -1521,7 +1521,7 @@ dotnet_diagnostic.S5445.severity = warning
 
 # S5542: Encryption algorithms should be used with secure mode and padding scheme
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5542.severity = none
+dotnet_diagnostic.S5542.severity = warning
 
 # S5547: Cipher algorithms should be robust
 # Enabled: True, Severity: warning

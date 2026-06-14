@@ -899,4 +899,31 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5445").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5542", "Encryption algorithms should be used with secure mode and padding scheme",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5542/")]
+    public async Task WarnOnInsecureEncryptionPaddingScheme()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Security.Cryptography;
+
+            namespace test;
+
+            public static class EncryptionExample
+            {
+                public static byte[] Encrypt(byte[] data)
+                {
+                    using var rsa = RSA.Create();
+                    return rsa.Encrypt(data, RSAEncryptionPadding.Pkcs1);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5542").ShouldBeTrue();
+    }
 }
