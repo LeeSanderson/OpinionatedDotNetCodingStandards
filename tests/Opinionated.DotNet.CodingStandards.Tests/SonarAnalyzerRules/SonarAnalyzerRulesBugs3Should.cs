@@ -115,4 +115,30 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3984").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4143", "Collection elements should not be replaced unconditionally",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4143/")]
+    public async Task DetectUnconditionalCollectionElementOverwrite()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System.Collections.Generic;
+            public class C
+            {
+                public static Dictionary<string, int> Build()
+                {
+                    var map = new Dictionary<string, int>();
+                    map["key"] = 1;
+                    map["key"] = 2; // S4143: same key overwritten unconditionally
+                    return map;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4143").ShouldBeTrue();
+    }
 }

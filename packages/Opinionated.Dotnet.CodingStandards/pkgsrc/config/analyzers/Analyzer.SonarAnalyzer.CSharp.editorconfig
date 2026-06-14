@@ -1349,7 +1349,7 @@ dotnet_diagnostic.S4136.severity = warning
 
 # S4143: Collection elements should not be replaced unconditionally
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4143.severity = none
+dotnet_diagnostic.S4143.severity = warning
 
 # S4144: Methods should not have identical implementations
 # Enabled: True, Severity: warning
