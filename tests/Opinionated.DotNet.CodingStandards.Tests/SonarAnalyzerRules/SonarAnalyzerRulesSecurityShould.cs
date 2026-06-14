@@ -770,4 +770,46 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5122").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5332", "Using clear-text protocols is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5332/")]
+    public async Task WarnOnClearTextProtocolUsage()
+    {
+        // S5332 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        // SmtpClient without EnableSsl=true is the trigger (example.com/localhost are exempt
+        // from the http:// regex, but SmtpClient without EnableSsl fires the EnableSslRule).
+        using var project = await CreateProjectBuilderAsync(
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S5332</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            using System.Net.Mail;
+
+            namespace test;
+
+            public static class Mailer
+            {
+                public static void Send()
+                {
+                    var client = new SmtpClient("mail.mycompany.com");
+                    client.Send("from@mycompany.com", "to@mycompany.com", "subject", "body");
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5332").ShouldBeTrue();
+    }
 }
