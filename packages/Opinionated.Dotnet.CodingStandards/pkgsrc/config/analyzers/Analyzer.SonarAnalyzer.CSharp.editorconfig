@@ -1613,7 +1613,7 @@ dotnet_diagnostic.S6566.severity = warning
 
 # S6575: Use "TimeZoneInfo.FindSystemTimeZoneById" without converting the timezones with "TimezoneConverter"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6575.severity = none
+dotnet_diagnostic.S6575.severity = warning
 
 # S6580: Use a format provider when parsing date and time
 # Enabled: True, Severity: warning

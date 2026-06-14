@@ -755,4 +755,26 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6566").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6575", "Use \"TimeZoneInfo.FindSystemTimeZoneById\" without converting the timezones with \"TimezoneConverter\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6575/")]
+    public async Task WarnOnTimeZoneConverterUsage()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "TimeZoneConverter", Version: "7.2.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using TimeZoneConverter;
+            namespace test;
+            public static class Example
+            {
+                public static string Convert(string ianaId) =>
+                    TZConvert.IanaToWindows(ianaId);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6575").ShouldBeTrue();
+    }
 }
