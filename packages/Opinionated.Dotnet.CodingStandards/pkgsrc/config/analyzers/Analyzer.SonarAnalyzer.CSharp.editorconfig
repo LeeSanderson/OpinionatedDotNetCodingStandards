@@ -1197,7 +1197,7 @@ dotnet_diagnostic.S3993.severity = none
 
 # S3994: URI Parameters should not be strings
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3994.severity = none
+dotnet_diagnostic.S3994.severity = warning
 
 # S3995: URI return values should not be strings
 # Enabled: False, Severity: warning

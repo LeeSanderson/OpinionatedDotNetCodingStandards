@@ -928,4 +928,25 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3967").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3994", "URI Parameters should not be strings",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3994/")]
+    public async Task WarnOnUriParameterTypedAsString()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Service
+            {
+                public void Navigate(string uri) { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3994").ShouldBeTrue();
+    }
 }
