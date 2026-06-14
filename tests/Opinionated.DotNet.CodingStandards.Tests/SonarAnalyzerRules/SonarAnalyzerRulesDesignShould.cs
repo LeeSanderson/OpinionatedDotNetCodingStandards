@@ -904,4 +904,28 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3956").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3967", "Multidimensional arrays should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3967/")]
+    public async Task WarnOnMultidimensionalArrayUsage()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Grid
+            {
+                private readonly int[,] _data = new int[3, 3];
+
+                public int Get(int row, int col) => _data[row, col];
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3967").ShouldBeTrue();
+    }
 }

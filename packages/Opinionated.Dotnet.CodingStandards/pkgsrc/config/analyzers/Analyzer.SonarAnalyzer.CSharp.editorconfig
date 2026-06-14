@@ -1161,7 +1161,7 @@ dotnet_diagnostic.S3963.severity = none
 
 # S3967: Multidimensional arrays should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3967.severity = none
+dotnet_diagnostic.S3967.severity = warning
 
 # S3971: "GC.SuppressFinalize" should not be called
 # Enabled: True, Severity: warning
