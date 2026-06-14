@@ -1037,7 +1037,7 @@ dotnet_diagnostic.S3776.severity = warning
 
 # S3869: "SafeHandle.DangerousGetHandle" should not be called
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3869.severity = none
+dotnet_diagnostic.S3869.severity = warning
 
 # S3871: Exception types should be "public"
 # Enabled: True, Severity: warning

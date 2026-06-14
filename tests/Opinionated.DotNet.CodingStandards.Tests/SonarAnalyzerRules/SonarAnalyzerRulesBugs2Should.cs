@@ -837,4 +837,30 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3610").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3869", "SafeHandle.DangerousGetHandle should not be called",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3869/")]
+    public async Task WarnOnDangerousGetHandleCall()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.InteropServices;
+            namespace test;
+            public sealed class MyHandle : SafeHandle
+            {
+                public MyHandle() : base(System.IntPtr.Zero, true) { }
+                public override bool IsInvalid => handle == System.IntPtr.Zero;
+                protected override bool ReleaseHandle() { return true; }
+            }
+            public static class Usage
+            {
+                public static System.IntPtr GetRaw(MyHandle h) => h.DangerousGetHandle();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3869").ShouldBeTrue();
+    }
 }
