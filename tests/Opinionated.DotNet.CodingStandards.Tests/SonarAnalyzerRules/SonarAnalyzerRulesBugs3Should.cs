@@ -459,4 +459,36 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6797").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6800", "Component parameter type should match the route parameter type constraint",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6800/")]
+    public async Task DetectComponentParameterTypeMismatchWithRouteConstraint()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Components
+            {
+                public sealed class RouteAttribute : System.Attribute
+                {
+                    public RouteAttribute(string template) { }
+                }
+                public sealed class ParameterAttribute : System.Attribute { }
+                public class ComponentBase { }
+            }
+            namespace test
+            {
+                [Microsoft.AspNetCore.Components.Route("/items/{Id:int}")]
+                public class ItemComponent : Microsoft.AspNetCore.Components.ComponentBase
+                {
+                    [Microsoft.AspNetCore.Components.Parameter]
+                    public string Id { get; set; } = string.Empty;
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6800").ShouldBeTrue();
+    }
 }

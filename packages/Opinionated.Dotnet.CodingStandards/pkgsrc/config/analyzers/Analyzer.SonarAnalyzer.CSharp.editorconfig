@@ -1729,7 +1729,7 @@ dotnet_diagnostic.S6798.severity = warning
 
 # S6800: Component parameter type should match the route parameter type constraint
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6800.severity = none
+dotnet_diagnostic.S6800.severity = warning
 
 # S6802: Using lambda expressions in loops should be avoided in Blazor markup section
 # Enabled: False, Severity: warning
