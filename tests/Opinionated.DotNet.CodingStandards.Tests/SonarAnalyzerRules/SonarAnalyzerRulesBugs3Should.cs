@@ -43,4 +43,28 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3927").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3971", "GC.SuppressFinalize should not be called",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3971/")]
+    public async Task WarnOnGcSuppressFinalizeCalledOutsideDispose()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class MyResource
+            {
+                public void Initialize()
+                {
+                    GC.SuppressFinalize(this);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3971").ShouldBeTrue();
+    }
 }

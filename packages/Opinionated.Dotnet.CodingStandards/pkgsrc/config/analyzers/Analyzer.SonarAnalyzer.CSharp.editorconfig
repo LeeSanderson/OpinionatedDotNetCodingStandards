@@ -1165,7 +1165,7 @@ dotnet_diagnostic.S3967.severity = warning
 
 # S3971: "GC.SuppressFinalize" should not be called
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3971.severity = none
+dotnet_diagnostic.S3971.severity = warning
 
 # S3972: Conditionals should start on new lines
 # Enabled: True, Severity: warning
