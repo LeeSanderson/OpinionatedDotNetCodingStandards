@@ -766,4 +766,31 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3466").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3598", "One-way \"OperationContract\" methods should have \"void\" return type",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3598/")]
+    public async Task WarnOnNonVoidOneWayOperationContract()
+    {
+        using var project = await CreateProjectBuilder(
+            packageReferences: [(Name: "System.ServiceModel.Primitives", Version: "10.0.652802")]);
+        await project.AddFile("Program.cs", """
+            using System.ServiceModel;
+
+            namespace test;
+
+            [ServiceContract]
+            public interface IMyService
+            {
+                [OperationContract(IsOneWay = true)]
+                int FireAndForgetButReturnsInt(); // Noncompliant: one-way operation cannot return a value
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3598").ShouldBeTrue();
+    }
 }

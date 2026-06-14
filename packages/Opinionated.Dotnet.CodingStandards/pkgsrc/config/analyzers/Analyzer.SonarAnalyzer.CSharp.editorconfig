@@ -1005,7 +1005,7 @@ dotnet_diagnostic.S3597.severity = warning
 
 # S3598: One-way "OperationContract" methods should have "void" return type
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3598.severity = none
+dotnet_diagnostic.S3598.severity = warning
 
 # S3600: "params" should not be introduced on overrides
 # Enabled: True, Severity: warning
