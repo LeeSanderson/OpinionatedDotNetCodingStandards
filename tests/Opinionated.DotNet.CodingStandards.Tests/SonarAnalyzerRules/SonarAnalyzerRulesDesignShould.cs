@@ -794,4 +794,32 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3898").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3906", "Event Handlers should have the correct signature",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3906/")]
+    public async Task WarnOnEventHandlerWithIncorrectSignature()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System;
+
+            // Delegate used as an event type but missing the 'object sender' first parameter
+            // and 'EventArgs e' second parameter — violates S3906
+            public delegate void BadEventHandler(int value);
+
+            public class Publisher
+            {
+                public event BadEventHandler? DataChanged;
+
+                public void Fire(int v) => DataChanged?.Invoke(v);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3906").ShouldBeTrue();
+    }
 }

@@ -1113,7 +1113,7 @@ dotnet_diagnostic.S3904.severity = none
 
 # S3906: Event Handlers should have the correct signature
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3906.severity = none
+dotnet_diagnostic.S3906.severity = warning
 
 # S3908: Generic event handlers should be used
 # Enabled: False, Severity: warning
