@@ -1721,7 +1721,7 @@ dotnet_diagnostic.S6678.severity = none
 
 # S6797: Blazor query parameter type should be supported
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6797.severity = none
+dotnet_diagnostic.S6797.severity = warning
 
 # S6798: [JSInvokable] attribute should only be used on public methods
 # Enabled: True, Severity: warning

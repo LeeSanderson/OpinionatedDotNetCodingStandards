@@ -426,4 +426,37 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6674").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6797", "Blazor query parameter type should be supported",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6797/")]
+    public async Task WarnOnUnsupportedBlazorQueryParameterType()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Components
+            {
+                public sealed class RouteAttribute : System.Attribute
+                {
+                    public RouteAttribute(string template) { }
+                }
+                public sealed class ParameterAttribute : System.Attribute { }
+                public sealed class SupplyParameterFromQueryAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                [Microsoft.AspNetCore.Components.Route("/print")]
+                public class MyComponent
+                {
+                    [Microsoft.AspNetCore.Components.Parameter]
+                    [Microsoft.AspNetCore.Components.SupplyParameterFromQuery]
+                    public System.TimeSpan Value { get; set; }
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6797").ShouldBeTrue();
+    }
 }
