@@ -295,4 +295,24 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3885").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3902", "Assembly.GetExecutingAssembly should not be called",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3902/")]
+    public async Task WarnOnAssemblyGetExecutingAssembly()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Reflection;
+            namespace test;
+            public static class Loader
+            {
+                public static Assembly GetAssembly() => Assembly.GetExecutingAssembly();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3902").ShouldBeTrue();
+    }
 }

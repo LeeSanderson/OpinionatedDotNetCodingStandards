@@ -1101,7 +1101,7 @@ dotnet_diagnostic.S3898.severity = warning
 
 # S3902: "Assembly.GetExecutingAssembly" should not be called
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3902.severity = none
+dotnet_diagnostic.S3902.severity = warning
 
 # S3903: Types should be defined in named namespaces
 # Enabled: True, Severity: warning
