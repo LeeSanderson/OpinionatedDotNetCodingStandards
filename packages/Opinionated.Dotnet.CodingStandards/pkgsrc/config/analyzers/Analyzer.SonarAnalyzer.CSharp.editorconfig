@@ -1089,7 +1089,7 @@ dotnet_diagnostic.S3887.severity = warning
 
 # S3889: "Thread.Resume" and "Thread.Suspend" should not be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3889.severity = none
+dotnet_diagnostic.S3889.severity = warning
 
 # S3897: Classes that provide "Equals(<T>)" should implement "IEquatable<T>"
 # Enabled: True, Severity: warning

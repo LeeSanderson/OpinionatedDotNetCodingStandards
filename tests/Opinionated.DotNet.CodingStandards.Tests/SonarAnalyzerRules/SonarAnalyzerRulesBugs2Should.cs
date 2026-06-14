@@ -863,4 +863,31 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3869").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3889", "Thread.Resume and Thread.Suspend should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3889/")]
+    public async Task ProhibitThreadSuspendAndResume()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Threading;
+            namespace test;
+            public static class Example
+            {
+                public static void Run()
+                {
+                    var t = new Thread(() => { });
+                    t.Start();
+            #pragma warning disable CS0618
+                    t.Suspend();
+            #pragma warning restore CS0618
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3889").ShouldBeTrue();
+    }
 }
