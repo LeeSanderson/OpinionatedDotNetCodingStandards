@@ -695,4 +695,23 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6561").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6562", "Always set the DateTimeKind when creating new DateTime instances",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6562/")]
+    public async Task DetectDateTimeWithoutKind()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public static System.DateTime GetDate() => new System.DateTime(2024, 1, 15);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6562").ShouldBeTrue();
+    }
 }
