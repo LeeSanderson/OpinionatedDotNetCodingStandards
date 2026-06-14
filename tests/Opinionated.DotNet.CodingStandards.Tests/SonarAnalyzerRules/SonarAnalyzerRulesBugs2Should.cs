@@ -793,4 +793,25 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3598").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3603", "Methods with \"Pure\" attribute should return a value",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3603/")]
+    public async Task DetectPureAttributeOnVoidMethod()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Diagnostics.Contracts;
+            namespace test;
+            public class C
+            {
+                [Pure]
+                public static void DoNothing() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3603").ShouldBeTrue();
+    }
 }

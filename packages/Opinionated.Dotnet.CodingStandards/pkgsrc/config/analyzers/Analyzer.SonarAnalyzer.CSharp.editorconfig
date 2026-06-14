@@ -1013,7 +1013,7 @@ dotnet_diagnostic.S3600.severity = warning
 
 # S3603: Methods with "Pure" attribute should return a value 
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3603.severity = none
+dotnet_diagnostic.S3603.severity = warning
 
 # S3604: Member initializer values should not be redundant
 # Enabled: True, Severity: warning
