@@ -28,4 +28,25 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S3995").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3996", "URI properties should not be strings",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3996/")]
+    public async Task WarnOnStringUriProperty()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Resource
+            {
+                public string Url { get; set; } = string.Empty;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3996").ShouldBeTrue();
+    }
 }

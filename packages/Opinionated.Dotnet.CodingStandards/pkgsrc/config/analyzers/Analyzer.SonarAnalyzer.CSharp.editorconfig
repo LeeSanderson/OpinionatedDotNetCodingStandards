@@ -1205,7 +1205,7 @@ dotnet_diagnostic.S3995.severity = warning
 
 # S3996: URI properties should not be strings
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3996.severity = none
+dotnet_diagnostic.S3996.severity = warning
 
 # S3997: String URI overloads should call "System.Uri" overloads
 # Enabled: False, Severity: warning
