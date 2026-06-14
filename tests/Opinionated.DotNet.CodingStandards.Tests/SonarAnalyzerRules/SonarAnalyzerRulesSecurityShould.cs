@@ -429,4 +429,31 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4036").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4211", "Members should not have conflicting transparency annotations",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4211/")]
+    public async Task WarnOnConflictingTransparencyAnnotations()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Security;
+
+            namespace test;
+
+            [SecurityCritical]
+            public class SecureService
+            {
+                private readonly int _value = 1;
+
+                [SecuritySafeCritical]
+                public int Execute() => _value;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4211").ShouldBeTrue();
+    }
 }

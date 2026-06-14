@@ -1373,7 +1373,7 @@ dotnet_diagnostic.S4210.severity = none
 
 # S4211: Members should not have conflicting transparency annotations
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4211.severity = none
+dotnet_diagnostic.S4211.severity = warning
 
 # S4212: Serialization constructors should be secured
 # Enabled: False, Severity: warning
