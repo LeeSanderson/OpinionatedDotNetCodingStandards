@@ -323,4 +323,29 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4136").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4200", "Native methods should be wrapped",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4200/")]
+    public async Task WarnOnPublicNativeMethod()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Runtime.InteropServices;
+
+            namespace test;
+
+            public static class NativeMethods
+            {
+                [DllImport("kernel32.dll")]
+                public static extern bool Beep(uint dwFreq, uint dwDuration);
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4200").ShouldBeTrue();
+    }
 }
