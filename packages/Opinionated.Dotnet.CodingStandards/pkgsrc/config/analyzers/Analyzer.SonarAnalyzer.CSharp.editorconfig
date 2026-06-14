@@ -1425,7 +1425,7 @@ dotnet_diagnostic.S4428.severity = warning
 
 # S4433: LDAP connections should be authenticated
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4433.severity = none
+dotnet_diagnostic.S4433.severity = warning
 
 # S4456: Parameter validation in yielding methods should be wrapped
 # Enabled: True, Severity: warning

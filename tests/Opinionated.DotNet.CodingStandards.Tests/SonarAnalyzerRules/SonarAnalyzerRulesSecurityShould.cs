@@ -545,4 +545,29 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4426").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4433", "LDAP connections should be authenticated",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4433/")]
+    public async Task WarnOnUnauthenticatedLdapConnection()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "System.DirectoryServices", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.DirectoryServices;
+            public static class LdapConfig
+            {
+                public static void Configure()
+                {
+                    var entry = new DirectoryEntry();
+                    entry.AuthenticationType = AuthenticationTypes.None;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4433").ShouldBeTrue();
+    }
 }
