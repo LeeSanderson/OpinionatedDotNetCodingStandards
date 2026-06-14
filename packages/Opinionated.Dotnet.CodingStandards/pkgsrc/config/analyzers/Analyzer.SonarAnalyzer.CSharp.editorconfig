@@ -1785,7 +1785,7 @@ dotnet_diagnostic.S6967.severity = warning
 
 # S6968: Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6968.severity = none
+dotnet_diagnostic.S6968.severity = warning
 
 # S7039: Content Security Policies should be restrictive
 # Enabled: True, Severity: warning

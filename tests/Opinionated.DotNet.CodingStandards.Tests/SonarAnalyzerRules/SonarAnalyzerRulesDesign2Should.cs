@@ -610,4 +610,41 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S6965").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6968", "Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6968/")]
+    public async Task WarnOnMissingProducesResponseTypeOnActionReturningValue()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+                (Name: "Swashbuckle.AspNetCore.Swagger", Version: "10.2.1"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Mvc;
+
+            namespace test;
+
+            [ApiController]
+            [Route("[controller]")]
+            public class ValuesController : ControllerBase
+            {
+                [HttpGet]
+                public IActionResult Get() => Ok(new object());
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6968").ShouldBeTrue();
+    }
 }
