@@ -152,4 +152,28 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6967").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8380", "Return types named \"partial\" should be escaped with \"@\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8380/")]
+    public async Task WarnOnUnescapedPartialReturnType()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("LangVersion", "13"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class @partial { }
+            public class C
+            {
+                public partial Method(int a) => null;  // S8380: partial is the return type
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8380").ShouldBeTrue();
+    }
 }

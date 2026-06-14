@@ -1805,7 +1805,7 @@ dotnet_diagnostic.S8368.severity = warning
 
 # S8380: Return types named "partial" should be escaped with "@"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S8380.severity = none
+dotnet_diagnostic.S8380.severity = warning
 
 # S8381: "scoped" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists
 # Enabled: True, Severity: warning
