@@ -627,4 +627,24 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4663").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6354", "Use a testable date/time provider",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6354/")]
+    public async Task WarnOnDirectDateTimeNowAccess()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class TimeService
+            {
+                public string GetCurrentTime() =>
+                    $"The time is {DateTime.UtcNow}";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6354").ShouldBeTrue();
+    }
 }
