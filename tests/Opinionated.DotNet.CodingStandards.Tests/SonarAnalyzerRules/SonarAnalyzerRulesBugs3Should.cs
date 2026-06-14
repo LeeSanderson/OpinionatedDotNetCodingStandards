@@ -521,4 +521,43 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6803").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6964", "Value type property used as input in a controller action should be nullable, required, or annotated with JsonRequiredAttribute to avoid under-posting",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6964/")]
+    public async Task WarnOnUnprotectedValueTypeControllerInput()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using Microsoft.AspNetCore.Mvc;
+
+            public class InputModel
+            {
+                public int Age { get; set; }
+            }
+
+            [ApiController]
+            [Route("[controller]")]
+            public class SampleController : ControllerBase
+            {
+                [HttpPost]
+                public IActionResult Create(InputModel model) => Ok();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6964").ShouldBeTrue();
+    }
 }

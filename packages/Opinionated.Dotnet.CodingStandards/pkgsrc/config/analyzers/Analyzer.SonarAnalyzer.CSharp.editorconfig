@@ -1769,7 +1769,7 @@ dotnet_diagnostic.S6962.severity = warning
 
 # S6964: Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6964.severity = none
+dotnet_diagnostic.S6964.severity = warning
 
 # S6965: REST API actions should be annotated with an HTTP verb attribute
 # Enabled: True, Severity: warning
