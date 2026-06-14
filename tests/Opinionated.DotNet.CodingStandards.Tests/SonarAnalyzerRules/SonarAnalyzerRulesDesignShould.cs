@@ -1,4 +1,4 @@
-// Copyright (c) Codurance. All rights reserved.
+﻿// Copyright (c) Codurance. All rights reserved.
 
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
@@ -699,5 +699,28 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
         var buildOutput = await project.BuildAndGetOutput();
 
         buildOutput.HasError("S3464").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S3874", "\u201Cout\u201D and \u201Cref\u201D parameters should not be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3874/")]
+    public async Task ProhibitOutAndRefParameters()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Calculator
+            {
+                public static void Divide(int dividend, int divisor, out int quotient, out int remainder)
+                {
+                    quotient = dividend / divisor;
+                    remainder = dividend % divisor;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3874").ShouldBeTrue();
     }
 }

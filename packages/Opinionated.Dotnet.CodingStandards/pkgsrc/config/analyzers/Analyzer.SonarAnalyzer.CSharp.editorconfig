@@ -1049,7 +1049,7 @@ dotnet_diagnostic.S3872.severity = warning
 
 # S3874: "out" and "ref" parameters should not be used
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3874.severity = none
+dotnet_diagnostic.S3874.severity = warning
 
 # S3875: "operator==" should not be overloaded on reference types
 # Enabled: True, Severity: warning
