@@ -1177,7 +1177,7 @@ dotnet_diagnostic.S3973.severity = none
 
 # S3981: Collection sizes and array length comparisons should make sense
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3981.severity = none
+dotnet_diagnostic.S3981.severity = warning
 
 # S3984: Exceptions should not be created without being thrown
 # Enabled: True, Severity: warning

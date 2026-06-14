@@ -67,4 +67,28 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3971").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3981", "Collection sizes and array length comparisons should make sense",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3981/")]
+    public async Task DetectNonsensicalCollectionSizeComparisons()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+            namespace test;
+            public static class Check
+            {
+                public static bool AlwaysFalse()
+                {
+                    var list = new List<int> { 1, 2, 3 };
+                    return list.Count < 0;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3981").ShouldBeTrue();
+    }
 }
