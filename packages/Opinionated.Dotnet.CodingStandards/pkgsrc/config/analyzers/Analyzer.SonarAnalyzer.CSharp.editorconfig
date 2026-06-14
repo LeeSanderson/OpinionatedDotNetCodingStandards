@@ -1065,7 +1065,7 @@ dotnet_diagnostic.S3877.severity = none
 
 # S3878: Arrays should not be created for params parameters
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3878.severity = none
+dotnet_diagnostic.S3878.severity = warning
 
 # S3880: Finalizers should not be empty
 # Enabled: False, Severity: warning

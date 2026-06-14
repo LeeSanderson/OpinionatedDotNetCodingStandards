@@ -248,4 +248,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3717").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3878", "Arrays should not be created for params parameters",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3878/")]
+    public async Task ProhibitArrayCreationForParamsParameter()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Helper
+            {
+                public static void Accept(params string[] values) { }
+            }
+            public static class Program
+            {
+                public static int Main()
+                {
+                    Helper.Accept(new string[] { "a", "b", "c" });
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3878").ShouldBeTrue();
+    }
 }
