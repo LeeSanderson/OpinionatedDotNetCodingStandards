@@ -1017,7 +1017,7 @@ dotnet_diagnostic.S3603.severity = warning
 
 # S3604: Member initializer values should not be redundant
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3604.severity = none
+dotnet_diagnostic.S3604.severity = warning
 
 # S3610: Nullable type comparison should not be redundant
 # Enabled: True, Severity: warning

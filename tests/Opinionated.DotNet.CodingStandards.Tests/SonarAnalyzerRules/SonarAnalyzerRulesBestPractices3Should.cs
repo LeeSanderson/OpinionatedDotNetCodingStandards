@@ -172,4 +172,38 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3600").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3604", "Member initializer values should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3604/")]
+    public async Task WarnOnRedundantMemberInitializer()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            #pragma warning disable S3052, CA1805, S2933, IDE0044, SA1649, S109, S3400
+            namespace test;
+
+            public sealed class Widget
+            {
+                private int _value = 5;
+
+                public Widget(int value)
+                {
+                    _value = value;
+                }
+
+                public Widget()
+                {
+                    _value = 1;
+                }
+
+                public int Value => _value;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3604").ShouldBeTrue();
+    }
 }
