@@ -141,4 +141,38 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S5766").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6377", "XML signatures should be validated securely",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6377/")]
+    public async Task WarnOnInsecureXmlSignatureValidation()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "System.Security.Cryptography.Xml", Version: "10.0.9")]);
+        await project.AddFileAsync("Program.cs", """
+            using System.Security.Cryptography.Xml;
+            using System.Xml;
+
+            namespace test;
+
+            public class XmlSignatureValidator
+            {
+                public bool ValidateSignature(string xml)
+                {
+                    var doc = new XmlDocument { PreserveWhitespace = true };
+                    doc.LoadXml(xml);
+                    var signedXml = new SignedXml(doc);
+                    var sigNode = (XmlElement?)doc.GetElementsByTagName("Signature")[0];
+                    signedXml.LoadXml(sigNode!);
+                    return signedXml.CheckSignature(); // S6377: no key passed — accepts any signer
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6377").ShouldBeTrue();
+    }
 }

@@ -1549,11 +1549,11 @@ dotnet_diagnostic.S5856.severity = warning
 
 # S6354: Use a testable date/time provider
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6354.severity = none
+dotnet_diagnostic.S6354.severity = warning
 
 # S6377: XML signatures should be validated securely
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6377.severity = none
+dotnet_diagnostic.S6377.severity = warning
 
 # S6418: Secrets should not be hard-coded
 # Enabled: True, Severity: warning
