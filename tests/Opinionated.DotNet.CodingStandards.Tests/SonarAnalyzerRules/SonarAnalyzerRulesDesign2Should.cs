@@ -501,4 +501,50 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S6934").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6960", "Controllers should not have mixed responsibilities",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6960/")]
+    public async Task WarnOnControllerWithMixedResponsibilities()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Mvc
+            {
+                public class ApiControllerAttribute : System.Attribute { }
+                public class ControllerBase { }
+                public interface IActionResult { }
+                public class OkResult : IActionResult { }
+            }
+
+            namespace test
+            {
+                using Microsoft.AspNetCore.Mvc;
+
+                public interface IS1 { void Use(); }
+                public interface IS2 { void Use(); }
+
+                [ApiController]
+                public class MixedController : ControllerBase
+                {
+                    private readonly IS1 _s1;
+                    private readonly IS2 _s2;
+
+                    public MixedController(IS1 s1, IS2 s2)
+                    {
+                        _s1 = s1;
+                        _s2 = s2;
+                    }
+
+                    public IActionResult ActionA() { _s1.Use(); return new OkResult(); }
+                    public IActionResult ActionB() { _s2.Use(); return new OkResult(); }
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6960").ShouldBeTrue();
+    }
 }

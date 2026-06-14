@@ -1757,7 +1757,7 @@ dotnet_diagnostic.S6934.severity = warning
 
 # S6960: Controllers should not have mixed responsibilities
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6960.severity = none
+dotnet_diagnostic.S6960.severity = warning
 
 # S6961: API Controllers should derive from ControllerBase instead of Controller
 # Enabled: True, Severity: warning
