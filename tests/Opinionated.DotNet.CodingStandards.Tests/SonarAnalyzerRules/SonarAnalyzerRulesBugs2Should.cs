@@ -814,4 +814,27 @@ public class SonarAnalyzerRulesBugs2Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S3603").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3610", "Nullable type comparison should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3610/")]
+    public async Task DetectRedundantNullableTypeComparison()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Checker
+            {
+                public static void DoChecks<T>(System.Nullable<T> value) where T : struct
+                {
+                    var areEqual = value.GetType() == typeof(System.Nullable<int>);
+                    _ = areEqual;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3610").ShouldBeTrue();
+    }
 }
