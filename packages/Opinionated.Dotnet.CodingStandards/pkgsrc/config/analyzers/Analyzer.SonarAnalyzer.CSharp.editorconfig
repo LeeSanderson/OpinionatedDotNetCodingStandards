@@ -1289,7 +1289,7 @@ dotnet_diagnostic.S4040.severity = warning
 
 # S4041: Type names should not match namespaces
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4041.severity = none
+dotnet_diagnostic.S4041.severity = warning
 
 # S4047: Generics should be used when appropriate
 # Enabled: False, Severity: warning

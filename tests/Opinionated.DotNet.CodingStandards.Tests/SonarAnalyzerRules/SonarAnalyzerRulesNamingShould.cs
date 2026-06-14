@@ -256,4 +256,20 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S4025").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4041", "Type names should not match namespaces",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4041/")]
+    public async Task WarnOnTypeNameMatchingNamespace()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class Collections { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4041").ShouldBeTrue();
+    }
 }
