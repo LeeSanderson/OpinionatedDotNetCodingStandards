@@ -1605,7 +1605,7 @@ dotnet_diagnostic.S6562.severity = warning
 
 # S6563: Use UTC when recording DateTime instants
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6563.severity = none
+dotnet_diagnostic.S6563.severity = warning
 
 # S6566: Use "DateTimeOffset" instead of "DateTime"
 # Enabled: False, Severity: warning

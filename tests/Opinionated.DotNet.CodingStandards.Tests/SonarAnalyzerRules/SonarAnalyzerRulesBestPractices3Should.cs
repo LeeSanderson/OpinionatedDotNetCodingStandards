@@ -714,4 +714,23 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6562").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6563", "Use UTC when recording DateTime instants",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6563/")]
+    public async Task WarnOnLocalDateTimeInstant()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Recorder
+            {
+                public static System.DateTime CapturedAt = System.DateTime.Now;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6563").ShouldBeTrue();
+    }
 }
