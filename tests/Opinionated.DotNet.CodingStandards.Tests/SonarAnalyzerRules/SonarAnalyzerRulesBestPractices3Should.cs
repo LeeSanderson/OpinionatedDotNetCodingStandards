@@ -848,4 +848,29 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6603").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6605", "Collection-specific \"Exists\" method should be used instead of the \"Any\" extension on List<T>",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6605/")]
+    public async Task WarnOnAnyExtensionInsteadOfListExists()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            public static class Example
+            {
+                public static bool Check(List<int> items) =>
+                    items.Any(x => x > 0);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6605").ShouldBeTrue();
+    }
 }

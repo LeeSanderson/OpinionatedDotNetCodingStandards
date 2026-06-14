@@ -1637,7 +1637,7 @@ dotnet_diagnostic.S6603.severity = warning
 
 # S6605: Collection-specific "Exists" method should be used instead of the "Any" extension
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6605.severity = none
+dotnet_diagnostic.S6605.severity = warning
 
 # S6607: The collection should be filtered before sorting by using "Where" before "OrderBy"
 # Enabled: True, Severity: warning
