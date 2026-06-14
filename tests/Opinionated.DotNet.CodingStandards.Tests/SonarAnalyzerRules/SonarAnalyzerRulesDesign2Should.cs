@@ -49,4 +49,32 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S3996").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3997", "String URI overloads should call \"System.Uri\" overloads",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3997/")]
+    public async Task WarnOnStringUriOverloadNotDelegatingToUriOverload()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class ResourceFetcher
+            {
+                public void FetchResource(string uriString)
+                {
+                    // Noncompliant: string overload exists alongside Uri overload but does not call it
+                    _ = uriString.Length;
+                }
+
+                public void FetchResource(Uri uri)
+                {
+                    _ = uri.AbsolutePath;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3997").ShouldBeTrue();
+    }
 }

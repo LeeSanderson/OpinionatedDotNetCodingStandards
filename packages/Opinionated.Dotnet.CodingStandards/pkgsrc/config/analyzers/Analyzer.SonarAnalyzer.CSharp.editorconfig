@@ -1209,7 +1209,7 @@ dotnet_diagnostic.S3996.severity = warning
 
 # S3997: String URI overloads should call "System.Uri" overloads
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3997.severity = none
+dotnet_diagnostic.S3997.severity = warning
 
 # S3998: Threads should not lock on objects with weak identity
 # Enabled: True, Severity: warning
