@@ -1149,7 +1149,7 @@ dotnet_diagnostic.S3937.severity = warning
 
 # S3956: "Generic.List" instances should not be part of public APIs
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3956.severity = none
+dotnet_diagnostic.S3956.severity = warning
 
 # S3962: "static readonly" constants should be "const" instead
 # Enabled: False, Severity: warning

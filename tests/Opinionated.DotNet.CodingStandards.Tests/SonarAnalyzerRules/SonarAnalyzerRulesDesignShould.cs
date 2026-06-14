@@ -881,4 +881,27 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3925").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3956", "Generic.List instances should not be part of public APIs",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3956/")]
+    public async Task WarnOnListInPublicApi()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Collections.Generic;
+
+            namespace test;
+
+            public class MyService
+            {
+                public List<string> GetItems() => new List<string>();
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3956").ShouldBeTrue();
+    }
 }
