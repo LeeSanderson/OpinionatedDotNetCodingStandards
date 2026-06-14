@@ -570,4 +570,42 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4433").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4502", "Disabling CSRF protections is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4502/")]
+    public async Task WarnOnDisabledCsrfProtection()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10")],
+            properties:
+            [
+                (Name: "NuGetAudit", Value: "false"),
+                (Name: "NoWarn", Value: "NU1903;NU1902;CA1515;CA1822")
+            ],
+            additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S4502</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Mvc;
+
+            namespace test;
+
+            [IgnoreAntiforgeryToken]
+            public class SomeController : Controller { }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4502").ShouldBeTrue();
+    }
 }
