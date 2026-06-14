@@ -1813,7 +1813,7 @@ dotnet_diagnostic.S8381.severity = warning
 
 # S881: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S881.severity = none
+dotnet_diagnostic.S881.severity = warning
 
 # S907: "goto" statement should not be used
 # Enabled: True, Severity: warning

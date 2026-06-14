@@ -201,4 +201,27 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S8381").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S881", "Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-881/")]
+    public async Task ProhibitIncrementDecrementOperatorsInExpressions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var i = 0;
+                    var result = i++ + 1;
+                    return result;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S881").ShouldBeTrue();
+    }
 }
