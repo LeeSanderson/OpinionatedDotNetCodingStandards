@@ -1145,7 +1145,7 @@ dotnet_diagnostic.S3928.severity = none
 
 # S3937: Number patterns should be regular
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S3937.severity = none
+dotnet_diagnostic.S3937.severity = warning
 
 # S3956: "Generic.List" instances should not be part of public APIs
 # Enabled: False, Severity: warning

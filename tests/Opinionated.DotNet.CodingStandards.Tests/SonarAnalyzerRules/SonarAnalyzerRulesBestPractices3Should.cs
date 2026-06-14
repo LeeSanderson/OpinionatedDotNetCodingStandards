@@ -315,4 +315,23 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3902").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3937", "Number patterns should be regular",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3937/")]
+    public async Task WarnOnIrregularNumberLiteralPattern()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class Numbers
+            {
+                public const int Irregular = 1_2_3_4_5;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3937").ShouldBeTrue();
+    }
 }
