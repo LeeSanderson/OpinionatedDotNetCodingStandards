@@ -1285,7 +1285,7 @@ dotnet_diagnostic.S4039.severity = none
 
 # S4040: Strings should be normalized to uppercase
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4040.severity = none
+dotnet_diagnostic.S4040.severity = warning
 
 # S4041: Type names should not match namespaces
 # Enabled: False, Severity: warning

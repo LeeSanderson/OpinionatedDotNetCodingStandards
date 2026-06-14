@@ -367,4 +367,24 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4005").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4040", "Strings should be normalized to uppercase",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4040/")]
+    public async Task WarnOnToLowerStringNormalization()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public static class StringNormalizer
+            {
+                public static bool AreEqual(string a, string b)
+                    => a.ToLowerInvariant() == b.ToLowerInvariant();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4040").ShouldBeTrue();
+    }
 }

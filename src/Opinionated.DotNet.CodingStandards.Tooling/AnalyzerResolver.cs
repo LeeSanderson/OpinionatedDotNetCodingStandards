@@ -139,7 +139,7 @@ public static class AnalyzerResolver
         foreach (var relPath in selected)
         {
             var relativePart = Path.Combine(
-                packageId.ToLowerInvariant(),
+                packageId,
                 version,
                 relPath.Replace('/', Path.DirectorySeparatorChar));
 
