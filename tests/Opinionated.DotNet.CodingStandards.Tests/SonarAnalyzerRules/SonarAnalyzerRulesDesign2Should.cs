@@ -189,4 +189,23 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4022").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4023", "Interfaces should not be empty",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4023/")]
+    public async Task ProhibitEmptyInterfaces()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public interface IMarker { }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4023").ShouldBeTrue();
+    }
 }

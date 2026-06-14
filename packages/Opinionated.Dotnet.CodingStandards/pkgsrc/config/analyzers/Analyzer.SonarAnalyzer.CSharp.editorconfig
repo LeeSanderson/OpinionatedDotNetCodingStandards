@@ -1257,7 +1257,7 @@ dotnet_diagnostic.S4022.severity = warning
 
 # S4023: Interfaces should not be empty
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4023.severity = none
+dotnet_diagnostic.S4023.severity = warning
 
 # S4025: Child class fields should not differ from parent class fields only by capitalization
 # Enabled: False, Severity: warning
