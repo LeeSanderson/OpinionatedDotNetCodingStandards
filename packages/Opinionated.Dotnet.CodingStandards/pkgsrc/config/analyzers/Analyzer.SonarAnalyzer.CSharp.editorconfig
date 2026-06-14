@@ -1741,7 +1741,7 @@ dotnet_diagnostic.S6803.severity = warning
 
 # S6930: Backslash should be avoided in route templates
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6930.severity = none
+dotnet_diagnostic.S6930.severity = warning
 
 # S6931: ASP.NET controller actions should not have a route template starting with "/"
 # Enabled: True, Severity: warning

@@ -11,36 +11,33 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
-    [RuleDoc("S6802", "Using lambda expressions in loops should be avoided in Blazor markup section",
-        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6802/")]
-    public async Task WarnOnLambdaExpressionsInLoopsInBlazorMarkup()
+    [RuleDoc("S6930", "Backslash should be avoided in route templates",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6930/")]
+    public async Task WarnOnBackslashInRouteTemplate()
     {
         using var project = await CreateProjectBuilderAsync(
-            packageReferences: [(Name: "Microsoft.AspNetCore.Components", Version: "10.0.0")]);
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
         await project.AddFileAsync("Program.cs", """
-            using Microsoft.AspNetCore.Components.Rendering;
+            using Microsoft.AspNetCore.Mvc;
 
             namespace test;
 
-            public class LoopLambdaComponent
-            {
-                private static readonly string[] Items = ["a", "b", "c"];
-
-                public static void BuildRenderTree(RenderTreeBuilder builder)
-                {
-                    foreach (var item in Items)
-                    {
-                        builder.OpenElement(0, "button");
-                        builder.AddAttribute(1, "onclick", (Microsoft.AspNetCore.Components.Web.MouseEventArgs e) => System.Console.WriteLine(item));
-                        builder.CloseElement();
-                    }
-                }
-            }
+            [Route(@"api\controller")]
+            public class HomeController : Controller { }
 
             public static class Program { public static int Main() => 0; }
+
             """);
         var buildOutput = await project.BuildAndGetOutputAsync();
 
-        buildOutput.HasError("S6802").ShouldBeTrue();
+        buildOutput.HasError("S6930").ShouldBeTrue();
     }
 }
