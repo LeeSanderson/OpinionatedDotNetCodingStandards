@@ -1317,7 +1317,7 @@ dotnet_diagnostic.S4056.severity = none
 
 # S4057: Locales should be set for data types
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4057.severity = none
+dotnet_diagnostic.S4057.severity = warning
 
 # S4058: Overloads with a "StringComparison" parameter should be used
 # Enabled: False, Severity: warning

@@ -406,4 +406,33 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4055").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4057", "Locales should be set for data types",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4057/")]
+    public async Task WarnOnDataTableWithoutLocale()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            using System.Data;
+            using System.Globalization;
+
+            namespace test;
+
+            public static class Factory
+            {
+                public static DataTable Create()
+                {
+                    var table = new DataTable();
+                    // Locale is never set — S4057 fires here
+                    return table;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4057").ShouldBeTrue();
+    }
 }
