@@ -1093,7 +1093,7 @@ dotnet_diagnostic.S3889.severity = warning
 
 # S3897: Classes that provide "Equals(<T>)" should implement "IEquatable<T>"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3897.severity = none
+dotnet_diagnostic.S3897.severity = warning
 
 # S3898: Value types should implement "IEquatable<T>"
 # Enabled: False, Severity: warning

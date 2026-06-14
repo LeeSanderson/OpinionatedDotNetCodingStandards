@@ -745,4 +745,30 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3887").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3897", "Classes that provide \"Equals(<T>)\" should implement \"IEquatable<T>\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3897/")]
+    public async Task WarnWhenClassProvidesTypedEqualsWithoutImplementingIEquatable()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Money
+            {
+                public int Amount { get; }
+
+                public Money(int amount) { Amount = amount; }
+
+                public bool Equals(Money other) => other != null && Amount == other.Amount;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3897").ShouldBeTrue();
+    }
 }
