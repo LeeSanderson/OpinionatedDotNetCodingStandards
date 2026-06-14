@@ -1433,7 +1433,7 @@ dotnet_diagnostic.S4456.severity = warning
 
 # S4457: Parameter validation in "async"/"await" methods should be wrapped
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4457.severity = none
+dotnet_diagnostic.S4457.severity = warning
 
 # S4462: Calls to "async" methods should not be blocking
 # Enabled: False, Severity: warning

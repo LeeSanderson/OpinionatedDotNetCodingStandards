@@ -529,4 +529,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4428").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4457", "Parameter validation in \"async\"/\"await\" methods should be wrapped",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4457/")]
+    public async Task WarnOnParameterValidationInAsyncMethodNotWrapped()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public class C
+            {
+                public static async System.Threading.Tasks.Task<string> ProcessAsync(string value)
+                {
+                    if (value == null) { throw new System.ArgumentNullException(nameof(value)); }
+                    await System.Threading.Tasks.Task.Delay(1);
+                    return value + "processed";
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4457").ShouldBeTrue();
+    }
 }
