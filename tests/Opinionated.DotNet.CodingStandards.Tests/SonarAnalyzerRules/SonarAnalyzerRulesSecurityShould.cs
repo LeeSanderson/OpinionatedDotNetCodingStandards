@@ -926,4 +926,38 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5542").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5659", "JWT should be signed and verified with strong cipher algorithms",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5659/")]
+    public async Task WarnOnJwtWithoutSignatureVerification()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "JWT", Version: "11.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using JWT;
+            using JWT.Algorithms;
+            using JWT.Builder;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    const string secret = "GQDstcKsx0NHjPOuXOYg5MbeJ1XT0uFiwDVvVBrk";
+                    const string token = "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmb28iOiJiYXIifQ.Xx";
+
+                    var decoded = new JwtBuilder()
+                        .WithSecret(secret)
+                        .DoNotVerifySignature()
+                        .Decode(token);
+
+                    return 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5659").ShouldBeTrue();
+    }
 }

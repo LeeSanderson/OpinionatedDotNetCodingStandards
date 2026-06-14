@@ -1529,7 +1529,7 @@ dotnet_diagnostic.S5547.severity = none
 
 # S5659: JWT should be signed and verified with strong cipher algorithms
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5659.severity = none
+dotnet_diagnostic.S5659.severity = warning
 
 # S5693: Allowing requests with excessive content length is security-sensitive
 # Enabled: True, Severity: warning
