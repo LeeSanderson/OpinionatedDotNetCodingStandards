@@ -1761,7 +1761,7 @@ dotnet_diagnostic.S6960.severity = warning
 
 # S6961: API Controllers should derive from ControllerBase instead of Controller
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6961.severity = none
+dotnet_diagnostic.S6961.severity = warning
 
 # S6962: You should pool HTTP connections with HttpClientFactory
 # Enabled: True, Severity: warning

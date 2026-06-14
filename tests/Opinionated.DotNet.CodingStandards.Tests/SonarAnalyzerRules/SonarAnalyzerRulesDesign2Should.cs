@@ -547,4 +547,32 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S6960").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6961", "API Controllers should derive from ControllerBase instead of Controller",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6961/")]
+    public async Task WarnWhenApiControllerDerivedFromControllerInsteadOfControllerBase()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Mvc
+            {
+                public class ControllerBase { }
+                public class Controller : ControllerBase { }
+                public sealed class ApiControllerAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                [Microsoft.AspNetCore.Mvc.ApiController]
+                public class MyApiController : Microsoft.AspNetCore.Mvc.Controller
+                {
+                    public int Get() => 0;
+                }
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6961").ShouldBeTrue();
+    }
 }
