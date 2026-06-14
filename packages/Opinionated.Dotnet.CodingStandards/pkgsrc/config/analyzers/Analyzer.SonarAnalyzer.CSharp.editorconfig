@@ -1513,7 +1513,7 @@ dotnet_diagnostic.S5344.severity = warning
 
 # S5443: Using publicly writable directories is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5443.severity = none
+dotnet_diagnostic.S5443.severity = warning
 
 # S5445: Insecure temporary file creation methods should not be used
 # Enabled: True, Severity: warning

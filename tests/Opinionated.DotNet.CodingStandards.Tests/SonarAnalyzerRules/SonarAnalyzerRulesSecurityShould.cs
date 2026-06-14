@@ -842,4 +842,41 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S5344").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5443", "Using publicly writable directories is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5443/")]
+    public async Task WarnOnPubliclyWritableDirectoryUsage()
+    {
+        // S5443 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S5443</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    // Noncompliant: string literal matches a publicly writable directory
+                    using var r = new System.IO.StreamReader("/tmp/f");
+                    return 0;
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5443").ShouldBeTrue();
+    }
 }
