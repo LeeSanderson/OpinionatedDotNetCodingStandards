@@ -585,4 +585,26 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4524").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4635", "Start index should be used instead of calling Substring",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4635/")]
+    public async Task WarnOnSubstringWithIndexOfStartIndex()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class StringHelper
+            {
+                public static int FindAfterOffset(string input, string separator, int offset)
+                {
+                    return input.Substring(offset).IndexOf(separator);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4635").ShouldBeTrue();
+    }
 }

@@ -1473,7 +1473,7 @@ dotnet_diagnostic.S4586.severity = none
 
 # S4635: Start index should be used instead of calling Substring
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4635.severity = none
+dotnet_diagnostic.S4635.severity = warning
 
 # S4663: Comments should not be empty
 # Enabled: True, Severity: warning
