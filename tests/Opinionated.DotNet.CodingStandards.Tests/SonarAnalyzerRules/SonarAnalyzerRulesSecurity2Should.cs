@@ -274,4 +274,28 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S6640").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S7039", "Content Security Policies should be restrictive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-7039/")]
+    public async Task WarnOnInsecureContentSecurityPolicy()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            namespace test;
+            public static class CspSetter
+            {
+                public static void Configure()
+                {
+                    IDictionary<string, string> headers = new Dictionary<string, string>();
+                    headers.Add("Content-Security-Policy", "'unsafe-inline' 'unsafe-eval' *");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S7039").ShouldBeTrue();
+    }
 }

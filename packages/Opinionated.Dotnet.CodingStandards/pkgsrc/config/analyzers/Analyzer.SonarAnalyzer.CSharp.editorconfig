@@ -1789,7 +1789,7 @@ dotnet_diagnostic.S6968.severity = warning
 
 # S7039: Content Security Policies should be restrictive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S7039.severity = none
+dotnet_diagnostic.S7039.severity = warning
 
 # S818: Literal suffixes should be upper case
 # Enabled: True, Severity: warning
