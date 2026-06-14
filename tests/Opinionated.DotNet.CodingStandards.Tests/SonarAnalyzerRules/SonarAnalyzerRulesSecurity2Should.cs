@@ -98,4 +98,47 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
 
         buildOutput.HasError("S5753").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5766", "Creating Serializable objects without data validation checks is security-sensitive",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5766/")]
+    public async Task WarnOnDeserializableClassWithoutValidation()
+    {
+        // S5766 is a Sonar security hotspot — it only fires when the rule is listed
+        // in a SonarLint.xml passed as an AdditionalFile (simulating Sonar Scanner mode).
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["SonarLint.xml"]);
+        await project.AddFileAsync("SonarLint.xml", """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <AnalysisInput>
+              <Rules>
+                <Rule>
+                  <Key>S5766</Key>
+                </Rule>
+              </Rules>
+            </AnalysisInput>
+            """);
+        await project.AddFileAsync("Program.cs", """
+            using System;
+            namespace test;
+
+            [Serializable]
+            public class InsecureSerializable
+            {
+                public string Name { get; set; }
+
+                public InsecureSerializable(string name) // S5766 fires here
+                {
+                    if (string.IsNullOrEmpty(name))
+                        Name = "default";
+                    else
+                        Name = name;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5766").ShouldBeTrue();
+    }
 }

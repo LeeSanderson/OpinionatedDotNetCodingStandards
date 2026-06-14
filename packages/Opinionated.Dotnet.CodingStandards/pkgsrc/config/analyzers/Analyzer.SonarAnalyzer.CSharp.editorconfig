@@ -1541,7 +1541,7 @@ dotnet_diagnostic.S5753.severity = warning
 
 # S5766: Creating Serializable objects without data validation checks is security-sensitive
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S5766.severity = none
+dotnet_diagnostic.S5766.severity = warning
 
 # S5856: Regular expressions should be syntactically valid
 # Enabled: True, Severity: warning
