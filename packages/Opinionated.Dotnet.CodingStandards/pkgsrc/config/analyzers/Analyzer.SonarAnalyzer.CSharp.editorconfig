@@ -1269,7 +1269,7 @@ dotnet_diagnostic.S4026.severity = none
 
 # S4027: Exceptions should provide standard constructors
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4027.severity = none
+dotnet_diagnostic.S4027.severity = warning
 
 # S4035: Classes implementing "IEquatable<T>" should be sealed
 # Enabled: True, Severity: warning

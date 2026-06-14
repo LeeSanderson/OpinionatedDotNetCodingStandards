@@ -208,4 +208,27 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4023").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4027", "Exceptions should provide standard constructors",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4027/")]
+    public async Task WarnOnExceptionMissingStandardConstructors()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            using System;
+
+            public class CustomException : Exception
+            {
+                public CustomException(string message) : base(message) { }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4027").ShouldBeTrue();
+    }
 }
