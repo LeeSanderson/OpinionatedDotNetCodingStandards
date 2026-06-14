@@ -40,4 +40,42 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6930").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6932", "Use model binding instead of reading raw request data",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6932/")]
+    public async Task WarnOnRawRequestDataAccess()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Mvc;
+
+            namespace test;
+
+            public class HomeController : ControllerBase
+            {
+                [HttpGet]
+                public IActionResult Index()
+                {
+                    var name = Request.Query["name"];   // S6932: use model binding instead
+                    return Ok(name);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6932").ShouldBeTrue();
+    }
 }
