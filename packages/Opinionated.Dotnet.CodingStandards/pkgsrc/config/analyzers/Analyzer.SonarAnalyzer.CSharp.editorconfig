@@ -985,7 +985,7 @@ dotnet_diagnostic.S3458.severity = warning
 
 # S3459: Unassigned members should be removed
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S3459.severity = none
+dotnet_diagnostic.S3459.severity = warning
 
 # S3464: Type inheritance should not be recursive
 # Enabled: True, Severity: warning

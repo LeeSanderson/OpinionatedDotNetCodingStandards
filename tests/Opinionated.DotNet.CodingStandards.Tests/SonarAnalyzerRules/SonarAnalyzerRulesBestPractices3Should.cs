@@ -72,4 +72,25 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3458").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S3459", "Unassigned members should be removed",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3459/")]
+    public async Task WarnOnUnassignedMembers()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+            public class MyClass
+            {
+                private int _neverAssigned;
+
+                public int GetValue() => _neverAssigned;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S3459").ShouldBeTrue();
+    }
 }
