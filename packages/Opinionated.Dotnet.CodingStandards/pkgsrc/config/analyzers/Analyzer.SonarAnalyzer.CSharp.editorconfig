@@ -1497,7 +1497,7 @@ dotnet_diagnostic.S5034.severity = none
 
 # S5042: Expanding archive files should not be done without controlling resource consumption
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S5042.severity = none
+dotnet_diagnostic.S5042.severity = warning
 
 # S5122: Having a permissive Cross-Origin Resource Sharing policy is security-sensitive
 # Enabled: True, Severity: warning

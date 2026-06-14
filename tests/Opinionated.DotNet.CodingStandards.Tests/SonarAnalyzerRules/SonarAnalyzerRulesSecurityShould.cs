@@ -704,4 +704,27 @@ public class SonarAnalyzerRulesSecurityShould(PackageFixture fixture, ITestOutpu
 
         buildOutput.HasError("S4792").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S5042", "Expanding archive files should not be done without controlling resource consumption",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-5042/")]
+    public async Task WarnOnUncontrolledArchiveExpansion()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.IO.Compression;
+
+            public static class Extractor
+            {
+                public static void Extract(string zipPath, string destDir) =>
+                    ZipFile.ExtractToDirectory(zipPath, destDir);
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S5042").ShouldBeTrue();
+    }
 }
