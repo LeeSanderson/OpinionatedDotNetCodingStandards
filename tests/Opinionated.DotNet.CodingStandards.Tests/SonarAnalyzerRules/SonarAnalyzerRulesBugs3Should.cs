@@ -239,4 +239,36 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S4260").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4275", "Getters and setters should access the expected fields",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4275/")]
+    public async Task DetectGetterAccessingWrongField()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Counter
+            {
+                private int _count;
+                private int _total;
+
+                public int Count
+                {
+                    get { return _total; }
+                    set { _count = value; }
+                }
+
+                public int Total
+                {
+                    get { return _count; }
+                    set { _total = value; }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4275").ShouldBeTrue();
+    }
 }

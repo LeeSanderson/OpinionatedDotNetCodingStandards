@@ -1405,7 +1405,7 @@ dotnet_diagnostic.S4261.severity = warning
 
 # S4275: Getters and setters should access the expected fields
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4275.severity = none
+dotnet_diagnostic.S4275.severity = warning
 
 # S4277: "Shared" parts should not be created with "new"
 # Enabled: True, Severity: warning
