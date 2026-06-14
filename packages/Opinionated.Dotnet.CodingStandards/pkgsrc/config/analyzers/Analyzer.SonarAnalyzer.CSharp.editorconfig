@@ -1777,7 +1777,7 @@ dotnet_diagnostic.S6965.severity = warning
 
 # S6966: Awaitable method should be used
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6966.severity = none
+dotnet_diagnostic.S6966.severity = warning
 
 # S6967: ModelState.IsValid should be called in controller actions
 # Enabled: True, Severity: warning

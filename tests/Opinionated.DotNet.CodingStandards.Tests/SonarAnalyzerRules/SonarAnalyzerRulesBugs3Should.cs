@@ -560,4 +560,38 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S6964").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6966", "Awaitable method should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6966/")]
+    public async Task DetectSyncCallWhenAwaitableAlternativeExists()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            using System.Threading.Tasks;
+
+            public sealed class Worker
+            {
+                public void Write() { }
+                public Task WriteAsync() => Task.CompletedTask;
+            }
+
+            public sealed class Caller
+            {
+                private readonly Worker _worker = new();
+
+                public async Task Run()
+                {
+                    _worker.Write(); // S6966: WriteAsync() should be awaited instead
+                    await Task.CompletedTask;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6966").ShouldBeTrue();
+    }
 }
