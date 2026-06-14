@@ -351,4 +351,29 @@ public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHe
 
         buildOutput.HasError("S5856").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6507", "Blocks should not be synchronized on local variables",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6507/")]
+    public async Task DetectLockOnLocalVariable()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public void DoSomething()
+                {
+                    object local = new object();
+                    lock (local) // S6507: locking on a local — each thread gets its own instance
+                    {
+                    }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6507").ShouldBeTrue();
+    }
 }

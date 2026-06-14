@@ -1589,7 +1589,7 @@ dotnet_diagnostic.S6444.severity = warning
 
 # S6507: Blocks should not be synchronized on local variables
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6507.severity = none
+dotnet_diagnostic.S6507.severity = warning
 
 # S6513: "ExcludeFromCodeCoverage" attributes should include a justification
 # Enabled: False, Severity: warning
