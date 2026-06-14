@@ -34,4 +34,29 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6617").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6618", "string.Create should be used instead of FormattableString",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6618/")]
+    public async Task WarnOnFormattableStringInsteadOfStringCreate()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Example
+            {
+                public static string GetInvariant(int value) =>
+                    FormattableString.Invariant($"value={value}");
+
+                public static string GetCurrentCulture(double value) =>
+                    FormattableString.CurrentCulture($"value={value}");
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6618").ShouldBeTrue();
+    }
 }

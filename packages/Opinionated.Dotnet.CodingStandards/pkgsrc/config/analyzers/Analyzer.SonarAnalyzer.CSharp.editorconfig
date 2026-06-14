@@ -1669,7 +1669,7 @@ dotnet_diagnostic.S6617.severity = warning
 
 # S6618: "string.Create" should be used instead of "FormattableString"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6618.severity = none
+dotnet_diagnostic.S6618.severity = warning
 
 # S6640: Using unsafe code blocks is security-sensitive
 # Enabled: True, Severity: warning
