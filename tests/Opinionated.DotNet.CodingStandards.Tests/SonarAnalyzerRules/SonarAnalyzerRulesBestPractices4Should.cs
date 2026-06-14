@@ -78,4 +78,41 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6932").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6962", "Pool HTTP connections with HttpClientFactory — flags new HttpClient() created inside a public action method of an ASP.NET Core controller class (deriving from ControllerBase or Controller), where the instance is not stored for reuse (e.g. not a field initializer, not assigned to a static member, not in a constructor).",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6962/")]
+    public async Task WarnOnHttpClientInstantiationInControllerAction()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties:
+            [
+                ("NuGetAudit", "false"),
+                ("NoWarn", "NU1903;NU1902;CA1515;CA1822"),
+            ],
+            packageReferences:
+            [
+                (Name: "Microsoft.AspNetCore.Mvc", Version: "2.3.10"),
+            ]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.AspNetCore.Mvc;
+
+            namespace test
+            {
+                public class HomeController : ControllerBase
+                {
+                    public string Get()
+                    {
+                        using var client = new System.Net.Http.HttpClient();
+                        return client.GetStringAsync("https://example.com").Result;
+                    }
+                }
+
+                public static class Program { public static int Main() => 0; }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6962").ShouldBeTrue();
+    }
 }

@@ -1765,7 +1765,7 @@ dotnet_diagnostic.S6961.severity = warning
 
 # S6962: You should pool HTTP connections with HttpClientFactory
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6962.severity = none
+dotnet_diagnostic.S6962.severity = warning
 
 # S6964: Value type property used as input in a controller action should be nullable, required or annotated with the JsonRequiredAttribute to avoid under-posting.
 # Enabled: True, Severity: warning
