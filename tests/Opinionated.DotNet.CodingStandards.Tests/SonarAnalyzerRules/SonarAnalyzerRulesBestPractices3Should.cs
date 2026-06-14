@@ -503,4 +503,30 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S4220").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4428", "PartCreationPolicyAttribute should be used with ExportAttribute",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4428/")]
+    public async Task WarnOnPartCreationPolicyWithoutExport()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "System.ComponentModel.Composition", Version: "8.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using System.ComponentModel.Composition;
+
+            namespace test;
+
+            [PartCreationPolicy(CreationPolicy.Shared)]
+            public class MyComponent
+            {
+                public int Value => 42;
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S4428").ShouldBeTrue();
+    }
 }

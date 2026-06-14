@@ -1421,7 +1421,7 @@ dotnet_diagnostic.S4426.severity = warning
 
 # S4428: "PartCreationPolicyAttribute" should be used with "ExportAttribute"
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S4428.severity = none
+dotnet_diagnostic.S4428.severity = warning
 
 # S4433: LDAP connections should be authenticated
 # Enabled: True, Severity: warning
