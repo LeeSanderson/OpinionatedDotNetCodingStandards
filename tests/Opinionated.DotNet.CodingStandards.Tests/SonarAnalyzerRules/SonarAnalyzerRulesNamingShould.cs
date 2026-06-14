@@ -230,4 +230,30 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S4016").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4025", "Child class fields should not differ from parent class fields only by capitalization",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4025/")]
+    public async Task WarnOnChildFieldNameDifferingFromParentByCapitalizationOnly()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public class Parent
+            {
+                protected int value;
+            }
+
+            public class Child : Parent
+            {
+                private int Value; // name differs from Parent.value only by capitalization -> S4025
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4025").ShouldBeTrue();
+    }
 }
