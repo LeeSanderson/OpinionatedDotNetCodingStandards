@@ -295,4 +295,26 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S4261").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6669", "Logger field or property name should comply with a naming convention",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6669/")]
+    public async Task WarnOnNoncompliantLoggerFieldName()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public class Service
+            {
+                private readonly ILogger myLogger; // Noncompliant: not in allowed set (log/_log/Log/_Log/logger/Logger/_logger/_Logger)
+                public Service(ILogger myLogger) { this.myLogger = myLogger; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6669").ShouldBeTrue();
+    }
 }

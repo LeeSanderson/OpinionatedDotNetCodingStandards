@@ -1689,7 +1689,7 @@ dotnet_diagnostic.S6668.severity = warning
 
 # S6669: Logger field or property name should comply with a naming convention
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S6669.severity = none
+dotnet_diagnostic.S6669.severity = warning
 
 # S6670: "Trace.Write" and "Trace.WriteLine" should not be used
 # Enabled: True, Severity: warning
