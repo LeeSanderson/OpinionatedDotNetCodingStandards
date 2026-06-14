@@ -334,4 +334,37 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S3937").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4005", "System.Uri arguments should be used instead of strings",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4005/")]
+    public async Task WarnOnStringUriArgumentWhenUriOverloadExists()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            using System;
+
+            public class MyClient
+            {
+                public void Download(string url) { }
+                public void Download(Uri url) { }
+            }
+
+            public class Caller
+            {
+                public static void Run()
+                {
+                    var client = new MyClient();
+                    client.Download("http://example.com");
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4005").ShouldBeTrue();
+    }
 }
