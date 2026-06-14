@@ -1217,7 +1217,7 @@ dotnet_diagnostic.S3998.severity = none
 
 # S4000: Pointers to unmanaged memory should not be visible
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4000.severity = none
+dotnet_diagnostic.S4000.severity = warning
 
 # S4002: Disposable types should declare finalizers
 # Enabled: False, Severity: warning
