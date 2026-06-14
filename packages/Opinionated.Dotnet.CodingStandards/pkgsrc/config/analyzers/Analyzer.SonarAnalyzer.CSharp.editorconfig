@@ -1389,7 +1389,7 @@ dotnet_diagnostic.S4220.severity = warning
 
 # S4225: Extension methods should not extend "object"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4225.severity = none
+dotnet_diagnostic.S4225.severity = warning
 
 # S4226: Extensions should be in separate namespaces
 # Enabled: False, Severity: warning

@@ -348,4 +348,25 @@ public class SonarAnalyzerRulesDesign2Should(PackageFixture fixture, ITestOutput
 
         buildOutput.HasError("S4200").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4225", "Extension methods should not extend \"object\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4225/")]
+    public async Task ProhibitExtensionMethodsOnObject()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public static class ObjectExtensions
+            {
+                public static string Describe(this object obj) => obj.GetType().Name;
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4225").ShouldBeTrue();
+    }
 }
