@@ -873,4 +873,39 @@ public class SonarAnalyzerRulesBestPractices3Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S6605").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6609", "Min/Max properties of Set types should be used instead of the Enumerable extension methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6609/")]
+    public async Task WarnOnEnumerableMinMaxOnSetTypes()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Generic;
+            using System.Linq;
+
+            namespace test;
+
+            public static class SetMinMaxUsage
+            {
+                public static int GetMin()
+                {
+                    var set = new SortedSet<int> { 3, 1, 4, 1, 5, 9 };
+                    return set.Min(); // S6609: should use set.Min property, not Enumerable.Min()
+                }
+
+                public static int GetMax()
+                {
+                    var set = new SortedSet<int> { 3, 1, 4, 1, 5, 9 };
+                    return set.Max(); // S6609: should use set.Max property, not Enumerable.Max()
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6609").ShouldBeTrue();
+    }
 }
