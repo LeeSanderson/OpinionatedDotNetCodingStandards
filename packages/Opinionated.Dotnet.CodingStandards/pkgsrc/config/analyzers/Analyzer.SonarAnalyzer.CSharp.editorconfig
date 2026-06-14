@@ -1725,7 +1725,7 @@ dotnet_diagnostic.S6797.severity = warning
 
 # S6798: [JSInvokable] attribute should only be used on public methods
 # Enabled: True, Severity: warning
-dotnet_diagnostic.S6798.severity = none
+dotnet_diagnostic.S6798.severity = warning
 
 # S6800: Component parameter type should match the route parameter type constraint
 # Enabled: True, Severity: warning
