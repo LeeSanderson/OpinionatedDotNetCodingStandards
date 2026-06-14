@@ -207,4 +207,27 @@ public class SonarAnalyzerRulesNamingShould(PackageFixture fixture, ITestOutputH
 
         buildOutput.HasError("S3872").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S4016", "Enumeration members should not be named \"Reserved\"",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4016/")]
+    public async Task WarnOnReservedEnumMemberName()
+    {
+        using var project = await CreateProjectBuilder();
+        await project.AddFile("Program.cs", """
+            namespace test;
+
+            public enum Status
+            {
+                Active = 0,
+                Reserved = 1,
+            }
+
+            public static class Program { public static int Main() => 0; }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutput();
+
+        buildOutput.HasError("S4016").ShouldBeTrue();
+    }
 }

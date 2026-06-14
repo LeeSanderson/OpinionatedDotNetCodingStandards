@@ -1237,7 +1237,7 @@ dotnet_diagnostic.S4015.severity = warning
 
 # S4016: Enumeration members should not be named "Reserved"
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S4016.severity = none
+dotnet_diagnostic.S4016.severity = warning
 
 # S4017: Method signatures should not contain nested generic types
 # Enabled: False, Severity: warning
