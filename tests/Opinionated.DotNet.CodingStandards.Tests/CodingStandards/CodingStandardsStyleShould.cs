@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
 using Xunit.Abstractions;
@@ -9,10 +11,10 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
     [Fact]
-    public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIDE()
+    public async Task IgnoreNameCanBeSimplifiedAsOnlyTreatedAsErrorsInIde()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -23,7 +25,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0003").ShouldBeFalse();
     }
@@ -35,9 +37,9 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     {
         // NoWarn targets RS0030 only — CA1866 (a different rule) must still fire,
         // proving the override is scoped and the ruleset remains layerable
-        using var project = await CreateProjectBuilder(properties: [(Name: "NoWarn", Value: "RS0030")]);
-        await project.AddFile("Program.cs", "_ = System.DateTime.Now;\r\n_ = \"hello\".IndexOf(\"h\");\r\n");
-        var buildOutput = await project.BuildAndGetOutput();
+        using var project = await CreateProjectBuilderAsync(properties: [(Name: "NoWarn", Value: "RS0030")]);
+        await project.AddFileAsync("Program.cs", "_ = System.DateTime.Now;\r\n_ = \"hello\".IndexOf(\"h\");\r\n");
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("RS0030").ShouldBeFalse();
         buildOutput.HasError("CA1866").ShouldBeTrue();
@@ -48,8 +50,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0004")]
     public async Task RequireRemovalOfUnnecessaryCast()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -62,7 +64,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0004").ShouldBeTrue();
     }
@@ -72,8 +74,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0005")]
     public async Task RequireRemovalOfUnnecessaryUsings()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -83,7 +85,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0005").ShouldBeTrue();
     }
@@ -93,8 +95,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0007")]
     public async Task RequireVarInsteadOfExplicitType()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -107,7 +109,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0007").ShouldBeTrue();
     }
@@ -117,8 +119,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0010")]
     public async Task RequireAllSwitchCasesToBeCovered()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -138,7 +140,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0010").ShouldBeTrue();
     }
@@ -148,8 +150,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0011")]
     public async Task RequireBracesForControlFlow()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -163,7 +165,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0011").ShouldBeTrue();
     }
@@ -173,8 +175,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0017")]
     public async Task RequireObjectInitializerSyntax()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -189,7 +191,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0017").ShouldBeTrue();
     }
@@ -199,8 +201,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0018")]
     public async Task RequireInlineVariableDeclaration()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -215,7 +217,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0018").ShouldBeTrue();
     }
@@ -225,8 +227,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0019")]
     public async Task RequirePatternMatchingForAsNullCheck()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -242,7 +244,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0019").ShouldBeTrue();
     }
@@ -252,8 +254,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0020")]
     public async Task RequirePatternMatchingForIsCheck()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -271,7 +273,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0020").ShouldBeTrue();
     }
@@ -281,8 +283,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0028")]
     public async Task RequireCollectionInitializerSyntax()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -297,7 +299,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0028").ShouldBeTrue();
     }
@@ -307,8 +309,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0029")]
     public async Task RequireCoalesceExpression()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -321,7 +323,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0029").ShouldBeTrue();
     }
@@ -331,8 +333,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0033")]
     public async Task RequireExplicitlyProvidedTupleName()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -345,7 +347,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0033").ShouldBeTrue();
     }
@@ -355,8 +357,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0034")]
     public async Task RequireSimplifiedDefaultExpression()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -369,7 +371,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0034").ShouldBeTrue();
     }
@@ -379,8 +381,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0036")]
     public async Task RequireCorrectModifierOrder()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -389,7 +391,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 static public int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0036").ShouldBeTrue();
     }
@@ -399,8 +401,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0039")]
     public async Task RequireLocalFunctionOverLambda()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -413,7 +415,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0039").ShouldBeTrue();
     }
@@ -423,8 +425,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0040")]
     public async Task RequireAccessibilityModifiers()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -434,7 +436,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0040").ShouldBeTrue();
     }
@@ -444,8 +446,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0043")]
     public async Task RejectInvalidFormatString()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -458,7 +460,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0043").ShouldBeTrue();
     }
@@ -468,8 +470,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0044")]
     public async Task RequireReadonlyModifierOnFields()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -480,7 +482,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0044").ShouldBeTrue();
     }
@@ -490,8 +492,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0045")]
     public async Task RequireConditionalExpressionForAssignment()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -513,7 +515,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0045").ShouldBeTrue();
     }
@@ -523,8 +525,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0046")]
     public async Task RequireConditionalExpressionForReturn()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -544,7 +546,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0046").ShouldBeTrue();
     }
@@ -554,8 +556,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0051")]
     public async Task RequireUnusedPrivateMembersToBeRemoved()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -567,7 +569,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0051").ShouldBeTrue();
     }
@@ -577,8 +579,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0052")]
     public async Task RequireUnreadPrivateMembersToBeRemoved()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -596,7 +598,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0052").ShouldBeTrue();
     }
@@ -606,8 +608,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0054")]
     public async Task RequireCompoundAssignment()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -621,7 +623,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0054").ShouldBeTrue();
     }
@@ -631,8 +633,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0055")]
     public async Task RequireProperFormatting()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -641,7 +643,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0055").ShouldBeTrue();
     }
@@ -651,8 +653,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0056")]
     public async Task RequireIndexOperator()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -665,7 +667,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0056").ShouldBeTrue();
     }
@@ -675,8 +677,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0057")]
     public async Task RequireRangeOperator()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -689,7 +691,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0057").ShouldBeTrue();
     }
@@ -699,8 +701,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0059")]
     public async Task RequireRemovalOfUnnecessaryValueAssignment()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -714,7 +716,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0059").ShouldBeTrue();
     }
@@ -724,8 +726,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0060")]
     public async Task RequireUnusedParametersToBeRemoved()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -741,7 +743,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0060").ShouldBeTrue();
     }
@@ -751,8 +753,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0062")]
     public async Task RequireStaticLocalFunctions()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -765,7 +767,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0062").ShouldBeTrue();
     }
@@ -775,8 +777,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0065")]
     public async Task RequireUsingDirectivesOutsideNamespace()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test
@@ -788,7 +790,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0065").ShouldBeTrue();
     }
@@ -798,8 +800,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0066")]
     public async Task RequireSwitchExpression()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -818,7 +820,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0066").ShouldBeTrue();
     }
@@ -830,8 +832,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     {
         // IDE0030's analyzer (AbstractUseCoalesceExpressionForNullableTernaryConditionalCheckDiagnosticAnalyzer)
         // fires only on the exact shape "!x.HasValue ? y : x.Value" for a Nullable<T>, NOT on a "x != null" comparison.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -841,7 +843,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0030").ShouldBeTrue();
     }
@@ -851,13 +853,13 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0031")]
     public async Task UseNullPropagation()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
         // Non-null branch must be a property/field access on a reference-typed nullable
         // receiver: the analyzer explicitly bails when the accessed member is a method
         // symbol (`x == null ? x : x.M` cannot become `x?.M`), so a method-call branch
         // never fires IDE0031. A property access (node.Value) is convertible to node?.Value
         // and triggers "Null check can be simplified".
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -871,7 +873,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0031").ShouldBeTrue();
     }
@@ -882,8 +884,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         Untestable = "EnforceOnBuild.Never: IDE0049's analyzer (PreferFrameworkTypeDiagnosticAnalyzerBase, src/Features/Core/Portable/PreferFrameworkType/PreferFrameworkTypeDiagnosticAnalyzerBase.cs) builds its descriptor with EnforceOnBuildValues.PreferBuiltInOrFrameworkType, which EnforceOnBuildValues.cs defines as EnforceOnBuild.Never (public const EnforceOnBuild PreferBuiltInOrFrameworkType = /*IDE0049*/ EnforceOnBuild.Never;). EnforceOnBuild.cs documents Never as 'an IDE-only diagnostic that cannot be enforced on build', and AbstractBuiltInCodeStyleDiagnosticAnalyzer_Core.CreateDescriptorWithId stamps the descriptor with the EnforceOnBuild_Never custom tag (DiagnosticCustomTags.Create). Consequently the command-line/build (csc) host never reports IDE0049 regardless of editorconfig severity. Empirically confirmed: building a project referencing the packed package with the System.String violation present, IDE0055 silenced, and IDE0049 escalated via both dotnet_diagnostic.IDE0049.severity=error and dotnet_style_predefined_type_for_locals_parameters_members/_member_access=true:error, yields an EMPTY SARIF (build succeeds) while sibling rules (IDE0161, IDE0007, CA2211) fire in the same build. The prior 'formatter-backed/emits IDE0055' explanation was incorrect; IDE0049 emits nothing at build. Corroborated by dotnet/roslyn issues #50173 and #77120.")]
     public async Task UseLanguageKeywordsInsteadOfFrameworkTypeNames()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -893,7 +895,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0049").ShouldBeTrue();
     }
@@ -903,12 +905,12 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0070")]
     public async Task UseSystemHashCodeInsteadOfManualHashCodeAccumulator()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
 
         // IDE0070 fires only on the VS-generated multi-statement accumulator GetHashCode
         // (HashCodeAnalyzer requires an IBlockOperation body with statements.Length >= 3),
         // NOT on an expression-bodied `=> X ^ Y`. It is severity=suggestion so it surfaces as a SARIF note.
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -935,7 +937,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0070").ShouldBeTrue();
     }
@@ -945,8 +947,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0074")]
     public async Task UseNullCoalescingCompoundAssignment()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -964,7 +966,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0074").ShouldBeTrue();
     }
@@ -975,8 +977,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         Untestable = "IDE0079 is an IDE-only analyzer that structurally cannot fire during `dotnet build`. Its descriptor is created with EnforceOnBuildValues.RemoveUnnecessaryPragmaSuppression = EnforceOnBuild.Never (commented \"IDE-only analyzer\" in src/Analyzers/Core/Analyzers/EnforceOnBuildValues.cs), and its analyzer (AbstractRemoveUnnecessaryInlineSuppressionsDiagnosticAnalyzer : IPragmaSuppressionsAnalyzer, src/Analyzers/Core/Analyzers/RemoveUnnecessarySuppressions/AbstractRemoveUnnecessaryPragmaSuppressionsDiagnosticAnalyzer.cs) overrides InitializeWorker with an EMPTY body (\"We do not register any normal analyzer actions as we need 'CompilationWithAnalyzers' context... Instead, the analyzer defines a special 'AnalyzeAsync' method that should be invoked by the host\"). That special AnalyzeAsync also bails immediately unless Compilation.Options.ReportSuppressedDiagnostics is true. The command-line/MSBuild analyzer driver never calls AnalyzeAsync, so no diagnostic is ever produced at build. Empirically confirmed in a harness-replica project: an unnecessary [SuppressMessage] produced only an unrelated IDE0055 formatting error, and with `dotnet_diagnostic.IDE0055.severity = none` the build emitted zero diagnostics (IDE0079 absent at note/warning/error). Source: dotnet/roslyn EnforceOnBuildValues.cs and AbstractRemoveUnnecessaryPragmaSuppressionsDiagnosticAnalyzer.cs (main).")]
     public async Task RemoveUnnecessarySuppression()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -987,7 +989,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0079").ShouldBeTrue();
     }
@@ -997,8 +999,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0080")]
     public async Task RemoveUnnecessaryNullForgivingOperator()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1011,7 +1013,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0080").ShouldBeTrue();
     }
@@ -1021,8 +1023,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0110")]
     public async Task RemoveUnnecessaryDiscardPattern()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1034,7 +1036,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0110").ShouldBeTrue();
     }
@@ -1044,10 +1046,10 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0260")]
     public async Task UsePatternMatchingOverAsWithMemberAccess()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
         // IDE0260 fires on `(expr as T)?.Member == constant` (as-cast + null-conditional
         // member access compared to a non-null constant), convertible to `expr is T { Member: constant }`.
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1057,7 +1059,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0260").ShouldBeTrue();
     }
@@ -1069,8 +1071,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     {
         // IDE0280 fires on a string-literal parameter name inside a nullable-analysis attribute
         // (here NotNullIfNotNull) when a parameter of that name is in scope - the fix is nameof(input).
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Diagnostics.CodeAnalysis;
@@ -1082,7 +1084,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0280").ShouldBeTrue();
     }
@@ -1098,10 +1100,10 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         // receivers), and the explicit-typed result local gives the analyzer a collection-expression
         // target (a 'var' result does not fire). The explicit type trips IDE0007 'use var', so that
         // companion rule is suppressed via NoWarn to isolate IDE0304.
-        using var project = await CreateProjectBuilder(properties: [
+        using var project = await CreateProjectBuilderAsync(properties: [
             (Name: "NoWarn", Value: "IDE0007;IDE0008"),
         ]);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Immutable;
@@ -1120,7 +1122,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0304").ShouldBeTrue();
     }
@@ -1134,8 +1136,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         // (dotnet_naming_style.camel_case_underscore_prefix.required_prefix = _). A private
         // field with no underscore prefix triggers IDE1006 ("Missing prefix: '_'"), which is
         // build-enforced (EnforceOnBuild.Recommended) at warning severity -> SARIF error.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1145,7 +1147,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE1006").ShouldBeTrue();
     }
@@ -1157,8 +1159,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
     {
         // The inner if-block's '}' and the method's '}' are two consecutive
         // closing braces separated by a blank line — the exact shape IDE2002 reports.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1174,7 +1176,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2002").ShouldBeTrue();
     }
@@ -1184,12 +1186,12 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2005")]
     public async Task ProhibitBlankLineAfterConditionalExpressionToken()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
         // IDE2005 fires only when BOTH the '?' and ':' conditional-expression tokens sit at
         // the end of their line (the analyzer's IsOk guard returns early if either token is
         // followed inline by the next token). Splitting both tokens onto their own lines makes
         // IsOk(QuestionToken) and IsOk(ColonToken) both false, so the diagnostic is reported.
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1203,7 +1205,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                     0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2005").ShouldBeTrue();
     }
@@ -1213,22 +1215,21 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2006")]
     public async Task ProhibitBlankLineAfterArrowExpressionClauseToken()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
 
         // IDE2006's analyzer (ArrowExpressionClausePlacementDiagnosticAnalyzer) returns early
-        // when AllowBlankLineAfterTokenInArrowExpressionClause is true:
-        //   if (option.Value || ShouldSkipAnalysis(...)) return;
-        // The package's CodeStyle.editorconfig ships that option as true (a global_level=-1
-        // config), so by default only IDE0055 fires. A local [*.cs] .editorconfig overrides the
-        // option back to false (file-scoped config wins over the package's global config), which
-        // re-enables IDE2006 so the blank line after => is reported.
-        await project.AddFile(
+        // when AllowBlankLineAfterTokenInArrowExpressionClause is true. The package's
+        // CodeStyle.editorconfig ships that option as true (a global_level=-1 config), so by
+        // default only IDE0055 fires. A local editorconfig overrides the option back to false
+        // (file-scoped config wins over the package's global config), which re-enables IDE2006
+        // so the blank line after the arrow expression is reported.
+        await project.AddFileAsync(
             ".editorconfig",
             """
             [*.cs]
             csharp_style_allow_blank_line_after_token_in_arrow_expression_clause_experimental = false
             """);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1239,7 +1240,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                     0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2006").ShouldBeTrue();
     }
@@ -1263,8 +1264,8 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
         // Analyzer.Microsoft.CodeAnalysis.CSharp.CodeStyle.editorconfig line 276), so at build
         // it surfaces in SARIF at level "note" -- asserted with HasNote, matching the dozens of
         // other suggestion-severity rules in this suite (IDE0066, IDE0250, the MA family, etc.).
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -1286,7 +1287,7 @@ public class CodingStandardsStyleShould(PackageFixture fixture, ITestOutputHelpe
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0064").ShouldBeTrue();
     }

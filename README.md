@@ -1,18 +1,23 @@
 # Opinionated.DotNet.CodingStandards
 
-A NuGet development-dependency package that bundles four Roslyn analyzer packages
+A NuGet development-dependency package that bundles five Roslyn analyzer packages
 together with a curated set of editorconfig rules, MSBuild props, and targets so
 every project that references it gets consistent code-quality enforcement out of the
 box.
 
 **Bundled analyzers**
 
-| Package | Purpose |
-|---------|---------|
-| [Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer) | Best-practice and correctness rules |
-| [Microsoft.CodeAnalysis.BannedApiAnalyzers](https://github.com/dotnet/roslyn-analyzers) | Banned-API enforcement |
-| [Microsoft.CodeAnalysis.NetAnalyzers](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/overview) | .NET platform quality rules |
-| [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) | Style and naming conventions |
+| Package | Purpose | License |
+|---------|---------|---------|
+| [Meziantou.Analyzer](https://github.com/meziantou/Meziantou.Analyzer) | Best-practice and correctness rules | MIT |
+| [Microsoft.CodeAnalysis.BannedApiAnalyzers](https://github.com/dotnet/roslyn-analyzers) | Banned-API enforcement | MIT |
+| [Microsoft.CodeAnalysis.NetAnalyzers](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/overview) | .NET platform quality rules | MIT |
+| [SonarAnalyzer.CSharp](https://github.com/SonarSource/sonar-dotnet) | Complexity metrics and maintainability rules | LGPL-3.0 |
+| [StyleCop.Analyzers](https://github.com/DotNetAnalyzers/StyleCopAnalyzers) | Style and naming conventions | MIT |
+
+> **License note:** `SonarAnalyzer.CSharp` is licensed under LGPL-3.0. It runs at build
+> time only and is not linked into or redistributed with your shipped binaries. The
+> package's own license remains MIT.
 
 See [`docs/rule-reference.md`](docs/rule-reference.md) for the full list of enforced
 rules and their severities.

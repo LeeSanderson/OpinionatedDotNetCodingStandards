@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 namespace Opinionated.DotNet.CodingStandards.Tests.Helpers;
 
 internal static class PathHelpers

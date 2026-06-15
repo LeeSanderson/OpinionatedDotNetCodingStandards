@@ -1,4 +1,9 @@
 <Project>
 	<!-- Dogfood the coding standards in all projects in this solution -->
 	<Import Project="packages\Opinionated.DotNet.CodingStandards\pkgsrc\build\Opinionated.DotNet.CodingStandards.props"/>
+
+	<!-- Configure S1451 header format for SonarAnalyzer -->
+	<ItemGroup>
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)SonarLint.xml" />
+	</ItemGroup>
 </Project>

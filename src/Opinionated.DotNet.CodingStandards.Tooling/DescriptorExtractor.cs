@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Diagnostics;
@@ -21,7 +23,15 @@ public static class DescriptorExtractor
             {
                 loader.LoadFromPath(path);
             }
-            catch
+            catch (BadImageFormatException)
+            {
+                // Best-effort; dependency may not need all DLLs
+            }
+            catch (FileLoadException)
+            {
+                // Best-effort; dependency may not need all DLLs
+            }
+            catch (IOException)
             {
                 // Best-effort; dependency may not need all DLLs
             }
@@ -29,36 +39,61 @@ public static class DescriptorExtractor
 
         foreach (var dllPath in paths)
         {
-            var reference = new AnalyzerFileReference(dllPath, loader);
-            reference.AnalyzerLoadFailed += (_, _) => { };
-
-            try
-            {
-                foreach (var analyzer in reference.GetAnalyzers(LanguageNames.CSharp))
-                {
-                    foreach (var diagnostic in analyzer.SupportedDiagnostics)
-                    {
-                        if (!seen.Add(diagnostic.Id))
-                        {
-                            continue;
-                        }
-
-                        descriptors.Add(new RuleDescriptor(
-                            diagnostic.Id,
-                            diagnostic.Title.ToString(),
-                            diagnostic.HelpLinkUri ?? string.Empty,
-                            MapSeverity(diagnostic.DefaultSeverity),
-                            diagnostic.IsEnabledByDefault));
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                // Skip DLLs or analyzers that fail to load or instantiate
-            }
+            CollectFromDll(dllPath, loader, seen, descriptors);
         }
 
         return descriptors;
+    }
+
+    private static void CollectFromDll(
+        string dllPath,
+        IAnalyzerAssemblyLoader loader,
+        ISet<string> seen,
+        ICollection<RuleDescriptor> descriptors)
+    {
+        var reference = new AnalyzerFileReference(dllPath, loader);
+        reference.AnalyzerLoadFailed += (_, _) => { };
+
+        try
+        {
+            foreach (var analyzer in reference.GetAnalyzers(LanguageNames.CSharp))
+            {
+                CollectFromAnalyzer(analyzer, seen, descriptors);
+            }
+        }
+        catch (BadImageFormatException)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+        catch (ReflectionTypeLoadException)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+        catch (InvalidOperationException)
+        {
+            // Skip DLLs or analyzers that fail to load or instantiate
+        }
+    }
+
+    private static void CollectFromAnalyzer(
+        DiagnosticAnalyzer analyzer,
+        ISet<string> seen,
+        ICollection<RuleDescriptor> descriptors)
+    {
+        foreach (var diagnostic in analyzer.SupportedDiagnostics)
+        {
+            if (!seen.Add(diagnostic.Id))
+            {
+                continue;
+            }
+
+            descriptors.Add(new RuleDescriptor(
+                diagnostic.Id,
+                diagnostic.Title.ToString(),
+                diagnostic.HelpLinkUri ?? string.Empty,
+                MapSeverity(diagnostic.DefaultSeverity),
+                diagnostic.IsEnabledByDefault));
+        }
     }
 
     private static RuleDefaultSeverity MapSeverity(DiagnosticSeverity severity) => severity switch

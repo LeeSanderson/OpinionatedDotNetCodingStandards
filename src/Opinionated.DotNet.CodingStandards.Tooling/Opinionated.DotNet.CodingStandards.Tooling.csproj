@@ -3,6 +3,9 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <!-- S3885: Assembly.Load should be used — suppressed because this project intentionally
+         uses Assembly.LoadFrom for path-based analyzer assembly loading. -->
+    <NoWarn>$(NoWarn);S3885</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

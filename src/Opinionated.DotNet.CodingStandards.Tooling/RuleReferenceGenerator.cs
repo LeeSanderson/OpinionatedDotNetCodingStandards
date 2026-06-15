@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -6,7 +8,10 @@ namespace Opinionated.DotNet.CodingStandards.Tooling;
 
 public static class RuleReferenceGenerator
 {
-    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir, string? editorConfigPath = null)
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir)
+        => CollectActiveRules(analyzerDir, null);
+
+    public static IReadOnlySet<string> CollectActiveRules(string analyzerDir, string? editorConfigPath)
     {
         var result = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var file in Directory.GetFiles(analyzerDir, "*.editorconfig"))
@@ -38,7 +43,7 @@ public static class RuleReferenceGenerator
                 entries.Add(new RuleDocEntry(attr.RuleId, attr, IsClassLevel: true));
             }
 
-            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
             {
                 foreach (var attr in method.GetCustomAttributes<RuleDocAttribute>())
                 {
@@ -51,7 +56,11 @@ public static class RuleReferenceGenerator
     }
 
     public static ReconciliationResult Reconcile(
-        string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
+        string analyzerDir, Assembly testAssembly)
+        => Reconcile(analyzerDir, testAssembly, null);
+
+    public static ReconciliationResult Reconcile(
+        string analyzerDir, Assembly testAssembly, string? editorConfigPath)
     {
         var activeRules = CollectActiveRules(analyzerDir, editorConfigPath);
         var docEntries = CollectRuleDocEntries(testAssembly);
@@ -62,12 +71,9 @@ public static class RuleReferenceGenerator
         IReadOnlySet<string> activeRules,
         IReadOnlyList<RuleDocEntry> docEntries)
     {
-        var idCounts = new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-        foreach (var entry in docEntries)
-        {
-            idCounts.TryGetValue(entry.RuleId, out var n);
-            idCounts[entry.RuleId] = n + 1;
-        }
+        var idCounts = docEntries
+            .GroupBy(entry => entry.RuleId, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.Count(), StringComparer.OrdinalIgnoreCase);
 
         var duplicateIds = idCounts
             .Where(kvp => kvp.Value > 1)
@@ -112,7 +118,7 @@ public static class RuleReferenceGenerator
                 docs[attr.RuleId] = attr;
             }
 
-            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static))
+            foreach (var method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static))
             {
                 foreach (var attr in method.GetCustomAttributes<RuleDocAttribute>())
                 {
@@ -124,7 +130,10 @@ public static class RuleReferenceGenerator
         return docs;
     }
 
-    public static string Generate(string analyzerDir, Assembly testAssembly, string? editorConfigPath = null)
+    public static string Generate(string analyzerDir, Assembly testAssembly)
+        => Generate(analyzerDir, testAssembly, null);
+
+    public static string Generate(string analyzerDir, Assembly testAssembly, string? editorConfigPath)
     {
         var ruleDocs = CollectRuleDocs(testAssembly);
         var files = Directory.GetFiles(analyzerDir, "*.editorconfig").OrderBy(Path.GetFileName).ToArray();
@@ -187,7 +196,7 @@ public static class RuleReferenceGenerator
     private static void AppendRuleRow(
         StringBuilder sb,
         (string Id, string Description, string Severity, string HelpLink) rule,
-        Dictionary<string, RuleDocAttribute> ruleDocs)
+        IDictionary<string, RuleDocAttribute> ruleDocs)
     {
         ruleDocs.TryGetValue(rule.Id, out var doc);
         var description = doc?.Description ?? "";
@@ -223,15 +232,9 @@ public static class RuleReferenceGenerator
             var description = "";
             var helpLink = "";
 
-            for (var j = i - 1; j >= 0; j--)
+            for (var j = i - 1; j >= 0 && lines[j].StartsWith('#'); j--)
             {
-                var commentLine = lines[j];
-                if (!commentLine.StartsWith('#'))
-                {
-                    break;
-                }
-
-                var text = commentLine.TrimStart('#').Trim();
+                var text = lines[j].TrimStart('#').Trim();
 
                 if (text.StartsWith($"{id}:", StringComparison.Ordinal))
                 {
@@ -240,6 +243,10 @@ public static class RuleReferenceGenerator
                 else if (text.StartsWith("Help link:", StringComparison.Ordinal))
                 {
                     helpLink = text["Help link:".Length..].Trim();
+                }
+                else
+                {
+                    // Other comment lines (e.g. "Enabled:" metadata) are not extracted
                 }
             }
 

@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
 using Xunit.Abstractions;
@@ -11,11 +13,11 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
     [Fact]
     public async Task AllowWarningsAsErrorsToBeDisabled()
     {
-        using var project = await CreateProjectBuilder(properties: [
+        using var project = await CreateProjectBuilderAsync(properties: [
             (Name: "TreatWarningsAsErrors", Value: "false"),
             (Name: "MSBuildTreatWarningsAsErrors", Value: "false"),
         ]);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test
@@ -26,7 +28,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         // Convert to file-scoped namespace should now be a warning instead of an error
         buildOutput.HasWarning("IDE0161").ShouldBeTrue();
@@ -37,8 +39,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0071")]
     public async Task RequireSimplifiedInterpolation()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -52,7 +54,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0071").ShouldBeTrue();
     }
@@ -62,8 +64,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0076")]
     public async Task RejectInvalidGlobalSuppressMessageAttribute()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Diagnostics.CodeAnalysis;
@@ -74,7 +76,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0076").ShouldBeTrue();
     }
@@ -84,8 +86,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0078")]
     public async Task RequireOrPattern()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -102,7 +104,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0078").ShouldBeTrue();
     }
@@ -112,8 +114,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0082")]
     public async Task RequireNameofOverTypeof()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -123,7 +125,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0082").ShouldBeTrue();
     }
@@ -133,8 +135,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0083")]
     public async Task RequireNotPattern()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -151,7 +153,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0083").ShouldBeTrue();
     }
@@ -161,8 +163,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0100")]
     public async Task RequireRemovalOfRedundantEquality()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -175,7 +177,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0100").ShouldBeTrue();
     }
@@ -185,14 +187,14 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0130")]
     public async Task RequireNamespaceToMatchFolderStructure()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Services/Service.cs",
             """
             namespace test;
             public static class Service { }
             """);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -201,7 +203,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0130").ShouldBeTrue();
     }
@@ -211,8 +213,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0161")]
     public async Task RequireFileScopedNamespaces()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test
@@ -223,7 +225,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0161").ShouldBeTrue(); // Convert to file-scoped namespace
     }
@@ -233,8 +235,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0170")]
     public async Task RequireSimplifiedPropertyPattern()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -251,7 +253,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE0170").ShouldBeTrue();
     }
@@ -261,8 +263,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0180")]
     public async Task RequireTupleSwap()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -279,7 +281,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0180").ShouldBeTrue();
     }
@@ -289,8 +291,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0200")]
     public async Task RequireMethodGroupConversion()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -304,7 +306,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0200").ShouldBeTrue();
     }
@@ -314,8 +316,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0230")]
     public async Task RequireUtf8StringLiteral()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -328,7 +330,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0230").ShouldBeTrue();
     }
@@ -338,8 +340,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0240")]
     public async Task RequireRemovalOfRedundantNullableDirective()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             #nullable enable
@@ -349,7 +351,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0240").ShouldBeTrue();
     }
@@ -359,8 +361,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0241")]
     public async Task RejectUnnecessaryNullableRestore()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs",
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs",
             """
             namespace test;
             #nullable disable
@@ -370,7 +372,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
             }
             #nullable restore
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0241").ShouldBeTrue();
     }
@@ -380,8 +382,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0250")]
     public async Task RequireReadonlyStruct()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -395,7 +397,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0250").ShouldBeTrue();
     }
@@ -405,8 +407,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0270")]
     public async Task RejectNullCheckThrowWhenCoalesceThrowApplies()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile("Program.cs",
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs",
             """
             namespace test;
             public static class Program
@@ -424,7 +426,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0270").ShouldBeTrue();
     }
@@ -434,8 +436,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0300")]
     public async Task RequireCollectionExpressionForArray()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -448,7 +450,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0300").ShouldBeTrue();
     }
@@ -458,8 +460,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0301")]
     public async Task RequireCollectionExpressionForList()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -472,7 +474,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0301").ShouldBeTrue();
     }
@@ -482,8 +484,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0302")]
     public async Task RequireCollectionExpressionForStackAlloc()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -503,7 +505,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => Sum();
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0302").ShouldBeTrue();
     }
@@ -513,8 +515,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0303")]
     public async Task RequireCollectionExpressionForImmutableArrayCreate()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -527,7 +529,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0303").ShouldBeTrue();
     }
@@ -537,8 +539,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0305")]
     public async Task RequireCollectionExpressionForFluentCreation()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -551,7 +553,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0305").ShouldBeTrue();
     }
@@ -561,8 +563,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0330")]
     public async Task RequireSystemThreadingLock()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -578,7 +580,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE0330").ShouldBeTrue();
     }
@@ -588,8 +590,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide1005")]
     public async Task RequireSimplifiedDelegateInvocation()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -603,7 +605,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE1005").ShouldBeTrue();
     }
@@ -613,8 +615,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2000")]
     public async Task RejectMultipleBlankLines()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -629,7 +631,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("IDE2000").ShouldBeTrue();
     }
@@ -639,8 +641,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2001")]
     public async Task RequireEmbeddedStatementsOnOwnLine()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -649,7 +651,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() { if (true) { return 1; } return 0; }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2001").ShouldBeTrue();
     }
@@ -659,8 +661,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2003")]
     public async Task RequireBlankLineAfterBlock()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -676,7 +678,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2003").ShouldBeTrue();
     }
@@ -686,8 +688,8 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide2004")]
     public async Task RequireNoBlankLineAfterConstructorColon()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -706,7 +708,7 @@ public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutp
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("IDE2004").ShouldBeTrue();
     }

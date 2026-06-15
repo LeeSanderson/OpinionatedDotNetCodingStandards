@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Text.Json.Serialization;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.Helpers;

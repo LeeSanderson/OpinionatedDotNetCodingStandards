@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -61,7 +63,7 @@ public static class EditorConfigMergeGenerator
 
     private static (string Header, Dictionary<string, ParsedRuleBlock> Blocks) ParseExistingFile(string text)
     {
-        var lines = text.ReplaceLineEndings("\n").TrimEnd('\n').Split('\n').ToList();
+        var lines = text.TrimEnd().Split('\n').Select(x => x.TrimEnd('\r')).ToList();
         var severityPattern = new Regex(@"^dotnet_diagnostic\.(.+?)\.severity\s*=\s*(\S+)$");
         var blocks = new Dictionary<string, ParsedRuleBlock>(StringComparer.OrdinalIgnoreCase);
         int? firstBlockStart = null;
@@ -108,5 +110,5 @@ public static class EditorConfigMergeGenerator
         _ => "silent",
     };
 
-    private record ParsedRuleBlock(string Id, string CuratedSeverity, List<string> RawLines);
+    private sealed record ParsedRuleBlock(string Id, string CuratedSeverity, List<string> RawLines);
 }

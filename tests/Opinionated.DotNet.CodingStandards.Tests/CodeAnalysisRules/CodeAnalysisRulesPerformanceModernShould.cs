@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
 using Xunit.Abstractions;
@@ -13,8 +15,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1841")]
     public async Task RequireDictionaryContainsMethods()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -30,7 +32,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1841").ShouldBeTrue();
     }
@@ -40,8 +42,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1844")]
     public async Task RequireMemoryBasedStreamAsyncOverrides()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.IO;
@@ -65,7 +67,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
             }
             public static class Program { public static int Main() => 0; }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1844").ShouldBeTrue();
     }
@@ -75,8 +77,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1847")]
     public async Task RequireCharLiteralForLookup()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -90,7 +92,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1847").ShouldBeTrue();
     }
@@ -100,8 +102,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1849")]
     public async Task RequireAsyncMethodsInAsyncContext()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Threading;
@@ -117,7 +119,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1849").ShouldBeTrue();
     }
@@ -127,8 +129,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1850")]
     public async Task RequireStaticHashDataMethod()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Security.Cryptography;
@@ -144,7 +146,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1850").ShouldBeTrue();
     }
@@ -154,8 +156,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1851")]
     public async Task ProhibitMultipleEnumerationsOfIEnumerable()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -172,7 +174,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1851").ShouldBeTrue();
     }
@@ -182,8 +184,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1854")]
     public async Task RequireTryGetValue()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -200,7 +202,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1854").ShouldBeTrue();
     }
@@ -210,8 +212,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1855")]
     public async Task PreferClearOverFillDefault()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -226,7 +228,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1855").ShouldBeTrue();
     }
@@ -236,8 +238,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1856")]
     public async Task ProhibitIncorrectConstantExpectedUsage()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Diagnostics.CodeAnalysis;
@@ -248,7 +250,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => Method(7);
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1856").ShouldBeTrue();
     }
@@ -258,8 +260,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1857")]
     public async Task RequireConstantForConstantExpectedParameter()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Diagnostics.CodeAnalysis;
@@ -274,7 +276,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => Helper.Double(_multiplier);
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1857").ShouldBeTrue();
     }
@@ -284,8 +286,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1858")]
     public async Task RequireStartsWithInsteadOfIndexOfEqualsZero()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -299,7 +301,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1858").ShouldBeTrue();
     }
@@ -309,8 +311,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1861")]
     public async Task RequireAvoidConstantArrays()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -323,7 +325,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1861").ShouldBeTrue();
     }
@@ -333,8 +335,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1862")]
     public async Task RequireStringComparisonForCaseInsensitive()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -347,7 +349,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1862").ShouldBeTrue();
     }
@@ -357,8 +359,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1864")]
     public async Task RequireTryAddInsteadOfContainsKeyAndAdd()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -374,7 +376,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1864").ShouldBeTrue();
     }
@@ -384,8 +386,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1865")]
     public async Task RequireCharOverloadForStartsWith()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -399,7 +401,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1865").ShouldBeTrue();
     }
@@ -409,8 +411,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1868")]
     public async Task ProhibitUnnecessaryContainsBeforeSetAdd()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Collections.Generic;
@@ -426,7 +428,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1868").ShouldBeTrue();
     }
@@ -436,8 +438,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1869")]
     public async Task RequireCachedJsonSerializerOptions()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Text.Json;
@@ -451,7 +453,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1869").ShouldBeTrue();
     }
@@ -461,8 +463,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1871")]
     public async Task ProhibitNullableStructThrowIfNull()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -475,7 +477,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1871").ShouldBeTrue();
     }
@@ -485,8 +487,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1872")]
     public async Task RequireConvertToHexStringOverBitConverter()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -500,7 +502,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1872").ShouldBeTrue();
     }
@@ -510,8 +512,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874")]
     public async Task RequireRegexIsMatchInsteadOfMatchesCount()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Text.RegularExpressions;
@@ -525,7 +527,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1874").ShouldBeTrue();
     }
@@ -535,8 +537,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875")]
     public async Task RequireRegexCountInsteadOfMatchesCount()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System.Text.RegularExpressions;
@@ -550,7 +552,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1875").ShouldBeTrue();
     }
@@ -571,10 +573,10 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // operation (a method invocation here), not wrapped in an ILogger.IsEnabled check. CA1848
         // (use LoggerMessage delegates) is an orthogonal rule that fires on the same call, so it is
         // suppressed via NoWarn.
-        using var project = await CreateProjectBuilder(
+        using var project = await CreateProjectBuilderAsync(
             properties: [(Name: "NoWarn", Value: "CA1848")],
             packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             using Microsoft.Extensions.Logging;
@@ -589,7 +591,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 private static void Main() { }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasNote("CA1873").ShouldBeTrue();
     }
@@ -599,8 +601,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1826")]
     public async Task ProhibitEnumerableMethodsOnIndexableCollections()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -615,7 +617,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1826").ShouldBeTrue();
     }
@@ -633,8 +635,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // resolution prefers the span overload for a bare single-task argument — that call produces
         // no implicit Task[] creation, so the analyzer never matches it. Pinning C# 12 disables
         // params-span expansion, so the call binds to params Task[] and the rule fires.
-        using var project = await CreateProjectBuilder(properties: [("LangVersion", "12")]);
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync(properties: [("LangVersion", "12")]);
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -649,7 +651,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1842").ShouldBeTrue();
     }
@@ -667,8 +669,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // overload resolution prefers the span overload for a bare single-task argument — that call
         // produces no implicit Task[] creation, so the analyzer never matches it. Pinning C# 12
         // disables params-span expansion, so the call binds to params Task[] and the rule fires.
-        using var project = await CreateProjectBuilder(properties: [("LangVersion", "12")]);
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync(properties: [("LangVersion", "12")]);
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -684,7 +686,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1843").ShouldBeTrue();
     }
@@ -703,8 +705,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // (a.AsSpan().SequenceEqual(b.Substring(1))) that the analyzer never inspects. A real `+`
         // concat with a Substring operand fires error:CA1845 — IDE0057 still fires as a note at the
         // Substring site but does not suppress CA1845.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -719,7 +721,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1845").ShouldBeTrue();
     }
@@ -737,8 +739,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // that position. int.TryParse(string, out int) has an int.TryParse(ReadOnlySpan<char>, out int)
         // overload, so the text.Substring(7) argument fires error:CA1846. IDE0057 still co-fires as a
         // harmless note at the Substring site but does not suppress CA1846.
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -753,7 +755,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1846").ShouldBeTrue();
     }
@@ -763,20 +765,20 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1852")]
     public async Task SealInternalTypes()
     {
-        using var project = await CreateProjectBuilder();
+        using var project = await CreateProjectBuilderAsync();
 
         // The package auto-injects [assembly: InternalsVisibleTo("<project>.Tests")] into every
         // non-test project (see build/Opinionated.DotNet.CodingStandards.targets). CA1852 suppresses
         // itself whenever the assembly exposes its internals to a friend assembly, because the friend
         // could subclass the type. Opt back in via the documented
         // dotnet_code_quality.CA1852.ignore_internalsvisibleto option so the rule fires here.
-        await project.AddFile(
+        await project.AddFileAsync(
             ".editorconfig",
             """
             [*.cs]
             dotnet_code_quality.CA1852.ignore_internalsvisibleto = true
             """);
-        await project.AddFile(
+        await project.AddFileAsync(
             "InternalService.cs",
             """
             namespace test;
@@ -786,7 +788,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public int GetValue() => 42;
             }
             """);
-        await project.AddFile(
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -800,7 +802,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 }
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1852").ShouldBeTrue();
     }
@@ -810,8 +812,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1853")]
     public async Task ProhibitUnnecessaryContainsKeyCall()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -835,7 +837,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1853").ShouldBeTrue();
     }
@@ -845,8 +847,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1867")]
     public async Task UseCharOverloadForStartsWithOrdinalIgnoreCase()
     {
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             using System;
@@ -857,7 +859,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1867").ShouldBeTrue();
     }
@@ -882,8 +884,8 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
         // MemoryExtensions.IndexOfAny(ReadOnlySpan<char>, ReadOnlySpan<char>) overload the analyzer
         // detects, and fires error:CA1870 (RuleLevel.IdeSuggestion, promoted to warning by the
         // package editorconfig + TreatWarningsAsErrors).
-        using var project = await CreateProjectBuilder();
-        await project.AddFile(
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
             "Program.cs",
             """
             namespace test;
@@ -898,7 +900,7 @@ public class CodeAnalysisRulesPerformanceModernShould(PackageFixture fixture, IT
                 public static int Main() => 0;
             }
             """);
-        var buildOutput = await project.BuildAndGetOutput();
+        var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("CA1870").ShouldBeTrue();
     }

@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using System.Text.Json;
 using System.Xml.Linq;
 using CliWrap;
@@ -42,17 +44,16 @@ internal sealed class ProjectBuilder : IDisposable
                         </configuration>
                         """);
 
-        // File.Copy(Path.Combine(PathHelpers.GetRootDirectory(), "global.json"), this._directory.GetPath("global.json"));
     }
 
-    public async ValueTask AddFile(string relativePath, string content)
+    public async ValueTask AddFileAsync(string relativePath, string content)
     {
         var path = _directory.GetPath(relativePath);
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
         await File.WriteAllTextAsync(path, content);
     }
 
-    public ValueTask AddCsprojFile(
+    public ValueTask AddCsprojFileAsync(
         (string Name, string Value)[]? properties = null,
         (string Name, string Version)[]? packageReferences = null,
         string[]? additionalFiles = null)
@@ -80,7 +81,7 @@ internal sealed class ProjectBuilder : IDisposable
                        </Project>
                        """;
 
-        return AddFile(_directory.GetPath("test.csproj"), content);
+        return AddFileAsync(_directory.GetPath("test.csproj"), content);
     }
 
     private static XElement BuildReferencesElement((string Name, string Version)[]? packageReferences)
@@ -136,12 +137,12 @@ internal sealed class ProjectBuilder : IDisposable
         _directory.Dispose();
     }
 
-    public Task<BuildOutputFile> BuildAndGetOutput(string[]? buildArguments = null)
+    public Task<BuildOutputFile> BuildAndGetOutputAsync(string[]? buildArguments = null)
     {
-        return ExecuteDotnetCommandAndGetOutput("build", buildArguments);
+        return ExecuteDotnetCommandAndGetOutputAsync("build", buildArguments);
     }
 
-    private async Task<BuildOutputFile> ExecuteDotnetCommandAndGetOutput(string command, string[]? buildArguments = null)
+    private async Task<BuildOutputFile> ExecuteDotnetCommandAndGetOutputAsync(string command, string[]? buildArguments = null)
     {
         var result = await Cli.Wrap("dotnet")
             .WithWorkingDirectory(_directory.FullPath)
@@ -154,15 +155,13 @@ internal sealed class ProjectBuilder : IDisposable
 
         _testOutputHelper.WriteLine("Process exit code: " + result.ExitCode);
 
-        return await ReadBuildOutputFile();
+        return await ReadBuildOutputFileAsync();
     }
 
-    private async Task<BuildOutputFile> ReadBuildOutputFile()
+    private async Task<BuildOutputFile> ReadBuildOutputFileAsync()
     {
         var bytes = await File.ReadAllBytesAsync(_directory.GetPath(BuildOutputFileName));
         var buildOutputFile = JsonSerializer.Deserialize<BuildOutputFile>(bytes) ?? throw new InvalidOperationException("The sarif file is invalid");
-
-        // AppendAdditionalResult(buildOutputFile);
 
         _testOutputHelper.WriteLine("Sarif result:\n" + string.Join("\n", buildOutputFile.AllResults().Select(r => r.ToString())));
         return buildOutputFile;

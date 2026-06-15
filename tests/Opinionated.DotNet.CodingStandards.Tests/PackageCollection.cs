@@ -1,3 +1,5 @@
+// Copyright (c) Codurance. All rights reserved.
+
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;
