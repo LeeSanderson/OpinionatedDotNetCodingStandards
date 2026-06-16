@@ -23,6 +23,20 @@ var anyDrift = false;
 
 foreach (var package in packages)
 {
+    anyDrift |= await ProcessPackageAsync(package, checkMode);
+}
+
+if (checkMode && anyDrift)
+{
+    await Console.Error.WriteLineAsync("\nCheck failed: one or more editorconfig files are out of date.");
+    return 1;
+}
+
+Console.WriteLine(checkMode ? "\nCheck passed." : "\nDone.");
+return 0;
+
+static async Task<bool> ProcessPackageAsync(AnalyzerPackageInfo package, bool checkMode)
+{
     var descriptors = DescriptorExtractor.Extract(package.DllPaths);
     var existingText = File.Exists(package.EditorConfigPath)
         ? await File.ReadAllTextAsync(package.EditorConfigPath)
@@ -35,33 +49,20 @@ foreach (var package in packages)
     Console.WriteLine($"  Added: {(result.AddedIds.Count > 0 ? string.Join(", ", result.AddedIds) : "(none)")}");
     Console.WriteLine($"  Stale: {(result.StaleIds.Count > 0 ? string.Join(", ", result.StaleIds) : "(none)")}");
 
-    if (hasChanges)
-    {
-        anyDrift = true;
-        if (!checkMode)
-        {
-            await File.WriteAllTextAsync(package.EditorConfigPath, result.RewrittenText, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
-            Console.WriteLine("  Written.");
-        }
-        else
-        {
-            Console.WriteLine("  DRIFT DETECTED.");
-        }
-    }
-    else
+    if (!hasChanges)
     {
         Console.WriteLine("  Up to date.");
+        return false;
     }
-}
 
-if (checkMode && anyDrift)
-{
-    await Console.Error.WriteLineAsync("\nCheck failed: one or more editorconfig files are out of date.");
-    return 1;
-}
+    if (!checkMode)
+    {
+        await File.WriteAllTextAsync(package.EditorConfigPath, result.RewrittenText, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+    }
 
-Console.WriteLine(checkMode ? "\nCheck passed." : "\nDone.");
-return 0;
+    Console.WriteLine(checkMode ? "  DRIFT DETECTED." : "  Written.");
+    return true;
+}
 
 static string GetRootDirectory()
 {

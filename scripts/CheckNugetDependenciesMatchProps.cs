@@ -15,7 +15,8 @@ if (nuspecDict == null)
     return 1;
 }
 
-return await ComparePackagesAsync(packageDict, nuspecDict) ? 0 : 1;
+var succeeded = await ComparePackagesAsync(packageDict, nuspecDict);
+return succeeded ? 0 : 1;
 
 static string GetRootDirectory()
 {

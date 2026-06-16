@@ -15,7 +15,7 @@ var outputFile = Path.Combine(rootDir, "docs", "rule-reference.md");
 var content = RuleReferenceGenerator.Generate(analyzerDir, typeof(RuleDocCoverageShould).Assembly, editorConfigPath);
 
 Directory.CreateDirectory(Path.GetDirectoryName(outputFile)!);
-File.WriteAllText(outputFile, content, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+await File.WriteAllTextAsync(outputFile, content, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
 Console.WriteLine($"Written: {outputFile}");
 return 0;
 

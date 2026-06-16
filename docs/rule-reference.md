@@ -418,8 +418,357 @@ Rules set to `none` or `silent` are omitted.
 
 | Rule ID | Description | Severity | Help |
 |---------|-------------|----------|------|
-| `S1541` |  | warning |  |
-| `S3776` |  | warning |  |
+| `S100` | Methods and properties should be named in PascalCase | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-100/) |
+| `S1006` | Method overrides should not change parameter defaults | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1006/) |
+| `S101` | Types should be named in PascalCase | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-101/) |
+| `S106` | Standard outputs should not be used directly to log anything | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-106/) |
+| `S1066` | Mergeable "if" statements should be combined | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1066/) |
+| `S1067` | Expressions should not be too complex | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1067/) |
+| `S107` | Methods should not have too many parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-107/) |
+| `S1075` | URIs should not be hardcoded | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1075/) |
+| `S108` | Nested blocks of code should not be left empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-108/) |
+| `S109` | Magic numbers should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-109/) |
+| `S110` | Inheritance tree of classes should not be too deep | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-110/) |
+| `S1110` | Redundant pairs of parentheses should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1110/) |
+| `S1116` | Empty statements should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1116/) |
+| `S1117` | Local variables should not shadow class fields or properties | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1117/) |
+| `S1121` | Assignments should not be made from within sub-expressions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1121/) |
+| `S1125` | Boolean literals should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1125/) |
+| `S1128` | Unnecessary "using" should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1128/) |
+| `S1133` | Deprecated code should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1133/) |
+| `S1134` | Track uses of "FIXME" tags | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1134/) |
+| `S1135` | Track uses of "TODO" tags | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1135/) |
+| `S1144` | Unused private types or members should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1144/) |
+| `S1147` | Exit methods should not be called | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1147/) |
+| `S1151` | “switch case” clauses should not have too many lines of code | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1151/) |
+| `S1168` | Empty arrays and collections should be returned instead of null | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1168/) |
+| `S1172` | Unused method parameters should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1172/) |
+| `S1185` | Overriding members should do more than simply call the same member in the base class | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1185/) |
+| `S1186` | Methods should not be empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1186/) |
+| `S1192` | String literals should not be duplicated | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1192/) |
+| `S1199` | Nested code blocks should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1199/) |
+| `S1200` | Classes should not be coupled to too many other classes | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1200/) |
+| `S1206` | 'Equals(Object)' and 'GetHashCode()' should be overridden in pairs | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1206/) |
+| `S121` | Control structures should use curly braces | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-121/) |
+| `S1215` | “GC.Collect” should not be called | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1215/) |
+| `S1226` | Method parameters, caught exceptions and foreach variables' initial values should not be ignored | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1226/) |
+| `S1227` | break statements should not be used except for switch cases | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1227/) |
+| `S1244` | Floating point numbers should not be tested for equality | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1244/) |
+| `S125` | Sections of code should not be commented out | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-125/) |
+| `S126` | “if ... else if” constructs should end with “else” clauses | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-126/) |
+| `S1264` | A "while" loop should be used instead of a "for" loop | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1264/) |
+| `S127` | “for” loop stop conditions should be invariant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-127/) |
+| `S1301` | "switch" statements should have at least 3 "case" clauses | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1301/) |
+| `S1309` | Track uses of in-source issue suppressions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1309/) |
+| `S131` | “switch/Select” statements should contain a “default/Case Else” clause | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-131/) |
+| `S1312` | Logger fields should be 'private static readonly' | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1312/) |
+| `S1313` | Using hardcoded IP addresses is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1313/) |
+| `S134` | Control flow statements "if", "switch", "for", "foreach", "while", "do" and "try" should not be nested too deeply | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-134/) |
+| `S138` | Functions should not have too many lines of code | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-138/) |
+| `S1450` | Private fields only used as local variables in methods should become local variables | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1450/) |
+| `S1479` | “switch” statements with many “case” clauses should have only one statement | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1479/) |
+| `S1481` | Unused local variables should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1481/) |
+| `S1541` | Methods and properties should not be too complex | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1541/) |
+| `S1607` | Tests should not be ignored | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1607/) |
+| `S1643` | Strings should not be concatenated using '+' in a loop | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1643/) |
+| `S1656` | Variables should not be self-assigned | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1656/) |
+| `S1659` | Multiple variables should not be declared on the same line | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1659/) |
+| `S1694` | An abstract class should have both abstract and concrete methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1694/) |
+| `S1696` | NullReferenceException should not be caught | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1696/) |
+| `S1698` | "==" should not be used when "Equals" is overridden | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1698/) |
+| `S1751` | Loops with at most one iteration should be refactored | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1751/) |
+| `S1764` | Identical expressions should not be used on both sides of operators | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1764/) |
+| `S1821` | “switch” statements should not be nested | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1821/) |
+| `S1848` | Objects should not be created to be dropped immediately without being used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1848/) |
+| `S1854` | Unused assignments should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1854/) |
+| `S1862` | Related 'if/else if' statements should not have the same condition | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1862/) |
+| `S1871` | Two branches in a conditional structure should not have exactly the same implementation | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1871/) |
+| `S1905` | Redundant casts should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1905/) |
+| `S1939` | Inheritance list should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1939/) |
+| `S1940` | Boolean checks should not be inverted | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1940/) |
+| `S1944` | Invalid casts should be avoided | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1944/) |
+| `S1994` | “for” loop increment clauses should modify the loops’ counters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1994/) |
+| `S2068` | Credentials should not be hard-coded | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2068/) |
+| `S2092` | Creating cookies without the "secure" flag is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2092/) |
+| `S2094` | Classes should not be empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2094/) |
+| `S2114` | Collections should not be passed as arguments to their own methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2114/) |
+| `S2115` | A secure password should be used when connecting to a database | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2115/) |
+| `S2123` | Values should not be uselessly incremented | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2123/) |
+| `S2139` | Exceptions should be either logged or rethrown but not both | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2139/) |
+| `S2148` | Underscores should be used to make large numbers readable | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2148/) |
+| `S2156` | “sealed” classes should not have “protected” members | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2156/) |
+| `S2166` | Classes named like "Exception" should extend "Exception" or a subclass | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2166/) |
+| `S2178` | Short-circuit logic should be used in boolean contexts | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2178/) |
+| `S2183` | Integral numbers should not be shifted by zero or more than their number of bits-1 | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2183/) |
+| `S2184` | Results of integer division should not be assigned to floating point variables | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2184/) |
+| `S2187` | Test classes should contain at least one test case | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2187/) |
+| `S2197` | Modulus results should not be checked for direct equality | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2197/) |
+| `S2198` | Unnecessary mathematical comparisons should not be made | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2198/) |
+| `S2219` | Runtime type checking should be simplified | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2219/) |
+| `S2221` | “Exception” should not be caught | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2221/) |
+| `S2225` | ToString() method should not return null | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2225/) |
+| `S2234` | Arguments should be passed in the same order as the method parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2234/) |
+| `S2245` | Using pseudorandom number generators (PRNGs) is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2245/) |
+| `S2251` | A "for" loop update clause should move the counter in the right direction | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2251/) |
+| `S2252` | For-loop conditions should be true at least once | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2252/) |
+| `S2257` | Using non-standard cryptographic algorithms is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2257/) |
+| `S2291` | Overflow checking should not be disabled for "Enumerable.Sum" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2291/) |
+| `S2292` | Trivial properties should be auto-implemented | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2292/) |
+| `S2302` | nameof should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2302/) |
+| `S2306` | “async” and “await” should not be used as identifiers | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2306/) |
+| `S2325` | Methods and properties that don't access instance data should be static | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2325/) |
+| `S2326` | Unused type parameters should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2326/) |
+| `S2327` | “try” statements with identical “catch” and/or “finally” blocks should be merged | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2327/) |
+| `S2328` | GetHashCode should not reference mutable fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2328/) |
+| `S2330` | Array covariance should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2330/) |
+| `S2333` | Redundant modifiers should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2333/) |
+| `S2339` | Public constant members should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2339/) |
+| `S2342` | Enumeration types should comply with a naming convention | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2342/) |
+| `S2344` | Enumeration type names should not have "Flags" or "Enum" suffixes | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2344/) |
+| `S2345` | Flags enumerations should explicitly initialize all their members | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2345/) |
+| `S2346` | Flags enumerations zero-value members should be named "None" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2346/) |
+| `S2360` | Optional parameters should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2360/) |
+| `S2365` | Properties should not make collection or array copies | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2365/) |
+| `S2368` | Public methods should not have multidimensional array parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2368/) |
+| `S2387` | Child class fields should not shadow parent class fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2387/) |
+| `S2436` | Types and methods should not have too many generic parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2436/) |
+| `S2437` | Unnecessary bit operations should not be performed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2437/) |
+| `S2445` | Blocks should be synchronized on read-only fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2445/) |
+| `S2479` | Whitespace and control characters in string literals should be explicit | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2479/) |
+| `S2486` | Generic exceptions should not be ignored | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2486/) |
+| `S2612` | File permissions should not be set to world-accessible values | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2612/) |
+| `S2681` | Multiline blocks should be enclosed in curly braces | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2681/) |
+| `S2692` | IndexOf checks should not be for positive numbers | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2692/) |
+| `S2696` | Instance members should not write to “static” fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2696/) |
+| `S2699` | Tests should include assertions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2699/) |
+| `S2701` | Literal boolean values should not be used in assertions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2701/) |
+| `S2737` | catch clauses should do more than rethrow | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2737/) |
+| `S2743` | Static fields should not be used in generic types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2743/) |
+| `S2755` | XML parsers should not be vulnerable to XXE attacks | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2755/) |
+| `S2757` | Non-existent operators like '=+' should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2757/) |
+| `S2760` | Sequential tests should not check the same condition | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2760/) |
+| `S2761` | Doubled prefix operators '!!' and '~~' should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2761/) |
+| `S2857` | SQL keywords should be delimited by whitespace | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2857/) |
+| `S2925` | Thread.Sleep should not be used in tests | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2925/) |
+| `S2930` | IDisposables should be disposed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2930/) |
+| `S2933` | Fields that are only assigned in the constructor should be 'readonly' | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2933/) |
+| `S2934` | Property assignments should not be made for 'readonly' fields not constrained to reference types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2934/) |
+| `S2955` | Generic parameters not constrained to reference types should not be compared to "null" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2955/) |
+| `S2970` | Assertions should be complete | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2970/) |
+| `S2971` | LINQ expressions should be simplified | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2971/) |
+| `S2996` | ThreadStatic fields should not be initialized | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2996/) |
+| `S2997` | IDisposables created in a 'using' statement should not be returned | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-2997/) |
+| `S3005` | ThreadStatic should not be used on non-static fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3005/) |
+| `S3010` | Static fields should not be updated in constructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3010/) |
+| `S3011` | Reflection should not be used to increase accessibility of classes, methods, or fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3011/) |
+| `S3052` | Members should not be initialized to default values | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3052/) |
+| `S3059` | Types should not have members with visibility set higher than the type's visibility | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3059/) |
+| `S3060` | "is" should not be used with "this" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3060/) |
+| `S3063` | “StringBuilder” data should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3063/) |
+| `S3168` | async methods should not return void | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3168/) |
+| `S3172` | Delegates should not be subtracted | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3172/) |
+| `S3215` | “interface” instances should not be cast to concrete types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3215/) |
+| `S3216` | "ConfigureAwait(false)" should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3216/) |
+| `S3217` | Explicit conversions of foreach loops should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3217/) |
+| `S3218` | Inner class members should not shadow outer class 'static' or type members | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3218/) |
+| `S3220` | Method calls should not resolve ambiguously to overloads with "params" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3220/) |
+| `S3234` | GC.SuppressFinalize should not be invoked for types without destructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3234/) |
+| `S3235` | Redundant parentheses should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3235/) |
+| `S3236` | Caller information arguments should not be provided explicitly | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3236/) |
+| `S3237` | "value" contextual keyword should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3237/) |
+| `S3240` | The simplest possible condition syntax should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3240/) |
+| `S3241` | Methods should not return values that are never used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3241/) |
+| `S3242` | Method parameters should be declared with base types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3242/) |
+| `S3246` | Generic type parameters should be co/contravariant when possible | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3246/) |
+| `S3247` | Duplicate casts should not be made | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3247/) |
+| `S3249` | Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3249/) |
+| `S3251` | Implementations should be provided for "partial" methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3251/) |
+| `S3253` | Constructor and destructor declarations should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3253/) |
+| `S3256` | string.IsNullOrEmpty should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3256/) |
+| `S3257` | Declarations and initializations should be as concise as possible | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3257/) |
+| `S3260` | Non-derived 'private' classes and records should be 'sealed' | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3260/) |
+| `S3261` | Namespaces should not be empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3261/) |
+| `S3262` | "params" should be used on overrides | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3262/) |
+| `S3263` | Static fields should appear in the order they must be initialized | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3263/) |
+| `S3264` | Events should be invoked | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3264/) |
+| `S3265` | Non-flags enums should not be used in bitwise operations | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3265/) |
+| `S3267` | Loops should be simplified with "LINQ" expressions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3267/) |
+| `S3330` | Creating cookies without the "HttpOnly" flag is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3330/) |
+| `S3343` | Caller information parameters should come at the end of the parameter list | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3343/) |
+| `S3346` | Expressions used in "Debug.Assert" should not produce side effects | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3346/) |
+| `S3353` | Unchanged variables should be marked as "const" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3353/) |
+| `S3358` | Ternary operators should not be nested | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3358/) |
+| `S3363` | Date and time should not be used as a type for primary keys | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3363/) |
+| `S3366` | this should not be exposed from constructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3366/) |
+| `S3376` | Attribute, EventArgs, and Exception type names should end with the type being extended | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3376/) |
+| `S3397` | base.Equals should not be used to check for reference equality in Equals if base is not object | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3397/) |
+| `S3398` | “private” methods called only by inner classes should be moved to those classes | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3398/) |
+| `S3400` | Methods should not return constants | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3400/) |
+| `S3415` | Assertion arguments should be passed in the correct order | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3415/) |
+| `S3427` | Method overloads with default parameter values should not overlap | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3427/) |
+| `S3431` | [ExpectedException] attribute should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3431/) |
+| `S3433` | Test method signatures should be correct | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3433/) |
+| `S3440` | Variables should not be checked against the values they're about to be assigned | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3440/) |
+| `S3441` | Redundant property names should be omitted in anonymous classes | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3441/) |
+| `S3444` | Interfaces should not simply inherit from base interfaces with colliding members | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3444/) |
+| `S3447` | [Optional] should not be used on ref or out parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3447/) |
+| `S3449` | Right operands of shift operators should be integers | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3449/) |
+| `S3453` | Classes should not have only 'private' constructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3453/) |
+| `S3456` | string.ToCharArray() and ReadOnlySpan&lt;T&gt;.ToArray() should not be called redundantly | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3456/) |
+| `S3458` | Empty 'case' clauses that fall through to the 'default' should be omitted | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3458/) |
+| `S3459` | Unassigned members should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3459/) |
+| `S3464` | Type inheritance should not be recursive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3464/) |
+| `S3466` | Optional parameters should be passed to "base" calls | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3466/) |
+| `S3532` | Empty default clauses should be removed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3532/) |
+| `S3597` | ServiceContract and OperationContract attributes should be used together | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3597/) |
+| `S3598` | One-way "OperationContract" methods should have "void" return type | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3598/) |
+| `S3600` | params should not be introduced on overrides | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3600/) |
+| `S3603` | Methods with "Pure" attribute should return a value | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3603/) |
+| `S3604` | Member initializer values should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3604/) |
+| `S3610` | Nullable type comparison should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3610/) |
+| `S3626` | Jump statements should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3626/) |
+| `S3717` | Track use of "NotImplementedException" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3717/) |
+| `S3776` | Cognitive Complexity of methods should not be too high | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3776/) |
+| `S3869` | SafeHandle.DangerousGetHandle should not be called | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3869/) |
+| `S3872` | Parameter names should not duplicate the names of their methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3872/) |
+| `S3874` | “out” and “ref” parameters should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3874/) |
+| `S3878` | Arrays should not be created for params parameters | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3878/) |
+| `S3884` | CoSetProxyBlanket and CoInitializeSecurity should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3884/) |
+| `S3885` | Assembly.Load should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3885/) |
+| `S3887` | Mutable, non-private fields should not be "readonly" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3887/) |
+| `S3889` | Thread.Resume and Thread.Suspend should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3889/) |
+| `S3897` | Classes that provide "Equals(<T>)" should implement "IEquatable<T>" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3897/) |
+| `S3898` | Value types should implement "IEquatable<T>" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3898/) |
+| `S3902` | Assembly.GetExecutingAssembly should not be called | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3902/) |
+| `S3906` | Event Handlers should have the correct signature | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3906/) |
+| `S3908` | Generic event handlers should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3908/) |
+| `S3923` | All branches in a conditional structure should not have exactly the same implementation | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3923/) |
+| `S3925` | ISerializable should be implemented correctly | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3925/) |
+| `S3926` | Deserialization methods should be provided for OptionalField members | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3926/) |
+| `S3927` | Serialization event handlers should be implemented correctly | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3927/) |
+| `S3937` | Number patterns should be regular | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3937/) |
+| `S3956` | Generic.List instances should not be part of public APIs | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3956/) |
+| `S3967` | Multidimensional arrays should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3967/) |
+| `S3971` | GC.SuppressFinalize should not be called | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3971/) |
+| `S3981` | Collection sizes and array length comparisons should make sense | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3981/) |
+| `S3984` | Exceptions should not be created without being thrown | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3984/) |
+| `S3994` | URI Parameters should not be strings | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3994/) |
+| `S3995` | URI return values should not be strings | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3995/) |
+| `S3996` | URI properties should not be strings | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3996/) |
+| `S3997` | String URI overloads should call "System.Uri" overloads | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3997/) |
+| `S4000` | Pointers to unmanaged memory should not be visible | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4000/) |
+| `S4004` | Collection properties should be readonly | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4004/) |
+| `S4005` | System.Uri arguments should be used instead of strings | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4005/) |
+| `S4015` | Inherited member visibility should not be decreased | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4015/) |
+| `S4016` | Enumeration members should not be named "Reserved" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4016/) |
+| `S4017` | Method signatures should not contain nested generic types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4017/) |
+| `S4018` | All type parameters should be used in the parameter list to enable type inference | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4018/) |
+| `S4022` | Enumerations should have "Int32" storage | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4022/) |
+| `S4023` | Interfaces should not be empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4023/) |
+| `S4025` | Child class fields should not differ from parent class fields only by capitalization | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4025/) |
+| `S4027` | Exceptions should provide standard constructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4027/) |
+| `S4035` | Classes implementing "IEquatable<T>" should be sealed | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4035/) |
+| `S4036` | Searching OS commands in PATH is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4036/) |
+| `S4040` | Strings should be normalized to uppercase | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4040/) |
+| `S4041` | Type names should not match namespaces | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4041/) |
+| `S4047` | Generics should be used when appropriate | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4047/) |
+| `S4049` | Properties should be preferred | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4049/) |
+| `S4057` | Locales should be set for data types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4057/) |
+| `S4061` | “params” should be used instead of “varargs” | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4061/) |
+| `S4136` | Method overloads should be grouped together | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4136/) |
+| `S4143` | Collection elements should not be replaced unconditionally | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4143/) |
+| `S4144` | Methods should not have identical implementations | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4144/) |
+| `S4159` | Classes should implement their "ExportAttribute" interfaces | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4159/) |
+| `S4200` | Native methods should be wrapped | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4200/) |
+| `S4201` | Null checks should not be combined with 'is' operator checks | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4201/) |
+| `S4211` | Members should not have conflicting transparency annotations | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4211/) |
+| `S4212` | Serialization constructors should be secured | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4212/) |
+| `S4220` | Events should have proper arguments | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4220/) |
+| `S4225` | Extension methods should not extend "object" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4225/) |
+| `S4226` | Extensions should be in separate namespaces | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4226/) |
+| `S4260` | ConstructorArgument parameters should exist in constructors | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4260/) |
+| `S4261` | Methods should be named according to their synchronicities | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4261/) |
+| `S4275` | Getters and setters should access the expected fields | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4275/) |
+| `S4277` | Shared parts should not be created with new | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4277/) |
+| `S4426` | Cryptographic keys should be robust | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4426/) |
+| `S4428` | PartCreationPolicyAttribute should be used with ExportAttribute | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4428/) |
+| `S4433` | LDAP connections should be authenticated | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4433/) |
+| `S4456` | Parameter validation in yielding methods should be wrapped | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4456/) |
+| `S4457` | Parameter validation in "async"/"await" methods should be wrapped | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4457/) |
+| `S4502` | Disabling CSRF protections is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4502/) |
+| `S4507` | Delivering code in production with debug features activated is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4507/) |
+| `S4524` | “default” clauses should be first or last | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4524/) |
+| `S4583` | Calls to delegate's method "BeginInvoke" should be paired with calls to "EndInvoke" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4583/) |
+| `S4635` | Start index should be used instead of calling Substring | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4635/) |
+| `S4663` | Comments should not be empty | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4663/) |
+| `S4792` | Configuring loggers is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-4792/) |
+| `S5042` | Expanding archive files should not be done without controlling resource consumption | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5042/) |
+| `S5122` | Having a permissive Cross-Origin Resource Sharing policy is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5122/) |
+| `S5332` | Using clear-text protocols is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5332/) |
+| `S5344` | Passwords should not be stored in plaintext or with a fast hashing algorithm | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5344/) |
+| `S5443` | Using publicly writable directories is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5443/) |
+| `S5445` | Insecure temporary file creation methods should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5445/) |
+| `S5542` | Encryption algorithms should be used with secure mode and padding scheme | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5542/) |
+| `S5659` | JWT should be signed and verified with strong cipher algorithms | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5659/) |
+| `S5693` | Allowing requests with excessive content length is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5693/) |
+| `S5753` | Disabling ASP.NET Request Validation feature is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5753/) |
+| `S5766` | Creating Serializable objects without data validation checks is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5766/) |
+| `S5856` | Regular expressions should be syntactically valid | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-5856/) |
+| `S6354` | Use a testable date/time provider | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6354/) |
+| `S6377` | XML signatures should be validated securely | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6377/) |
+| `S6418` | Secrets should not be hard-coded | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6418/) |
+| `S6444` | Not specifying a timeout for regular expressions is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6444/) |
+| `S6507` | Blocks should not be synchronized on local variables | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6507/) |
+| `S6513` | ExcludeFromCodeCoverage attributes should include a justification | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6513/) |
+| `S6561` | Avoid using "DateTime.Now" for benchmarking or timing operations | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6561/) |
+| `S6562` | Always set the DateTimeKind when creating new DateTime instances | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6562/) |
+| `S6563` | Use UTC when recording DateTime instants | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6563/) |
+| `S6566` | Use "DateTimeOffset" instead of "DateTime" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6566/) |
+| `S6575` | Use "TimeZoneInfo.FindSystemTimeZoneById" without converting the timezones with "TimezoneConverter" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6575/) |
+| `S6585` | Don't hardcode the format when turning dates and times to strings | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6585/) |
+| `S6602` | Find method should be used instead of the FirstOrDefault extension on List<T> | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6602/) |
+| `S6603` | The collection-specific TrueForAll method should be used instead of the All extension on List<T> | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6603/) |
+| `S6605` | Collection-specific "Exists" method should be used instead of the "Any" extension on List<T> | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6605/) |
+| `S6609` | Min/Max properties of Set types should be used instead of the Enumerable extension methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6609/) |
+| `S6612` | The lambda parameter should be used instead of capturing arguments in ConcurrentDictionary methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6612/) |
+| `S6613` | “First” and “Last” properties of “LinkedList” should be used instead of the “First()” and “Last()” extension methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6613/) |
+| `S6617` |  | warning |  |
+| `S6618` |  | warning |  |
+| `S6640` | Using unsafe code blocks is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6640/) |
+| `S6664` |  | warning |  |
+| `S6667` |  | warning |  |
+| `S6668` |  | warning |  |
+| `S6669` | Logger field or property name should comply with a naming convention | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6669/) |
+| `S6670` |  | warning |  |
+| `S6673` | Log message template placeholders should be in the right order | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6673/) |
+| `S6674` | Log message template should be syntactically correct | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6674/) |
+| `S6675` | Trace.WriteLineIf should not be used with TraceSwitch levels | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6675/) |
+| `S6677` |  | warning |  |
+| `S6797` | Blazor query parameter type should be supported | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6797/) |
+| `S6798` |  | warning |  |
+| `S6800` | Component parameter type should match the route parameter type constraint | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6800/) |
+| `S6802` |  | warning |  |
+| `S6803` | Parameters with SupplyParameterFromQuery attribute should be used only in routable components | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6803/) |
+| `S6930` | Backslash should be avoided in route templates | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6930/) |
+| `S6931` | ASP.NET controller actions should not have a route template starting with "/" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6931/) |
+| `S6932` | Use model binding instead of reading raw request data | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6932/) |
+| `S6934` | A Route attribute should be added to the controller when a route template is specified at the action level | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6934/) |
+| `S6960` | Controllers should not have mixed responsibilities | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6960/) |
+| `S6961` | API Controllers should derive from ControllerBase instead of Controller | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6961/) |
+| `S6962` | Pool HTTP connections with HttpClientFactory — flags new HttpClient() created inside a public action method of an ASP.NET Core controller class (deriving from ControllerBase or Controller), where the instance is not stored for reuse (e.g. not a field initializer, not assigned to a static member, not in a constructor). | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6962/) |
+| `S6964` | Value type property used as input in a controller action should be nullable, required, or annotated with JsonRequiredAttribute to avoid under-posting | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6964/) |
+| `S6965` | REST API actions should be annotated with an HTTP verb attribute | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6965/) |
+| `S6966` | Awaitable method should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6966/) |
+| `S6967` | ModelState.IsValid should be called in controller actions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6967/) |
+| `S6968` | Actions that return a value should be annotated with ProducesResponseTypeAttribute containing the return type | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6968/) |
+| `S7039` | Content Security Policies should be restrictive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-7039/) |
+| `S818` | Literal suffixes should be upper case | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-818/) |
+| `S8367` | Identifiers should not conflict with the C# 14 'field' contextual keyword | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8367/) |
+| `S8368` | Identifiers should not conflict with the C# 14 'extension' contextual keyword | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8368/) |
+| `S8380` | Return types named "partial" should be escaped with "@" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8380/) |
+| `S8381` | "scoped" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8381/) |
+| `S881` | Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-881/) |
+| `S907` | goto statement should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-907/) |
 
 ## StyleCop.Analyzers.Unstable
 
