@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
 [RuleDoc("IDE0001", "Simplify name",

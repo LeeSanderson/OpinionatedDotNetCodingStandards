@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 using System.Text.Json;
 using System.Xml.Linq;
 using CliWrap;

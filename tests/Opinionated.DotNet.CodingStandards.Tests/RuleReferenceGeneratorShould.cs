@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;

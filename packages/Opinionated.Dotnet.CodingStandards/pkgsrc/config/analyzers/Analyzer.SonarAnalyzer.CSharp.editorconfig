@@ -260,8 +260,8 @@ dotnet_diagnostic.S1449.severity = none
 dotnet_diagnostic.S1450.severity = warning
 
 # S1451: Track lack of copyright and license headers
-# Enabled: False, Severity: warning
-dotnet_diagnostic.S1451.severity = warning
+# Enabled: False, Severity: none
+dotnet_diagnostic.S1451.severity = none
 
 # S1479: "switch" statements with many "case" clauses should have only one statement
 # Enabled: False, Severity: warning

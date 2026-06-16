@@ -1,19 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <AnalysisInput>
   <Settings />
-  <Rules>
-    <Rule>
-      <Key>S1451</Key>
-      <Parameters>
-        <Parameter>
-          <Key>headerFormat</Key>
-          <Value>// Copyright \(c\) .+\. All rights reserved\.</Value>
-        </Parameter>
-        <Parameter>
-          <Key>isRegularExpression</Key>
-          <Value>true</Value>
-        </Parameter>
-      </Parameters>
-    </Rule>
-  </Rules>
+  <Rules />
 </AnalysisInput>

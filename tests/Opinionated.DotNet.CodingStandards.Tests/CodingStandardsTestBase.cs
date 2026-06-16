@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Xunit.Abstractions;
 

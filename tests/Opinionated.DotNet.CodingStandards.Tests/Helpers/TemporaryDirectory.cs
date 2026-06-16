@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 namespace Opinionated.DotNet.CodingStandards.Tests.Helpers;
 
 internal sealed class TemporaryDirectory : IDisposable

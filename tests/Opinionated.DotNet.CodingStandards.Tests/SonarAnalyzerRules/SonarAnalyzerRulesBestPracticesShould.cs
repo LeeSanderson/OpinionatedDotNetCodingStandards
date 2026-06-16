@@ -1,5 +1,3 @@
-// Copyright (c) Codurance. All rights reserved.
-
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
 using Xunit.Abstractions;
@@ -779,21 +777,6 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
         var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("S1312").ShouldBeTrue();
-    }
-
-    [Fact]
-    [RuleDoc("S1451", "Track lack of copyright and license headers",
-        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-1451/")]
-    public async Task WarnOnMissingCopyrightHeader()
-    {
-        using var project = await CreateProjectBuilderAsync();
-        await project.AddFileAsync("Program.cs", """
-            namespace test;
-            public static class Program { public static int Main() => 0; }
-            """);
-        var buildOutput = await project.BuildAndGetOutputAsync();
-
-        buildOutput.HasError("S1451").ShouldBeTrue();
     }
 
     [Fact]
