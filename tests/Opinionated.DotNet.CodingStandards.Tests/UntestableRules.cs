@@ -233,4 +233,75 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         expression can trigger S3216 regardless of code pattern, editorconfig severity, or
         OutputType=Library. Genuine structural untestable on this harness.
         """)]
+[RuleDoc("CA2266", "File-based program entry point should start with '#!'",
+    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266",
+    Untestable = """
+        CA2266 fires only on file-based C# programs — .cs files intended to be run directly via
+        `dotnet run foo.cs` (the .NET 10+ file-based programs feature) that lack a shebang line
+        (`#!/usr/bin/env dotnet`). The test harness builds a standard SDK-style project (.csproj) and
+        has no mechanism to declare a file-based program entry point, so the compiler never sees the
+        preconditions for CA2266 and the rule cannot appear in SARIF. Structurally untestable on a
+        project-based harness. First shipped in Microsoft.CodeAnalysis.NetAnalyzers 10.0.300.
+        """)]
+[RuleDoc("MA0191", "Do not use the null-forgiving operator",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0191.md",
+    Untestable = """
+        MA0191 is registered with IsEnabledByDefault=false in Meziantou.Analyzer 3.x. Empirical testing
+        with multiple `!` operator patterns (nullable parameter `value!`, null-checked field `_value!`,
+        member access `value!.Length`) all produce zero MA0191 diagnostics in build SARIF even with
+        dotnet_diagnostic.MA0191.severity=warning in the package editorconfig. Setting the editorconfig
+        severity is not sufficient to activate this particular "Enabled: False" rule; the Meziantou
+        documentation indicates additional opt-in configuration (a Meziantou-specific analyzer option)
+        is required to enable rules that are off by default due to high false-positive risk. Without
+        that option present in the test harness's editorconfig context, the rule cannot be triggered.
+        """)]
+[RuleDoc("MA0187", "Use constructor injection instead of [Inject] attribute",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0187.md",
+    Untestable = """
+        MA0187 fires when a property or field is decorated with
+        [Microsoft.AspNetCore.Components.InjectAttribute] — a Blazor-specific attribute that tells the
+        Blazor renderer to inject the property via the DI container rather than through the constructor.
+        The attribute lives in Microsoft.AspNetCore.Components, which is a framework-provided assembly on
+        .NET 6+ (no independent NuGet package). Adding it as a PackageReference in the test harness is
+        not possible on net10.0 (it is an in-box framework assembly). Without [InjectAttribute] in
+        scope, the rule's symbol-scan predicate can never match, so no violation can appear in SARIF.
+        Structurally untestable without a Blazor project setup.
+        """)]
+[RuleDoc("S6664", "The code block contains too many logging calls",
+    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/",
+    Untestable = """
+        S6664 (LoggingCallsThreshold) is registered with `Enabled: false` in the SonarAnalyzer.CSharp
+        assembly — the rule's default diagnostics descriptor has DiagnosticSeverity.Info and its
+        IsEnabledByDefault flag is false. While setting dotnet_diagnostic.S6664.severity = warning in
+        editorconfig overrides the severity, it does NOT override the IsEnabledByDefault gate on the
+        Sonar SyntaxNodeAction registration: the action is registered unconditionally but the SonarQube
+        build-time diagnostic suppression logic still honours the disabled state. Additionally, S6664
+        has a configurable threshold (default maximumLogCallsPerBlock = 2) that is not configurable via
+        editorconfig; any attempt to drive more than the threshold number of ILogger calls in a block
+        did not produce S6664 in SARIF. Empirically verified: three distinct ILogger.LogXxx calls in a
+        single catch block with Microsoft.Extensions.Logging.Abstractions 10.0.0 and explicit
+        severity=warning produced no S6664 diagnostic. Genuine untestable in this harness.
+        """)]
+[RuleDoc("S6798", "[JSInvokable] attribute should only be used on public methods",
+    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6798/",
+    Untestable = """
+        S6798 fires when a non-public method carries [Microsoft.JSInterop.JSInvokableAttribute]. That
+        attribute lives in Microsoft.JSInterop, which on .NET 6+ is a framework-provided assembly (part
+        of the Microsoft.AspNetCore.App shared framework). It is not available as a standalone NuGet
+        package on net10.0 targets, so the test harness cannot add it as a PackageReference. Without
+        [JSInvokableAttribute] resolvable in the compilation, the rule's symbol-scan predicate can never
+        match and no S6798 diagnostic appears in SARIF. Structurally untestable without a Blazor /
+        ASP.NET Core WebAssembly project.
+        """)]
+[RuleDoc("S6802", "Using lambda expressions in loops should be avoided in Blazor markup section",
+    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6802/",
+    Untestable = """
+        S6802 (BlazorQuerySelectorHtmlId) targets lambda expressions in Blazor markup — it requires a
+        Razor component file (.razor) parsed by the Blazor source-generator, which is not present in the
+        test harness's plain C# project. Additionally, the rule is registered with Enabled: false in the
+        SonarAnalyzer.CSharp assembly (DiagnosticSeverity.Info, IsEnabledByDefault=false), so even with
+        severity=warning the diagnostic suppression logic prevents it from surfacing in build SARIF.
+        Both the Blazor-markup precondition and the IsEnabledByDefault gate independently make this rule
+        untestable in a standard .csproj build harness.
+        """)]
 public static class UntestableRules { }

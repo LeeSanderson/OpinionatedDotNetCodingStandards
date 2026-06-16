@@ -15,9 +15,9 @@
 		<icon>icon.png</icon>
 		<repository type="git" url="$RepositoryUrl$" commit="$RepositoryCommit$" branch="$RepositoryBranch$" />
 		<dependencies>
-			<dependency id="Meziantou.Analyzer" version="2.0.286" />
+			<dependency id="Meziantou.Analyzer" version="3.0.104" />
 			<dependency id="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="4.14.0" />
-			<dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.102" />
+			<dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.301" />
 			<dependency id="SonarAnalyzer.CSharp" version="10.27.0.140913" />
 			<dependency id="StyleCop.Analyzers" version="1.2.0-beta.556" />
 		</dependencies>

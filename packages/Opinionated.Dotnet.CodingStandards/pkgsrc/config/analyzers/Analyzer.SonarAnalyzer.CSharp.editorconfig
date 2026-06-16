@@ -39,14 +39,12 @@ dotnet_diagnostic.S106.severity = warning
 dotnet_diagnostic.S1066.severity = warning
 
 # S1067: Expressions should not be too complex
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S1067.severity = warning
-sonar.S1067.max = 3
 
 # S107: Methods should not have too many parameters
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S107.severity = warning
-sonar.S107.maximumFunctionParameters = 7
 
 # S1075: URIs should not be hardcoded
 # Enabled: True, Severity: warning
@@ -57,7 +55,7 @@ dotnet_diagnostic.S1075.severity = warning
 dotnet_diagnostic.S108.severity = warning
 
 # S109: Magic numbers should not be used
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S109.severity = warning
 
 # S110: Inheritance tree of classes should not be too deep
@@ -171,7 +169,6 @@ dotnet_diagnostic.S1199.severity = warning
 # S1200: Classes should not be coupled to too many other classes
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S1200.severity = warning
-sonar.S1200.max = 30
 
 # S1206: "Equals(Object)" and "GetHashCode()" should be overridden in pairs
 # Enabled: True, Severity: warning
@@ -244,12 +241,10 @@ dotnet_diagnostic.S1313.severity = warning
 # S134: Control flow statements "if", "switch", "for", "foreach", "while", "do"  and "try" should not be nested too deeply
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S134.severity = warning
-sonar.S134.maximumNestingLevel = 3
 
 # S138: Functions should not have too many lines of code
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S138.severity = warning
-sonar.S138.maximumMethodLength = 80
 
 # S1449: Culture should be specified for "string" operations
 # Enabled: False, Severity: warning
@@ -260,7 +255,7 @@ dotnet_diagnostic.S1449.severity = none
 dotnet_diagnostic.S1450.severity = warning
 
 # S1451: Track lack of copyright and license headers
-# Enabled: False, Severity: none
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S1451.severity = none
 
 # S1479: "switch" statements with many "case" clauses should have only one statement
@@ -847,7 +842,7 @@ dotnet_diagnostic.S3261.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S3262.severity = warning
 
-# S3263: Static fields should appear in the order they must be initialized
+# S3263: Static fields should appear in the order they must be initialized 
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S3263.severity = warning
 
