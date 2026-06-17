@@ -63,13 +63,71 @@ If **any** of those conditions is false, run the full suite (`dotnet test`) befo
   - Top-level `*Should.cs` files cover cross-cutting concerns (happy path, package metadata,
     StyleCop, banned-API).
   - Large test classes are split into logically-grouped files under a folder named after the
-    originator: `CodeAnalysisRules/`, `CodingStandards/`, `MeziantouAnalyzers/`. Each split
-    file is named `<OriginalClass><Group>Should.cs` and its namespace mirrors the folder.
+    originator: `CodeAnalysisRules/`, `CodingStandards/`, `MeziantouAnalyzers/`,
+    `SonarAnalyzerRules/`. Each split file is named `<OriginalClass><Group>Should.cs` and
+    its namespace mirrors the folder.
   - `UntestableRules.cs` holds class-level `[RuleDoc]` entries for rules that cannot be
     triggered by the single-project build harness.
 - `scripts/` — the dependency-sync check (run as a `dotnet` file-based app).
 - The solution **dogfoods itself** via `Directory.Build.props`/`.targets`, which import
   the package's own props/targets.
+
+## Key file paths
+
+| Purpose | Path |
+|---------|------|
+| Test base class | `tests/Opinionated.DotNet.CodingStandards.Tests/CodingStandardsTestBase.cs` |
+| SARIF assertion helper | `tests/Opinionated.DotNet.CodingStandards.Tests/Helpers/BuildOutputFile.cs` |
+| Throwaway project builder | `tests/Opinionated.DotNet.CodingStandards.Tests/Helpers/ProjectBuilder.cs` |
+| Untestable rules catalog | `tests/Opinionated.DotNet.CodingStandards.Tests/UntestableRules.cs` |
+| Analyzer editorconfigs | `packages/Opinionated.DotNet.CodingStandards/pkgsrc/config/analyzers/` |
+
+## Canonical test pattern
+
+```csharp
+[Collection(nameof(PackageCollection))]
+public class MyAnalyzerRulesShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
+    : CodingStandardsTestBase(fixture, testOutputHelper)
+{
+    [Fact]
+    [RuleDoc("RULEXX", "Rule description", HelpLink = "https://...")]
+    public async Task ShortDescriptionOfViolation()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            // optional: properties: [("NuGetAudit", "false")],
+            // optional: packageReferences: [("Microsoft.Extensions.Logging.Abstractions", "10.0.0")]
+        );
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            // ... code that TRIGGERS the rule ...
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("RULEXX").ShouldBeTrue();
+    }
+}
+```
+
+**`BuildOutputFile` assertion API** (all methods are on the value returned by `BuildAndGetOutputAsync`):
+- `buildOutput.HasError("RULEID")` — rule fires as `error` (most common — package sets most rules to `warning` which the ErrorLog treats as `error`)
+- `buildOutput.HasWarning("RULEID")` — rule fires as `warning`
+- `buildOutput.HasNote("RULEID")` — rule fires as `note`
+- `buildOutput.HasError()` — any error exists (used in happy-path / negative tests)
+
+## How to add a new rule test
+
+1. **Find the right file** — pick the `*Should.cs` file for the rule's analyzer family:
+   `CodeAnalysisRules/`, `MeziantouAnalyzers/`, `SonarAnalyzerRules/`, or a top-level file
+   (e.g. `StyleCopAnalyzersShould.cs`). Keep files under 1000 lines; create a new split file
+   if the target is near that limit.
+2. **Write the test** using the canonical pattern above.
+3. **Remove from `UntestableRules.cs`** if a class-level `[RuleDoc]` for this rule ID already
+   exists there.
+4. **Verify in isolation** before committing:
+   ```powershell
+   dotnet build
+   dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+   ```
 
 ## Test conventions
 
