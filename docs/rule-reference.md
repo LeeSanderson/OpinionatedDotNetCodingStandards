@@ -68,6 +68,26 @@ Rules set to `none` or `silent` are omitted.
 | `MA0180` | ILogger type parameter should match containing type | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0180.md) |
 | `MA0181` | Do not use cast | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0181.md) |
 | `MA0182` | Avoid unused internal types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0182.md) |
+| `MA0183` | The format string should use placeholders | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0183.md) |
+| `MA0184` | Do not use interpolated string without parameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0184.md) |
+| `MA0185` | Simplify string.Create when all parameters are culture invariant | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0185.md) |
+| `MA0186` | Equals method should use [NotNullWhen(true)] on the parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0186.md) |
+| `MA0187` | Use constructor injection instead of [Inject] attribute | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0187.md) |
+| `MA0188` | Use System.TimeProvider instead of a custom time abstraction | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0188.md) |
+| `MA0189` | Use InlineArray instead of fixed-size buffers | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0189.md) |
+| `MA0190` | Use partial property instead of partial method for GeneratedRegex | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0190.md) |
+| `MA0191` | Do not use the null-forgiving operator | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0191.md) |
+| `MA0192` | Use HasFlag instead of bitwise checks | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0192.md) |
+| `MA0193` | Use an overload with a MidpointRounding argument | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0193.md) |
+| `MA0194` | Merge is expressions on the same value | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0194.md) |
+| `MA0195` | Do not use static fields before they are initialized | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0195.md) |
+| `MA0196` | Do not use inheritdoc on non-inheriting members | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0196.md) |
+| `MA0197` | Add dedicated documentation on types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0197.md) |
+| `MA0198` | Specify cref for ambiguous inheritdoc on types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0198.md) |
+| `MA0199` | Do not use inheritdoc on types without inheritance source | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0199.md) |
+| `MA0200` | Do not use empty property patterns with non-nullable value types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0200.md) |
+| `MA0201` | Do not use zero-valued enum flags in flag checks | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0201.md) |
+| `MA0202` | Conditional compilation branches have identical code | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0202.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
@@ -340,6 +360,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA2263` | Prefer generic overload when type is known | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2263) |
 | `CA2264` | Do not pass a non-nullable value to 'ArgumentNullException.ThrowIfNull' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2264) |
 | `CA2265` | Do not compare Span<T> to 'null' or 'default' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2265) |
+| `CA2266` | File-based program entry point should start with '#!' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266) |
 | `CA2300` | Do not use insecure deserializer BinaryFormatter | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300) |
 | `CA2301` | Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301) |
 | `CA2302` | Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302) |
@@ -732,22 +753,22 @@ Rules set to `none` or `silent` are omitted.
 | `S6609` | Min/Max properties of Set types should be used instead of the Enumerable extension methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6609/) |
 | `S6612` | The lambda parameter should be used instead of capturing arguments in ConcurrentDictionary methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6612/) |
 | `S6613` | “First” and “Last” properties of “LinkedList” should be used instead of the “First()” and “Last()” extension methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6613/) |
-| `S6617` |  | warning |  |
-| `S6618` |  | warning |  |
+| `S6617` | "Contains" should be used instead of "Any" for simple equality checks | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6617/) |
+| `S6618` | "string.Create" should be used instead of "FormattableString" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6618/) |
 | `S6640` | Using unsafe code blocks is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6640/) |
-| `S6664` |  | warning |  |
-| `S6667` |  | warning |  |
-| `S6668` |  | warning |  |
+| `S6664` | The code block contains too many logging calls | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6664/) |
+| `S6667` | Logging in a catch clause should pass the caught exception as a parameter | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6667/) |
+| `S6668` | Logging arguments should be passed to the correct parameter | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6668/) |
 | `S6669` | Logger field or property name should comply with a naming convention | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6669/) |
-| `S6670` |  | warning |  |
+| `S6670` | "Trace.Write" and "Trace.WriteLine" should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6670/) |
 | `S6673` | Log message template placeholders should be in the right order | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6673/) |
 | `S6674` | Log message template should be syntactically correct | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6674/) |
 | `S6675` | Trace.WriteLineIf should not be used with TraceSwitch levels | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6675/) |
-| `S6677` |  | warning |  |
+| `S6677` | Message template placeholders should be unique | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6677/) |
 | `S6797` | Blazor query parameter type should be supported | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6797/) |
-| `S6798` |  | warning |  |
+| `S6798` | [JSInvokable] attribute should only be used on public methods | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6798/) |
 | `S6800` | Component parameter type should match the route parameter type constraint | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6800/) |
-| `S6802` |  | warning |  |
+| `S6802` | Using lambda expressions in loops should be avoided in Blazor markup section | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6802/) |
 | `S6803` | Parameters with SupplyParameterFromQuery attribute should be used only in routable components | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6803/) |
 | `S6930` | Backslash should be avoided in route templates | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6930/) |
 | `S6931` | ASP.NET controller actions should not have a route template starting with "/" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-6931/) |
