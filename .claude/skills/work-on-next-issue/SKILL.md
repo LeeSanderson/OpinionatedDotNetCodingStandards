@@ -52,11 +52,28 @@ Classify the issue before choosing an approach:
 
 Skip this step entirely for pure documentation or pipeline issues.
 
-For code changes, before committing run and fix any failures:
+For code changes:
 
-```powershell
-dotnet build && dotnet test
-```
+1. **Build first:**
+   ```powershell
+   dotnet build
+   ```
+
+2. **Run only the new/changed test(s) with a filter** (fast — seconds, not minutes):
+   ```powershell
+   dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+   ```
+   Fix failures before proceeding.
+
+3. **Decide whether the full suite is needed.** Consult AGENTS.md §Test speed.
+   Skip the full suite if ALL hold:
+   - Only new `[Fact]` methods added to existing test classes (and/or a `UntestableRules.cs` removal)
+   - No changes to shared helpers, package content, or editorconfigs
+   
+   Otherwise run the full suite:
+   ```powershell
+   dotnet test --no-build
+   ```
 
 If the solution has a `dotnet format` (or analyzer/style) gate, run it too and fix any violations before committing.
 

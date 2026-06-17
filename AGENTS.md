@@ -31,7 +31,27 @@ dotnet ./scripts/CheckNugetDependenciesMatchProps.cs          # verify nuspec de
 ```
 
 CI builds with `-c Release`. Tests spin up real `dotnet pack`/`dotnet build` processes,
-so they need network access to nuget.org and are slower than typical unit tests.
+so they need network access to nuget.org and are slower than typical unit tests (~40 min full suite).
+
+## Test speed
+
+**Always verify a new test in isolation first** using `--filter` before running the full suite:
+
+```powershell
+dotnet build
+dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+```
+
+**Skip the full suite and commit directly** when ALL of the following hold — these changes
+cannot regress existing tests:
+
+1. The only source changes are new `[Fact]` methods added to existing `*Should.cs` test classes
+   (and/or removing the corresponding `[RuleDoc]` entry from `UntestableRules.cs`)
+2. No changes to shared test helpers: `ProjectBuilder`, `PackageFixture`, `PathHelpers`,
+   `RuleReferenceGenerator`, `RuleDocAttribute`, or any file under `tests/*/Helpers/`
+3. No changes to package content: `pkgsrc/`, `*.editorconfig`, `*.nuspec`, `Directory.Packages.props`
+
+If **any** of those conditions is false, run the full suite (`dotnet test`) before committing.
 
 ## Project structure
 

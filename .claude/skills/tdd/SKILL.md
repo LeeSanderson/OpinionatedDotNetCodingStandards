@@ -79,6 +79,15 @@ GREEN: Write minimal code to pass → test passes
 
 For a new command handler, the tracer bullet is usually the happy-path "does the work and produces the expected output" test, verified by driving the public entry point and asserting on the result (e.g. via a snapshot of the produced content).
 
+**Verify each RED→GREEN cycle with a targeted filter, not the full suite:**
+
+```powershell
+dotnet test --no-build --filter "FullyQualifiedName~MyTestMethodName"
+```
+
+Run the full suite only once — before committing — and only when shared infrastructure
+changed (see AGENTS.md §Test speed for when it is safe to skip the full suite).
+
 ### 3. Incremental Loop
 
 For each remaining behavior:
@@ -103,7 +112,7 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 - [ ] Deepen modules (move complexity behind simple interfaces)
 - [ ] Apply SOLID principles where natural
 - [ ] Consider what new code reveals about existing code
-- [ ] Run `dotnet test` after each refactor step
+- [ ] Run `dotnet test --filter "FullyQualifiedName~<affected class>"` after each refactor step; full suite only if shared helpers changed
 
 **Never refactor while RED.** Get to GREEN first.
 
