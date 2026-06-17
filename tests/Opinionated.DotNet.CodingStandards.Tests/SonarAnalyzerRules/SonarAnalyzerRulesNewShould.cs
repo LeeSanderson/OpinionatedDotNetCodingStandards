@@ -168,4 +168,29 @@ public class SonarAnalyzerRulesNewShould(PackageFixture fixture, ITestOutputHelp
 
         buildOutput.HasError("S6798").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6664", "The code block contains too many logging calls",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/")]
+    public async Task CodeBlockContainsTooManyLoggingCalls()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            packageReferences: [(Name: "Microsoft.Extensions.Logging.Abstractions", Version: "10.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            using Microsoft.Extensions.Logging;
+            namespace test;
+            public class C
+            {
+                public void M(ILogger logger)
+                {
+                    logger.LogWarning("First warning");
+                    logger.LogWarning("Second warning");
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6664").ShouldBeTrue();
+    }
 }

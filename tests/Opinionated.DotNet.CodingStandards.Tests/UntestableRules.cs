@@ -243,21 +243,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         preconditions for CA2266 and the rule cannot appear in SARIF. Structurally untestable on a
         project-based harness. First shipped in Microsoft.CodeAnalysis.NetAnalyzers 10.0.300.
         """)]
-[RuleDoc("S6664", "The code block contains too many logging calls",
-    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/",
-    Untestable = """
-        S6664 (LoggingCallsThreshold) is registered with `Enabled: false` in the SonarAnalyzer.CSharp
-        assembly — the rule's default diagnostics descriptor has DiagnosticSeverity.Info and its
-        IsEnabledByDefault flag is false. While setting dotnet_diagnostic.S6664.severity = warning in
-        editorconfig overrides the severity, it does NOT override the IsEnabledByDefault gate on the
-        Sonar SyntaxNodeAction registration: the action is registered unconditionally but the SonarQube
-        build-time diagnostic suppression logic still honours the disabled state. Additionally, S6664
-        has a configurable threshold (default maximumLogCallsPerBlock = 2) that is not configurable via
-        editorconfig; any attempt to drive more than the threshold number of ILogger calls in a block
-        did not produce S6664 in SARIF. Empirically verified: three distinct ILogger.LogXxx calls in a
-        single catch block with Microsoft.Extensions.Logging.Abstractions 10.0.0 and explicit
-        severity=warning produced no S6664 diagnostic. Genuine untestable in this harness.
-        """)]
 [RuleDoc("S6802", "Using lambda expressions in loops should be avoided in Blazor markup section",
     HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6802/",
     Untestable = """
