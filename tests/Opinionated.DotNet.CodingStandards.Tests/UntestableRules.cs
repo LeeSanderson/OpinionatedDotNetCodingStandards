@@ -270,17 +270,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         single catch block with Microsoft.Extensions.Logging.Abstractions 10.0.0 and explicit
         severity=warning produced no S6664 diagnostic. Genuine untestable in this harness.
         """)]
-[RuleDoc("S6798", "[JSInvokable] attribute should only be used on public methods",
-    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6798/",
-    Untestable = """
-        S6798 fires when a non-public method carries [Microsoft.JSInterop.JSInvokableAttribute]. That
-        attribute lives in Microsoft.JSInterop, which on .NET 6+ is a framework-provided assembly (part
-        of the Microsoft.AspNetCore.App shared framework). It is not available as a standalone NuGet
-        package on net10.0 targets, so the test harness cannot add it as a PackageReference. Without
-        [JSInvokableAttribute] resolvable in the compilation, the rule's symbol-scan predicate can never
-        match and no S6798 diagnostic appears in SARIF. Structurally untestable without a Blazor /
-        ASP.NET Core WebAssembly project.
-        """)]
 [RuleDoc("S6802", "Using lambda expressions in loops should be avoided in Blazor markup section",
     HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6802/",
     Untestable = """

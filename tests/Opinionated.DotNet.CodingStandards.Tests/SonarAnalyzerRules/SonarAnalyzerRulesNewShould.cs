@@ -142,4 +142,30 @@ public class SonarAnalyzerRulesNewShould(PackageFixture fixture, ITestOutputHelp
 
         buildOutput.HasError("S6677").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S6798", "[JSInvokable] attribute should only be used on public methods",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6798/")]
+    public async Task JSInvokableAttributeShouldOnlyBeUsedOnPublicMethods()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.JSInterop
+            {
+                public sealed class JSInvokableAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                public class C
+                {
+                    [Microsoft.JSInterop.JSInvokable]
+                    private void M() { }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S6798").ShouldBeTrue();
+    }
 }
