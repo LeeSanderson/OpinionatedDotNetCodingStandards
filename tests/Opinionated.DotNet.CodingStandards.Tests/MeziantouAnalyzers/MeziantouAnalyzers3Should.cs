@@ -173,6 +173,25 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
     }
 
     [Fact]
+    [RuleDoc("MA0191", "Do not use the null-forgiving operator",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0191.md")]
+    public async Task DoNotUseTheNullForgivingOperator()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public string M() { string x = null!; return x; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0191").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("MA0192", "Use HasFlag instead of bitwise checks",
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0192.md")]
     public async Task UseHasFlagInsteadOfBitwiseChecks()

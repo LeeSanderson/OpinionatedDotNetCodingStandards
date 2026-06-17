@@ -243,18 +243,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         preconditions for CA2266 and the rule cannot appear in SARIF. Structurally untestable on a
         project-based harness. First shipped in Microsoft.CodeAnalysis.NetAnalyzers 10.0.300.
         """)]
-[RuleDoc("MA0191", "Do not use the null-forgiving operator",
-    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0191.md",
-    Untestable = """
-        MA0191 is registered with IsEnabledByDefault=false in Meziantou.Analyzer 3.x. Empirical testing
-        with multiple `!` operator patterns (nullable parameter `value!`, null-checked field `_value!`,
-        member access `value!.Length`) all produce zero MA0191 diagnostics in build SARIF even with
-        dotnet_diagnostic.MA0191.severity=warning in the package editorconfig. Setting the editorconfig
-        severity is not sufficient to activate this particular "Enabled: False" rule; the Meziantou
-        documentation indicates additional opt-in configuration (a Meziantou-specific analyzer option)
-        is required to enable rules that are off by default due to high false-positive risk. Without
-        that option present in the test harness's editorconfig context, the rule cannot be triggered.
-        """)]
 [RuleDoc("S6664", "The code block contains too many logging calls",
     HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/",
     Untestable = """
