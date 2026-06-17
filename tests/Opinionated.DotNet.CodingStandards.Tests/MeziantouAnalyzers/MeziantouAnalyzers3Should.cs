@@ -85,6 +85,34 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
     }
 
     [Fact]
+    [RuleDoc("MA0187", "Use constructor injection instead of [Inject] attribute",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0187.md")]
+    public async Task UseConstructorInjectionInsteadOfInjectAttribute()
+    {
+        using var project = await CreateProjectBuilderAsync(
+            properties: [("AssemblyVersion", "9.0.0.0")]);
+        await project.AddFileAsync("Program.cs", """
+            namespace Microsoft.AspNetCore.Components
+            {
+                public interface IComponent { }
+                public sealed class InjectAttribute : System.Attribute { }
+            }
+            namespace test
+            {
+                public class MyComponent : Microsoft.AspNetCore.Components.IComponent
+                {
+                    [Microsoft.AspNetCore.Components.Inject]
+                    public System.IServiceProvider? Services { get; set; }
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0187").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("MA0188", "Use System.TimeProvider instead of a custom time abstraction",
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0188.md")]
     public async Task UseSystemTimeProviderInsteadOfCustomAbstraction()

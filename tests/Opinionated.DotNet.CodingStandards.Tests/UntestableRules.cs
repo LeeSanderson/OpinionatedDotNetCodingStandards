@@ -255,18 +255,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         is required to enable rules that are off by default due to high false-positive risk. Without
         that option present in the test harness's editorconfig context, the rule cannot be triggered.
         """)]
-[RuleDoc("MA0187", "Use constructor injection instead of [Inject] attribute",
-    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0187.md",
-    Untestable = """
-        MA0187 fires when a property or field is decorated with
-        [Microsoft.AspNetCore.Components.InjectAttribute] — a Blazor-specific attribute that tells the
-        Blazor renderer to inject the property via the DI container rather than through the constructor.
-        The attribute lives in Microsoft.AspNetCore.Components, which is a framework-provided assembly on
-        .NET 6+ (no independent NuGet package). Adding it as a PackageReference in the test harness is
-        not possible on net10.0 (it is an in-box framework assembly). Without [InjectAttribute] in
-        scope, the rule's symbol-scan predicate can never match, so no violation can appear in SARIF.
-        Structurally untestable without a Blazor project setup.
-        """)]
 [RuleDoc("S6664", "The code block contains too many logging calls",
     HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6664/",
     Untestable = """
