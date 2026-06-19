@@ -307,6 +307,46 @@ None — can start immediately.
 - User story 2 (add test coverage for each newly-discovered rule)
 ```
 
+After writing the last per-rule issue, append one final issue numbered `NNN+1` (the next sequence number after the last per-rule issue):
+
+```markdown
+## Parent PRD
+
+`issues/prd.md`
+
+## What to build
+
+Regenerate `docs/rule-reference.md` now that all new rule tests from this bump have been
+written (or declared untestable). The reference is generated from the editorconfig files and
+the test assembly's `[RuleDoc]` attributes, so it must be regenerated **after** all per-rule
+issues are complete to include the correct test links.
+
+## Acceptance criteria
+
+- [ ] `docs/rule-reference.md` has been regenerated and the new rule IDs appear in it
+- [ ] The file is committed
+
+## How to implement
+
+Run the generation script:
+
+```powershell
+dotnet ./scripts/GenerateRuleReference.cs
+```
+
+Verify the new rule IDs appear in `docs/rule-reference.md`, then commit.
+
+## Blocked by
+
+All per-rule test issues for this PRD (issues NNN through NNN).
+
+## User stories addressed
+
+- User story 3 (test suite remains green and package remains releasable)
+```
+
+> **Important:** this issue must be the **last** issue listed in the PRD and must always be created, even if there is only one per-rule issue. It is the gate that confirms the docs are up to date before the PRD is closed.
+
 ## 10. Output a summary
 
 After all files are written, print:
@@ -316,10 +356,11 @@ Updated packages:
   SonarAnalyzer.CSharp: 10.27.0.140913 → 10.28.0.XXXXXX
 
 Created PRD: issues/prd.md
-Created 12 issues:
-  issues/001-test-s1234.md   (S1234 — Description of rule)
-  issues/002-test-ca1234.md  (CA1234 — Description of rule)
+Created 13 issues:
+  issues/001-test-s1234.md        (S1234 — Description of rule)
+  issues/002-test-ca1234.md       (CA1234 — Description of rule)
   ...
+  issues/013-update-rule-reference.md  (regenerate docs/rule-reference.md)
 
 Next step: run `dotnet test` to verify the full suite is still green, then commit.
 ```
@@ -329,6 +370,7 @@ Next step: run `dotnet test` to verify the full suite is still green, then commi
 - Always update `Directory.Packages.props` and `.nuspec` together — never drift.
 - Always run `CheckNugetDependenciesMatchProps.cs` after editing versions.
 - Always run the editorconfig update script and build before writing issues.
+- Always create a final `NNN-update-rule-reference.md` issue as the last issue in the PRD.
 - Never create an issue for a rule that already has a `[RuleDoc]`.
 - Never mark a rule untestable without exhausting the confounder playbook.
 - Do not commit — the user reviews and commits when ready.

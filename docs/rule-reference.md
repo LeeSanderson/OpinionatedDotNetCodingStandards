@@ -88,6 +88,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0200` | Do not use empty property patterns with non-nullable value types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0200.md) |
 | `MA0201` | Do not use zero-valued enum flags in flag checks | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0201.md) |
 | `MA0202` | Conditional compilation branches have identical code | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0202.md) |
+| `MA0203` | Do not use return tag for void method | warning | [docs](https://www.meziantou.net/analyzer/rules/203) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
