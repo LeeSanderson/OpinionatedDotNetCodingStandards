@@ -186,7 +186,21 @@ deliberately rather than suppressing inline.
 
 ## Git & boundaries
 
-- Branch from `main`; open a PR. Commit/push only when asked.
+- **Never commit or push directly to `main`.** All changes must land via a feature branch
+  and PR.
+- **Branch naming — PRD-linked work:** all issues that share a parent PRD commit to
+  `feat/<prd-slug>`, where `<prd-slug>` is the PRD filename stripped of the `issues/`
+  prefix and `.md` suffix. Example: issues whose `Parent PRD` is
+  `issues/prd-renovate-branch-protection.md` all land on
+  `feat/prd-renovate-branch-protection`.
+- **Branch naming — standalone issues:** issues with no `Parent PRD` commit to
+  `feat/NNN-issue-slug`, where `NNN-issue-slug` is the issue filename stripped of the
+  `issues/` prefix and `.md` suffix. Example: `issues/007-fix-something.md` → branch
+  `feat/007-fix-something`.
+- **Unexpected branch:** when invoked on a branch that does not match the expected name
+  derived from the issue, warn the user and default to refusing — do not mix unrelated
+  issues onto the same branch. Ask the user to switch branches manually.
+- Commit/push only when asked.
 - **Never commit secrets** (e.g. the NuGet.org API key) — they belong in CI secrets, not
   the repo.
 - Skills under `.claude/skills/` are intentionally **.NET-generic and project-agnostic** —

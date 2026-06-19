@@ -410,4 +410,25 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0202").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0203", "Do not use return tag for void method",
+        HelpLink = "https://www.meziantou.net/analyzer/rules/203")]
+    public async Task ProhibitReturnTagOnVoidMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                /// <summary>Does something.</summary>
+                /// <returns>Nothing — this is wrong on a void method.</returns>
+                public static void DoSomething() { }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0203").ShouldBeTrue();
+    }
 }

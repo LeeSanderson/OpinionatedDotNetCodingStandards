@@ -77,13 +77,29 @@ For code changes:
 
 If the solution has a `dotnet format` (or analyzer/style) gate, run it too and fix any violations before committing.
 
-## 6. Close the issue
+## 6. Branch check
+
+Before committing, verify you are on the correct branch for this issue.
+
+**Derive the expected branch name:**
+1. Read the chosen issue file's `## Parent PRD` field.
+   - If present: derive branch as `feat/<prd-slug>`, where `<prd-slug>` is the PRD filename with the `issues/` prefix and `.md` suffix stripped.  
+     Example: `Parent PRD: issues/prd-renovate-branch-protection.md` → `feat/prd-renovate-branch-protection`
+   - If absent: derive branch as `feat/NNN-issue-slug`, where `NNN-issue-slug` is the issue filename with the `issues/` prefix and `.md` suffix stripped.  
+     Example: `issues/007-fix-something.md` → `feat/007-fix-something`
+
+**Three-way logic:**
+- **Currently on `main`** → create and checkout the expected branch (`git checkout -b <expected>`), then proceed.
+- **Already on the expected branch** → proceed.
+- **On a different feature branch** → warn the user, refuse to commit by default; ask them to switch to `<expected>` manually before re-running.
+
+## 7. Close the issue
 
 - If complete: move the issue file to `issues/done/`.
 - If incomplete: append a note to the issue file describing what was done and what's left.
 
 
-## 7. Commit
+## 8. Commit
 
 Make one git commit. The message must include:
 

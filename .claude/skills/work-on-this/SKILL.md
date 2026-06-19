@@ -67,7 +67,22 @@ dotnet format &&dotnet build && dotnet test
 
 If the `dotnet format` gate fails, fix any violations and ensure `dotnet build` and `dotnet test` pass before committing.
 
-## 6. Commit
+## 6. Branch check
+
+Before committing, verify you are on the correct branch for this task.
+
+**Derive the expected branch name:**
+1. Take the first five words of `{{args}}` (the task description).
+2. Lowercase them, replace spaces with hyphens, strip punctuation.
+3. Prepend `feat/`.  
+   Example: `Add support for CA1234 rule` → `feat/add-support-for-ca1234-rule`
+
+**Three-way logic:**
+- **Currently on `main`** → create and checkout the expected branch (`git checkout -b <expected>`), then proceed.
+- **Already on the expected branch** → proceed.
+- **On a different feature branch** → warn the user, refuse to commit by default; ask them to switch to `<expected>` manually before re-running.
+
+## 7. Commit
 
 Make one git commit. The message must include:
 

@@ -40,7 +40,30 @@ All analyzer packages are already up to date:
   ...
 ```
 
-## 3. Update version files
+## 3. Create and switch to a feature branch
+
+Before modifying any files, create a branch for this update run:
+
+1. Derive today's date in `YYYY-MM-DD` format (use the `currentDate` from the system context or run `Get-Date -Format "yyyy-MM-dd"`).
+2. Set the branch name to `feat/bump-analyzers-YYYY-MM-DD` (substituting the real date).
+3. Check whether the branch already exists:
+   ```powershell
+   git show-ref --verify --quiet refs/heads/feat/bump-analyzers-YYYY-MM-DD
+   ```
+4. If the branch **does not exist** → create it and switch:
+   ```powershell
+   git checkout -b feat/bump-analyzers-YYYY-MM-DD
+   ```
+5. If the branch **already exists** (e.g. a prior run on the same day) → switch to it without creating a duplicate:
+   ```powershell
+   git checkout feat/bump-analyzers-YYYY-MM-DD
+   ```
+
+Then continue with the rest of the workflow on this branch.
+
+> **This step is skipped entirely when no updates were found in step 2.**
+
+## 4. Update version files
 
 For each package with a new version, update **both** files in a single pass — they must never drift:
 
@@ -52,7 +75,7 @@ Change the `version=` attribute on the matching `<PackageReference>` element.
 
 Change the `version=` attribute on the matching `<dependency>` element inside `<metadata>/<dependencies>`.
 
-## 4. Run the editorconfig update script
+## 5. Run the editorconfig update script
 
 ```powershell
 dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
@@ -75,7 +98,7 @@ If the script errors with "No analyzer packages resolved", restore first:
 dotnet restore && dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
 ```
 
-## 5. Verify package-version sync
+## 6. Verify package-version sync
 
 ```powershell
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
@@ -83,7 +106,7 @@ dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
 
 If this fails, the `Directory.Packages.props` and `.nuspec` versions are still mismatched — fix before proceeding.
 
-## 6. Build to confirm no regressions
+## 7. Build to confirm no regressions
 
 ```powershell
 dotnet build
@@ -91,7 +114,7 @@ dotnet build
 
 If the build fails because a newly-added rule fires on the repo's own code, the editorconfig severity for that rule needs adjusting before proceeding. Only suppress a rule in editorconfig deliberately — never inline.
 
-## 7. Write the PRD
+## 8. Write the PRD
 
 Check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, write at `issues/prd.md`. If `issues/prd.md` already exists, write at `issues/prd-update-YYYY-MM-DD.md` (use today's date from the system).
 
@@ -159,7 +182,7 @@ The editorconfig update script adds new rules at their default/suggested severit
 `Added:` output to identify rules that might warrant a different severity.
 ```
 
-## 8. Create one issue per new rule
+## 9. Create one issue per new rule
 
 For each rule ID collected in step 4, first check whether a `[RuleDoc]` already exists anywhere in the test assembly:
 
@@ -284,7 +307,47 @@ None — can start immediately.
 - User story 2 (add test coverage for each newly-discovered rule)
 ```
 
-## 9. Output a summary
+After writing the last per-rule issue, append one final issue numbered `NNN+1` (the next sequence number after the last per-rule issue):
+
+```markdown
+## Parent PRD
+
+`issues/prd.md`
+
+## What to build
+
+Regenerate `docs/rule-reference.md` now that all new rule tests from this bump have been
+written (or declared untestable). The reference is generated from the editorconfig files and
+the test assembly's `[RuleDoc]` attributes, so it must be regenerated **after** all per-rule
+issues are complete to include the correct test links.
+
+## Acceptance criteria
+
+- [ ] `docs/rule-reference.md` has been regenerated and the new rule IDs appear in it
+- [ ] The file is committed
+
+## How to implement
+
+Run the generation script:
+
+```powershell
+dotnet ./scripts/GenerateRuleReference.cs
+```
+
+Verify the new rule IDs appear in `docs/rule-reference.md`, then commit.
+
+## Blocked by
+
+All per-rule test issues for this PRD (issues NNN through NNN).
+
+## User stories addressed
+
+- User story 3 (test suite remains green and package remains releasable)
+```
+
+> **Important:** this issue must be the **last** issue listed in the PRD and must always be created, even if there is only one per-rule issue. It is the gate that confirms the docs are up to date before the PRD is closed.
+
+## 10. Output a summary
 
 After all files are written, print:
 
@@ -293,10 +356,11 @@ Updated packages:
   SonarAnalyzer.CSharp: 10.27.0.140913 → 10.28.0.XXXXXX
 
 Created PRD: issues/prd.md
-Created 12 issues:
-  issues/001-test-s1234.md   (S1234 — Description of rule)
-  issues/002-test-ca1234.md  (CA1234 — Description of rule)
+Created 13 issues:
+  issues/001-test-s1234.md        (S1234 — Description of rule)
+  issues/002-test-ca1234.md       (CA1234 — Description of rule)
   ...
+  issues/013-update-rule-reference.md  (regenerate docs/rule-reference.md)
 
 Next step: run `dotnet test` to verify the full suite is still green, then commit.
 ```
@@ -306,6 +370,7 @@ Next step: run `dotnet test` to verify the full suite is still green, then commi
 - Always update `Directory.Packages.props` and `.nuspec` together — never drift.
 - Always run `CheckNugetDependenciesMatchProps.cs` after editing versions.
 - Always run the editorconfig update script and build before writing issues.
+- Always create a final `NNN-update-rule-reference.md` issue as the last issue in the PRD.
 - Never create an issue for a rule that already has a `[RuleDoc]`.
 - Never mark a rule untestable without exhausting the confounder playbook.
 - Do not commit — the user reviews and commits when ready.
