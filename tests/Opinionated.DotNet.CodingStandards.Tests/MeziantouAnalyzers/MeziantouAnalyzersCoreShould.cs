@@ -3,7 +3,6 @@ using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.MeziantouAnalyzers;
 
-[Collection(nameof(PackageCollection))]
 public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

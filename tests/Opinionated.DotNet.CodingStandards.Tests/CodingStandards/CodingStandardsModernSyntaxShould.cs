@@ -3,7 +3,6 @@ using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.CodingStandards;
 
-[Collection(nameof(PackageCollection))]
 public class CodingStandardsModernSyntaxShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

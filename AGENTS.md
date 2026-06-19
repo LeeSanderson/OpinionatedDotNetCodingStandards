@@ -85,7 +85,6 @@ If **any** of those conditions is false, run the full suite (`dotnet test`) befo
 ## Canonical test pattern
 
 ```csharp
-[Collection(nameof(PackageCollection))]
 public class MyAnalyzerRulesShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

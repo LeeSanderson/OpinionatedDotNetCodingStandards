@@ -3,7 +3,6 @@ using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.SonarAnalyzerRules;
 
-[Collection(nameof(PackageCollection))]
 public class SonarAnalyzerRulesBugs3Should(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

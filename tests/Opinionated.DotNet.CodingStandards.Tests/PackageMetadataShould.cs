@@ -5,7 +5,6 @@ using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
-[Collection(nameof(PackageCollection))]
 public class PackageMetadataShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

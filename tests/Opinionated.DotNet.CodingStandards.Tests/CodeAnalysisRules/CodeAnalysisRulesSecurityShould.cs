@@ -3,7 +3,6 @@ using Shouldly;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.CodeAnalysisRules;
 
-[Collection(nameof(PackageCollection))]
 public class CodeAnalysisRulesSecurityShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
