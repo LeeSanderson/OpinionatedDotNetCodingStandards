@@ -2,7 +2,6 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;
 

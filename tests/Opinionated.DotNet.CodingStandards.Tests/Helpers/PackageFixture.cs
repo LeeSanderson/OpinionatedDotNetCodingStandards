@@ -13,7 +13,7 @@ public sealed class PackageFixture : IAsyncLifetime
 
     public string PackageDirectory => _packageDirectory.FullPath;
 
-    public async Task InitializeAsync()
+    public async ValueTask InitializeAsync()
     {
         var projectPath =
             Path.Combine(
@@ -37,9 +37,9 @@ public sealed class PackageFixture : IAsyncLifetime
         }
     }
 
-    public Task DisposeAsync()
+    public ValueTask DisposeAsync()
     {
         _packageDirectory.Dispose();
-        return Task.CompletedTask;
+        return ValueTask.CompletedTask;
     }
 }

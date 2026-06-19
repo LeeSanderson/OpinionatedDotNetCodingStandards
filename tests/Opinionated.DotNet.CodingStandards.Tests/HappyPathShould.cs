@@ -1,6 +1,5 @@
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;
 

@@ -1,7 +1,6 @@
 using System.Text.Json;
 using System.Xml.Linq;
 using CliWrap;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.Helpers;
 
