@@ -40,7 +40,30 @@ All analyzer packages are already up to date:
   ...
 ```
 
-## 3. Update version files
+## 3. Create and switch to a feature branch
+
+Before modifying any files, create a branch for this update run:
+
+1. Derive today's date in `YYYY-MM-DD` format (use the `currentDate` from the system context or run `Get-Date -Format "yyyy-MM-dd"`).
+2. Set the branch name to `feat/bump-analyzers-YYYY-MM-DD` (substituting the real date).
+3. Check whether the branch already exists:
+   ```powershell
+   git show-ref --verify --quiet refs/heads/feat/bump-analyzers-YYYY-MM-DD
+   ```
+4. If the branch **does not exist** → create it and switch:
+   ```powershell
+   git checkout -b feat/bump-analyzers-YYYY-MM-DD
+   ```
+5. If the branch **already exists** (e.g. a prior run on the same day) → switch to it without creating a duplicate:
+   ```powershell
+   git checkout feat/bump-analyzers-YYYY-MM-DD
+   ```
+
+Then continue with the rest of the workflow on this branch.
+
+> **This step is skipped entirely when no updates were found in step 2.**
+
+## 4. Update version files
 
 For each package with a new version, update **both** files in a single pass — they must never drift:
 
@@ -52,7 +75,7 @@ Change the `version=` attribute on the matching `<PackageReference>` element.
 
 Change the `version=` attribute on the matching `<dependency>` element inside `<metadata>/<dependencies>`.
 
-## 4. Run the editorconfig update script
+## 5. Run the editorconfig update script
 
 ```powershell
 dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
@@ -75,7 +98,7 @@ If the script errors with "No analyzer packages resolved", restore first:
 dotnet restore && dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
 ```
 
-## 5. Verify package-version sync
+## 6. Verify package-version sync
 
 ```powershell
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
@@ -83,7 +106,7 @@ dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
 
 If this fails, the `Directory.Packages.props` and `.nuspec` versions are still mismatched — fix before proceeding.
 
-## 6. Build to confirm no regressions
+## 7. Build to confirm no regressions
 
 ```powershell
 dotnet build
@@ -91,7 +114,7 @@ dotnet build
 
 If the build fails because a newly-added rule fires on the repo's own code, the editorconfig severity for that rule needs adjusting before proceeding. Only suppress a rule in editorconfig deliberately — never inline.
 
-## 7. Write the PRD
+## 8. Write the PRD
 
 Check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, write at `issues/prd.md`. If `issues/prd.md` already exists, write at `issues/prd-update-YYYY-MM-DD.md` (use today's date from the system).
 
@@ -159,7 +182,7 @@ The editorconfig update script adds new rules at their default/suggested severit
 `Added:` output to identify rules that might warrant a different severity.
 ```
 
-## 8. Create one issue per new rule
+## 9. Create one issue per new rule
 
 For each rule ID collected in step 4, first check whether a `[RuleDoc]` already exists anywhere in the test assembly:
 
@@ -284,7 +307,7 @@ None — can start immediately.
 - User story 2 (add test coverage for each newly-discovered rule)
 ```
 
-## 9. Output a summary
+## 10. Output a summary
 
 After all files are written, print:
 
