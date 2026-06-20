@@ -6,14 +6,14 @@ pr:
   autoCancel: true
   branches:
     include:
-      - "*"
+      - main
   drafts: false
 
 trigger:
   batch: true
   branches:
     include:
-      - "*"
+      - main
 
 variables:
   buildConfiguration: 'Release'
