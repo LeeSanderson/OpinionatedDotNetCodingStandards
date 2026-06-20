@@ -1,10 +1,8 @@
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.SonarAnalyzerRules;
 
-[Collection(nameof(PackageCollection))]
 public class SonarAnalyzerRulesBugsShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

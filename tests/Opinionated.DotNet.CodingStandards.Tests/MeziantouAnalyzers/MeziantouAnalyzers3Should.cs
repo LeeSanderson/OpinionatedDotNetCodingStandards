@@ -1,10 +1,8 @@
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests.MeziantouAnalyzers;
 
-[Collection(nameof(PackageCollection))]
 public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {

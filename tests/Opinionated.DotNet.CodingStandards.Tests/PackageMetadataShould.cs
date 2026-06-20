@@ -2,11 +2,9 @@ using System.IO.Compression;
 using System.Xml.Linq;
 using Opinionated.DotNet.CodingStandards.Tests.Helpers;
 using Shouldly;
-using Xunit.Abstractions;
 
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
-[Collection(nameof(PackageCollection))]
 public class PackageMetadataShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
     : CodingStandardsTestBase(fixture, testOutputHelper)
 {
