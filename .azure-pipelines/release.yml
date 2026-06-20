@@ -40,6 +40,15 @@ stages:
         version: $(dotnetSdkVersion)
         includePreviewVersions: true
 
+    - task: Cache@2
+      displayName: 'Cache NuGet packages'
+      inputs:
+        key: 'nuget | "$(Agent.OS)" | Directory.Packages.props | **/*.csproj'
+        restoreKeys: |
+          nuget | "$(Agent.OS)" | Directory.Packages.props
+          nuget | "$(Agent.OS)"
+        path: '$(UserProfile)\.nuget\packages'
+
     - task: DotNetCoreCLI@2
       displayName: 'Restore NuGet packages'
       inputs:
