@@ -1,26 +1,48 @@
-# PRD: Parallelise Integration Tests via xUnit v3 Migration
+# PRD: xUnit v3 Migration, Parallelisation, and Analyzer Package Update
 
 ## Problem Statement
 
-The full integration test suite takes approximately 40 minutes to run. This makes the inner
-development loop slow: confirming a new test passes, or verifying that a package change has
-not broken existing rules, requires an unreasonably long wait.
+Two related problems need to be solved together to make the test suite releasable after the
+analyzer bump:
 
-The root cause is that all 795 test methods live in a single xUnit collection
-(`PackageCollection`). xUnit guarantees that tests within a named collection run serially.
-The collection was introduced to ensure `dotnet pack` runs only once — an `ICollectionFixture`
-is a convenient way to share state — but it has the side effect of serialising the entire
-test suite, eliminating all parallelism.
+1. **Slow test suite.** The full integration test suite takes approximately 40 minutes to run.
+   All 795 test methods live in a single xUnit collection (`PackageCollection`), which
+   serialises the entire suite and eliminates all parallelism.
+
+2. **New analyzer rules without test coverage.** `Meziantou.Analyzer` has been updated from
+   3.0.105 to 3.0.107, introducing two new diagnostic rules (MA0204, MA0205) that are not yet
+   covered by the test suite. The analyzer bump must land on the same branch as the xUnit
+   migration because both touch `Directory.Packages.props`.
 
 ## Solution
 
-Upgrade the test project from xUnit 2.9.3 to xUnit v3 and use xUnit v3's
-`IAssemblyFixture<T>` to run `dotnet pack` exactly once per test assembly. With the
-pack guaranteed at the assembly level, the `PackageCollection` and all `[Collection]`
-attributes can be removed. xUnit v3 then runs test classes in parallel by default,
-reducing wall-clock time from ~40 minutes to under 10 minutes.
+1. **xUnit v3 migration.** Upgrade the test project from xUnit 2.9.3 to xUnit v3 and use
+   `IAssemblyFixture<T>` to run `dotnet pack` exactly once per test assembly. Remove
+   `PackageCollection` and all `[Collection]` attributes so xUnit v3 runs test classes in
+   parallel by default, reducing wall-clock time from ~40 minutes to under 10 minutes.
+
+2. **Analyzer bump.** Update `Meziantou.Analyzer` from 3.0.105 to 3.0.107 in
+   `Directory.Packages.props` and `.nuspec`, regenerate the affected editorconfig, and add
+   test coverage for the two newly-discovered rules.
+
+## Updated Packages
+
+| Package | Old Version | New Version |
+|---------|------------|------------|
+| Meziantou.Analyzer | 3.0.105 | 3.0.107 |
+| Meziantou.Analyzer | 3.0.107 | 3.0.108 |
+
+## Newly Discovered Rules
+
+| Rule ID | Editorconfig | Status |
+|---------|-------------|--------|
+| MA0204 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+| MA0205 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+| MA0206 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
 
 ## User Stories
+
+### xUnit v3 Migration
 
 1. As a developer, I want the full integration test suite to complete in under 10 minutes,
    so that I can get fast feedback without long waits.
@@ -48,7 +70,18 @@ reducing wall-clock time from ~40 minutes to under 10 minutes.
     generator, etc.) that currently run outside the collection to continue working
     unchanged after the migration.
 
+### Analyzer Package Update
+
+13. As a maintainer, I want the analyzer packages updated so that new rules are enforced on
+    consuming projects.
+14. As a maintainer, I want each new rule covered by a test so that the package's rule coverage
+    is verified.
+15. As a maintainer, I want the test suite to remain green after the update so that the package
+    remains releasable.
+
 ## Implementation Decisions
+
+### xUnit v3 Migration
 
 - **Upgrade xUnit.** Replace the `xunit` 2.9.3 package reference with `xunit.v3`
   (the xUnit v3 meta-package). Update `xunit.runner.visualstudio` to a version that
@@ -82,18 +115,38 @@ reducing wall-clock time from ~40 minutes to under 10 minutes.
   degree = logical processor count). An `xunit.runner.json` file can be added later if
   saturation becomes a problem.
 
+### Analyzer Package Update
+
+- **`Directory.Packages.props` and `.nuspec` versions are updated in lockstep.** The
+  `CheckNugetDependenciesMatchProps.cs` script enforces this; update both together.
+- **Re-run `scripts/UpdateAnalyzerEditorConfigs.cs`** after the package bump to pick up
+  added/stale rule IDs in the editorconfig files.
+- **Each new rule gets its own issue** with guidance on how to write the test and which
+  confounders to exhaust before marking a rule untestable.
+
 ## Testing Decisions
 
+### xUnit v3 Migration
+
 This work is entirely structural — no analyzer rules, editorconfigs, or package content
-change. The existing 795 integration tests collectively constitute the test for this
-migration: if they all pass after the migration, the behaviour is preserved.
+change. The existing integration tests collectively constitute the test for this migration:
+if they all pass after the migration, the behaviour is preserved.
 
 - **Verify in isolation first.** After the migration, run a single test class using
   `--filter` to confirm the new fixture wiring works before running the full suite.
-- **Run the full suite last.** Run `dotnet test` without filters to confirm all 795 tests
+- **Run the full suite last.** Run `dotnet test` without filters to confirm all tests
   pass and that the parallel execution produces no flakiness (e.g. from shared state).
 - **No new test classes required.** The migration does not introduce logic that needs its
   own coverage.
+
+### Analyzer Package Update
+
+- Each new rule needs exactly one `[RuleDoc]` attribute — either a method-level one on a
+  `[Fact]` test, or a class-level one in `UntestableRules.cs`.
+- Before marking any rule untestable, exhaust the confounder playbook (see AGENTS.md and
+  each per-rule issue).
+- Run new tests in isolation: `dotnet test --no-build --filter "FullyQualifiedName~MyNewTest"`.
+- Only run the full suite if shared helpers or package content changed.
 
 ## Out of Scope
 
@@ -106,6 +159,8 @@ migration: if they all pass after the migration, the behaviour is preserved.
   as part of this PRD.
 - CI timing benchmarks — wall-clock improvement on GitHub Actions is expected but not
   formally measured as part of this work.
+- Bumping non-analyzer dependencies beyond xUnit v3 (e.g., `CliWrap`).
+- Changing rule severities for existing rules — that is a separate, deliberate change.
 
 ## Further Notes
 
@@ -118,4 +173,6 @@ migration: if they all pass after the migration, the behaviour is preserved.
   (`RuleDocAttributeShould`, `RuleDocCoverageShould`, `RuleReferenceGeneratorShould`,
   `EditorConfigMergeGeneratorShould`, and one other) already run in parallel today.
   They require no changes beyond any xUnit v3 namespace fixes.
+- The editorconfig update script adds new rules at their default/suggested severity. Review
+  the `Added:` output to identify rules that might warrant a different severity.
 - Branch for this work: `feat/prd-xunit-v3-parallel-tests`.

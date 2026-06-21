@@ -7,6 +7,30 @@ description: Check NuGet analyzer packages for newer versions, update Directory.
 
 Check the five analyzer NuGet packages for new versions, apply any updates, regenerate editorconfigs, and create work items for every newly-added rule.
 
+## 0. Detect context
+
+Before doing anything else, capture two facts that control later steps:
+
+**Current branch:**
+
+```powershell
+git rev-parse --abbrev-ref HEAD
+```
+
+Set `ON_FEATURE_BRANCH = true` when the result is anything other than `main` or `master`.
+
+**Active PRD:**
+
+List `issues/` (excluding `issues/done/`) and look for any `.md` file whose name begins with `prd` (e.g. `issues/prd.md`, `issues/prd-add-logging-rules.md`).
+
+Set `ACTIVE_PRD_EXISTS = true` and record the path as `ACTIVE_PRD_PATH` when such a file is found.
+
+**Combined flag — extend mode:**
+
+`EXTEND_MODE = ON_FEATURE_BRANCH AND ACTIVE_PRD_EXISTS`
+
+When `EXTEND_MODE` is true, steps 3 and 8 behave differently (detailed below). Steps 1–2, 4–7, 9–10 are unchanged.
+
 ## 1. Read current versions
 
 Read `Directory.Packages.props` to capture the current versions of all five analyzer packages:
@@ -42,7 +66,10 @@ All analyzer packages are already up to date:
 
 ## 3. Create and switch to a feature branch
 
-Before modifying any files, create a branch for this update run:
+> **This step is skipped entirely when no updates were found in step 2.**
+> **This step is also skipped when `EXTEND_MODE` is true** — the work stays on the current feature branch, which already has a home for the new issues.
+
+When `EXTEND_MODE` is **false** (i.e. we are on `main` or there is no active PRD), create a dedicated branch:
 
 1. Derive today's date in `YYYY-MM-DD` format (use the `currentDate` from the system context or run `Get-Date -Format "yyyy-MM-dd"`).
 2. Set the branch name to `feat/bump-analyzers-YYYY-MM-DD` (substituting the real date).
@@ -58,10 +85,6 @@ Before modifying any files, create a branch for this update run:
    ```powershell
    git checkout feat/bump-analyzers-YYYY-MM-DD
    ```
-
-Then continue with the rest of the workflow on this branch.
-
-> **This step is skipped entirely when no updates were found in step 2.**
 
 ## 4. Update version files
 
@@ -114,9 +137,24 @@ dotnet build
 
 If the build fails because a newly-added rule fires on the repo's own code, the editorconfig severity for that rule needs adjusting before proceeding. Only suppress a rule in editorconfig deliberately — never inline.
 
-## 8. Write the PRD
+## 8. Write or extend the PRD
 
-Check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, write at `issues/prd.md`. If `issues/prd.md` already exists, write at `issues/prd-update-YYYY-MM-DD.md` (use today's date from the system).
+### When `EXTEND_MODE` is true — extend the existing PRD
+
+Read `ACTIVE_PRD_PATH`. Locate the two Markdown tables inside it:
+
+- **`## Updated Packages`** table — append one new row per package that was bumped in this run.
+- **`## Newly Discovered Rules`** table — append one new row per rule added in this run.
+
+Do **not** alter any other section of the PRD. After editing, `ACTIVE_PRD_PATH` is still the PRD for step 9.
+
+If either table is missing from the active PRD (it may have been created by a different process), add the missing table immediately after the section heading.
+
+Skip the rest of this step (the "create new PRD" path below).
+
+### When `EXTEND_MODE` is false — create a new PRD
+
+Check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, write at `issues/prd.md`. If `issues/prd.md` already exists, write at `issues/prd-update-YYYY-MM-DD.md` (use today's date from the system). Record the path as `ACTIVE_PRD_PATH` for step 9.
 
 Use this template (fill in the real package and rule data):
 
@@ -224,12 +262,12 @@ Convert the rule description to PascalCase. For example, "Do not use string.Empt
 
 Number issues sequentially starting from the next available number (scan `issues/` for the highest `NNN-` prefix, then increment). Write each file at `issues/NNN-test-{RULEID-lowercase}.md`.
 
-Use this template:
+Use this template (substituting the real `ACTIVE_PRD_PATH` for the `Parent PRD` field):
 
 ```markdown
 ## Parent PRD
 
-`issues/prd.md`
+`{ACTIVE_PRD_PATH}`
 
 ## What to build
 
@@ -312,7 +350,7 @@ After writing the last per-rule issue, append one final issue numbered `NNN+1` (
 ```markdown
 ## Parent PRD
 
-`issues/prd.md`
+`{ACTIVE_PRD_PATH}`
 
 ## What to build
 
@@ -355,7 +393,10 @@ After all files are written, print:
 Updated packages:
   SonarAnalyzer.CSharp: 10.27.0.140913 → 10.28.0.XXXXXX
 
-Created PRD: issues/prd.md
+Extended PRD: issues/prd.md          ← use "Extended" when EXTEND_MODE was true
+  (or)
+Created PRD: issues/prd.md           ← use "Created" when EXTEND_MODE was false
+
 Created 13 issues:
   issues/001-test-s1234.md        (S1234 — Description of rule)
   issues/002-test-ca1234.md       (CA1234 — Description of rule)
@@ -373,4 +414,6 @@ Next step: run `dotnet test` to verify the full suite is still green, then commi
 - Always create a final `NNN-update-rule-reference.md` issue as the last issue in the PRD.
 - Never create an issue for a rule that already has a `[RuleDoc]`.
 - Never mark a rule untestable without exhausting the confounder playbook.
+- When on a feature branch with an active PRD, extend that PRD and stay on the branch — never create a `feat/bump-analyzers-*` branch in this situation.
+- All new issues must reference the correct `ACTIVE_PRD_PATH` in their `## Parent PRD` field.
 - Do not commit — the user reviews and commits when ready.

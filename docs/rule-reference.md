@@ -89,6 +89,9 @@ Rules set to `none` or `silent` are omitted.
 | `MA0201` | Do not use zero-valued enum flags in flag checks | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0201.md) |
 | `MA0202` | Conditional compilation branches have identical code | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0202.md) |
 | `MA0203` | Do not use return tag for void method | warning | [docs](https://www.meziantou.net/analyzer/rules/203) |
+| `MA0204` | Remove unnecessary partial modifier | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0204.md) |
+| `MA0205` | Use exclusive or operator | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0205.md) |
+| `MA0206` | Remove unnecessary braces in type declaration | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

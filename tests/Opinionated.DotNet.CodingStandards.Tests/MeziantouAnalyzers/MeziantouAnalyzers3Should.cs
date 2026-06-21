@@ -429,4 +429,54 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0203").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0204", "Remove unnecessary partial modifier",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0204.md")]
+    public async Task RemoveUnnecessaryPartialModifier()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public partial class C { }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0204").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0205", "Use exclusive or operator",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0205.md")]
+    public async Task UseExclusiveOrOperator()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static bool M(bool a, bool b) => (a && !b) || (!a && b);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0205").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0206", "Remove unnecessary braces in type declaration",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md")]
+    public async Task RemoveUnnecessaryBracesInTypeDeclaration()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Service()
+            {
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0206").ShouldBeTrue();
+    }
 }

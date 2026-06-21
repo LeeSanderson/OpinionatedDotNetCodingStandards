@@ -1011,3 +1011,18 @@ dotnet_diagnostic.MA0202.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0203.md
 # Enabled: True, Severity: warning
 dotnet_diagnostic.MA0203.severity = warning
+
+# MA0204: Remove unnecessary partial modifier
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0204.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0204.severity = warning
+
+# MA0205: Use exclusive or operator
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0205.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0205.severity = warning
+
+# MA0206: Remove unnecessary braces in type declaration
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0206.severity = warning
