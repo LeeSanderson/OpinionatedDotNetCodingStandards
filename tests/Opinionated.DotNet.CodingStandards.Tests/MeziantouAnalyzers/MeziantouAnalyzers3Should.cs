@@ -462,4 +462,21 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0205").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0206", "Remove unnecessary braces in type declaration",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md")]
+    public async Task RemoveUnnecessaryBracesInTypeDeclaration()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Service()
+            {
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0206").ShouldBeTrue();
+    }
 }
