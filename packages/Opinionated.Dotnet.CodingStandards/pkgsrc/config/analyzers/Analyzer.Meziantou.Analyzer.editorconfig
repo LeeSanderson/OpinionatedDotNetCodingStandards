@@ -1021,3 +1021,8 @@ dotnet_diagnostic.MA0204.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0205.md
 # Enabled: True, Severity: suggestion
 dotnet_diagnostic.MA0205.severity = warning
+
+# MA0206: Remove unnecessary braces in type declaration
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0206.severity = warning

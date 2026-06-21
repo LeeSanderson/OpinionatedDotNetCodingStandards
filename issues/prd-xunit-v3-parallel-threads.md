@@ -30,6 +30,7 @@ analyzer bump:
 | Package | Old Version | New Version |
 |---------|------------|------------|
 | Meziantou.Analyzer | 3.0.105 | 3.0.107 |
+| Meziantou.Analyzer | 3.0.107 | 3.0.108 |
 
 ## Newly Discovered Rules
 
@@ -37,6 +38,7 @@ analyzer bump:
 |---------|-------------|--------|
 | MA0204 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
 | MA0205 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+| MA0206 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
 
 ## User Stories
 
