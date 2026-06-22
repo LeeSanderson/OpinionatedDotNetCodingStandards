@@ -9,11 +9,12 @@ pr:
       - main
   drafts: false
 
-trigger:
-  batch: true
-  branches:
-    include:
-      - main
+# Don't trigger CI builds on pushes to main, only on PRs. This is to avoid unnecessary builds when merging PRs.
+# trigger:
+#   batch: true
+#   branches:
+#     include:
+#       - main
 
 variables:
   buildConfiguration: 'Release'
