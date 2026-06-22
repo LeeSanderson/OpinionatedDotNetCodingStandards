@@ -76,8 +76,12 @@ stages:
         arguments: '--configuration $(buildConfiguration) --no-build'
         publishTestResults: true
 
-    - script: |
-        dotnet pack src/Opinionated.DotNet.CodingStandards/Opinionated.DotNet.CodingStandards.csproj --configuration $(buildConfiguration) --no-build -p:NuspecProperties=version=$(PackageVersion) --output $(Build.ArtifactStagingDirectory)/packages
+    - powershell: |
+        dotnet pack src/Opinionated.DotNet.CodingStandards/Opinionated.DotNet.CodingStandards.csproj `
+          --configuration $(buildConfiguration) `
+          --no-build `
+          -p:NuspecProperties=version=$(PackageVersion) `
+          --output "$(Build.ArtifactStagingDirectory)\packages"
       displayName: 'Pack NuGet package'
 
     - task: PublishBuildArtifacts@1
@@ -86,6 +90,7 @@ stages:
         pathToPublish: '$(Build.ArtifactStagingDirectory)/packages'
         artifactName: 'packages'
 
-    - script: |
-        dotnet nuget push "$(Build.ArtifactStagingDirectory)/packages/*.nupkg" --api-key $(NuGetApiKey) --source https://api.nuget.org/v3/index.json --skip-duplicate
+    - powershell: |
+        $package = Get-Item "$(Build.ArtifactStagingDirectory)\packages\*.nupkg"
+        dotnet nuget push $package.FullName --api-key $(NuGetApiKey) --source https://api.nuget.org/v3/index.json --skip-duplicate
       displayName: 'Publish to NuGet.org'
