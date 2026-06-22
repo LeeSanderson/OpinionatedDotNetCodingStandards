@@ -51,19 +51,19 @@ if (-not $highest) {
 }
 
 $parts = $highest -replace '^v', '' -split '\.'
-$major = [int]$parts[0]
-$minor = [int]$parts[1]
-$patch = [int]$parts[2]
+$verMajor = [int]$parts[0]
+$verMinor = [int]$parts[1]
+$verPatch = [int]$parts[2]
 
 if ($Major) {
-    $major++; $minor = 0; $patch = 0
+    $verMajor++; $verMinor = 0; $verPatch = 0
 } elseif ($Minor) {
-    $minor++; $patch = 0
+    $verMinor++; $verPatch = 0
 } else {
-    $patch++
+    $verPatch++
 }
 
-$newTag = "v$major.$minor.$patch"
+$newTag = "v$verMajor.$verMinor.$verPatch"
 Write-Host "New tag: $newTag (previous: $highest)"
 
 if (-not $Force) {
@@ -72,7 +72,7 @@ if (-not $Force) {
         Write-Error "CHANGELOG.md not found. Use -Force to skip the changelog check."
         exit 1
     }
-    $version = "$major.$minor.$patch"
+    $version = "$verMajor.$verMinor.$verPatch"
     if ($changelog -notmatch "(?im)^##\s*\[$version\]") {
         Write-Error "CHANGELOG.md has no heading matching '## [$version]'. Add a changelog entry or use -Force to skip."
         exit 1
