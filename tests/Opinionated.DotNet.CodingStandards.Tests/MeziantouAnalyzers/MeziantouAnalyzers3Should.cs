@@ -498,4 +498,23 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0207").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0208", "[FixedAddressValueType] fields must be value types",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0208.md")]
+    public async Task RequireFixedAddressValueTypeFieldsToBeValueTypes()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Sample
+            {
+                [System.Runtime.CompilerServices.FixedAddressValueType]
+                private static string _field = "";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0208").ShouldBeTrue();
+    }
 }
