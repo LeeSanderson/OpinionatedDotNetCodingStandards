@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.0.2]
+
+### Added
+
+- Two new enforced rules from Meziantou.Analyzer 3.0.109, both at `warning` severity:
+  `MA0207` (`[FixedAddressValueType]` fields must be static) and `MA0208`
+  (`[FixedAddressValueType]` fields must be value types).
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.108 to 3.0.109.
+
+
 ## [v0.0.1]
 
 ### Added
