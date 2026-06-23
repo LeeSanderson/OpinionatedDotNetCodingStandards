@@ -479,4 +479,23 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0206").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0207", "[FixedAddressValueType] fields must be static",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0207.md")]
+    public async Task RequireFixedAddressValueTypeFieldsToBeStatic()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class Sample
+            {
+                [System.Runtime.CompilerServices.FixedAddressValueType]
+                private int _field;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0207").ShouldBeTrue();
+    }
 }
