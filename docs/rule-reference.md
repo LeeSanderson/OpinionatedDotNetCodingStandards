@@ -92,6 +92,8 @@ Rules set to `none` or `silent` are omitted.
 | `MA0204` | Remove unnecessary partial modifier | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0204.md) |
 | `MA0205` | Use exclusive or operator | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0205.md) |
 | `MA0206` | Remove unnecessary braces in type declaration | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md) |
+| `MA0207` | [FixedAddressValueType] fields must be static | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0207.md) |
+| `MA0208` | [FixedAddressValueType] fields must be value types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0208.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

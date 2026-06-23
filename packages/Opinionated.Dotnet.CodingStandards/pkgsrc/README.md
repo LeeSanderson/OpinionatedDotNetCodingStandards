@@ -26,7 +26,7 @@ Create (or edit) `Directory.Packages.props` next to your `.slnx`:
 
   <ItemGroup>
     <!-- Applies to every project in the solution; one place to bump the version -->
-    <GlobalPackageReference Include="Opinionated.DotNet.CodingStandards" Version="0.0.1" />
+    <GlobalPackageReference Include="Opinionated.DotNet.CodingStandards" Version="0.0.2" />
   </ItemGroup>
 </Project>
 ```
