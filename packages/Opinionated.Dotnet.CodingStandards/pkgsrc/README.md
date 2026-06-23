@@ -1,11 +1,43 @@
 # Opinionated.DotNet.CodingStandards
 
 Strongly opinionated coding standards for .NET — a single development-dependency
-package that wires in four Roslyn analyzer packages plus a curated editorconfig,
+package that wires in five Roslyn analyzer packages plus a curated editorconfig,
 MSBuild props, and targets so every project in your solution enforces the same
 quality bar automatically.
 
 ## Installation
+
+### Recommended: centralise across the whole solution
+
+The point of this package is that **every** project in a solution enforces the same
+standards. The cleanest way to guarantee that is [Central Package Management
+(CPM)](https://learn.microsoft.com/nuget/consume-packages/central-package-management)
+with a `GlobalPackageReference`. Declaring it once in a `Directory.Packages.props` at
+the solution root applies it to every project automatically — no per-project edits, and
+no risk of one project drifting out of line.
+
+Create (or edit) `Directory.Packages.props` next to your `.slnx`:
+
+```xml
+<Project>
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Applies to every project in the solution; one place to bump the version -->
+    <GlobalPackageReference Include="Opinionated.DotNet.CodingStandards" Version="0.0.1" />
+  </ItemGroup>
+</Project>
+```
+
+A `GlobalPackageReference` is implicitly a development-only dependency
+(`PrivateAssets="all"`), so it never flows to your published assemblies or transitive
+consumers, and you never repeat the reference in individual `.csproj` files.
+
+### Single project
+
+For a one-off project, add it directly instead:
 
 ```bash
 dotnet add package Opinionated.DotNet.CodingStandards
