@@ -72,7 +72,7 @@ if (-not $Force) {
         Write-Error "CHANGELOG.md not found. Use -Force to skip the changelog check."
         exit 1
     }
-    $version = "$verMajor.$verMinor.$verPatch"
+    $version = "v$verMajor.$verMinor.$verPatch"
     if ($changelog -notmatch "(?im)^##\s*\[$version\]") {
         Write-Error "CHANGELOG.md has no heading matching '## [$version]'. Add a changelog entry or use -Force to skip."
         exit 1

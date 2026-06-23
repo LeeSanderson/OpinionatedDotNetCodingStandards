@@ -1,9 +1,14 @@
-# Opinionated.DotNet.CodingStandards
+# Opinionated DotNet CodingStandards
 
 A NuGet development-dependency package that bundles five Roslyn analyzer packages
 together with a curated set of editorconfig rules, MSBuild props, and targets so
 every project that references it gets consistent code-quality enforcement out of the
 box.
+
+![Build Status](https://dev.azure.com/sixsideddice/SixSidedDice/_apis/build/status%2FOpinionatedDotNetCodingStandards?branchName=main)
+![Nuget](https://img.shields.io/nuget/dt/Opinionated.DotNet.CodingStandards)
+![Nuget](https://img.shields.io/nuget/v/Opinionated.DotNet.CodingStandards)
+
 
 **Bundled analyzers**
 
