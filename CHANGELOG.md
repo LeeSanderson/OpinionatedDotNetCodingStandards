@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.0.3]
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.109 to 3.0.114. No new rules are enforced, but
+  `MA0206` (remove unnecessary braces in type declaration) now also flags empty type
+  bodies such as `class Foo { }`; replace them with `class Foo;` to satisfy the rule.
+
+
 ## [v0.0.2]
 
 ### Added
