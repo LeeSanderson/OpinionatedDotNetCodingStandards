@@ -6,7 +6,7 @@
 		Keep this file in sync with the .nuspec file!
 	-->
   <ItemGroup>
-    <PackageReference Include="Meziantou.Analyzer" version="3.0.109">
+    <PackageReference Include="Meziantou.Analyzer" version="3.0.114">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
