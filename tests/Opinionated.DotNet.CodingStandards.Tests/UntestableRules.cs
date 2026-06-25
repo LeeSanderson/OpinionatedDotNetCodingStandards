@@ -254,4 +254,4 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         Both the Blazor-markup precondition and the IsEnabledByDefault gate independently make this rule
         untestable in a standard .csproj build harness.
         """)]
-public static class UntestableRules { }
+public static class UntestableRules;
