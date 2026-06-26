@@ -55,7 +55,7 @@ jobs:
       # Directory.Packages.props + all .csproj files. This speeds up only the main-solution
       # restore; the integration tests use per-fixture temporary globalPackagesFolders.
       - name: Cache NuGet packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.nuget/packages
           key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
