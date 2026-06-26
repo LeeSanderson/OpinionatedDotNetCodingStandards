@@ -5,7 +5,7 @@ together with a curated set of editorconfig rules, MSBuild props, and targets so
 every project that references it gets consistent code-quality enforcement out of the
 box.
 
-![Build Status](https://dev.azure.com/sixsideddice/SixSidedDice/_apis/build/status%2FOpinionatedDotNetCodingStandards?branchName=main)
+[![Build Status](https://github.com/LeeSanderson/OpinionatedDotNetCodingStandards/actions/workflows/ci.yml/badge.svg)](https://github.com/LeeSanderson/OpinionatedDotNetCodingStandards/actions/workflows/ci.yml)
 ![Nuget](https://img.shields.io/nuget/dt/Opinionated.DotNet.CodingStandards)
 ![Nuget](https://img.shields.io/nuget/v/Opinionated.DotNet.CodingStandards)
 
@@ -62,9 +62,9 @@ dotnet ./scripts/CheckRuleReferenceFreshness.cs
 ## Repository layout
 
 ```
-.azure-pipelines/
-    ci.yml              Per-commit build, test, pack, and freshness checks
-    outdated.yml        Scheduled weekly pipeline to report stale NuGet packages
+.github/workflows/
+    ci.yml              Per-PR build, test, pack, and freshness checks
+    release.yml         Tag-triggered (v*) build, pack, and publish to NuGet.org
 
 src/
     Opinionated.DotNet.CodingStandards/
