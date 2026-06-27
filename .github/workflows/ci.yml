@@ -1,0 +1,96 @@
+# GitHub Actions CI for Opinionated.DotNet.CodingStandards.
+#
+# Replaces the Azure DevOps ci.yml AND analyzer-bump.yml with a single, read-only PR
+# workflow. It CHECKS, never fixes: it builds, tests, and packs, and fails the PR when
+# dependencies are outdated, when the .nuspec and Directory.Packages.props disagree, or
+# when the generated analyzer editorconfigs / rule reference are stale relative to the
+# referenced analyzer packages. CI never writes to the repository (no commit-back) —
+# regenerating those generated files is the author's job, done locally (e.g. via the
+# update-nuget-packages skill).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+# Cancel superseded in-progress runs on the same PR head ref (parity with Azure autoCancel).
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+# Least privilege: CI is read-only and never pushes to the repository.
+permissions:
+  contents: read
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  build:
+    name: build
+    # Skip draft PRs (parity with Azure drafts: false). The job name `build` is the
+    # required status-check context configured on main branch protection.
+    if: github.event.pull_request.draft == false
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK (honours global.json)
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Install dotnet-outdated global tool
+        run: |
+          dotnet tool install --global dotnet-outdated-tool
+          if ($LASTEXITCODE -ne 0) { dotnet tool update --global dotnet-outdated-tool }
+
+      # Faithful port of Azure Cache@2: caches the user NuGet packages folder keyed on
+      # Directory.Packages.props + all .csproj files. This speeds up only the main-solution
+      # restore; the integration tests use per-fixture temporary globalPackagesFolders.
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore Opinionated.DotNet.CodingStandards.slnx
+
+      - name: Check for outdated packages
+        run: dotnet outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
+
+      - name: Check .nuspec dependencies match Directory.Packages.props
+        run: dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
+
+      - name: Build (Release)
+        run: dotnet build Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-restore
+
+      # Freshness checks (check, never fix). Regenerate the analyzer editorconfigs first so
+      # the rule-reference check reflects the actually-referenced analyzers, then fail on any
+      # drift over the generated editorconfig directory and docs/. No commit, no push.
+      - name: Check generated files are fresh (editorconfigs + rule reference)
+        run: |
+          dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          dotnet ./scripts/GenerateRuleReference.cs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          git diff --exit-code -- packages/Opinionated.DotNet.CodingStandards/pkgsrc/config/analyzers/ docs/
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "::error::Generated files are stale. Regenerate locally with 'dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs' then 'dotnet ./scripts/GenerateRuleReference.cs', and commit the result."
+            exit 1
+          }
+
+      - name: Test
+        run: dotnet test Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-build --output artifacts/packages

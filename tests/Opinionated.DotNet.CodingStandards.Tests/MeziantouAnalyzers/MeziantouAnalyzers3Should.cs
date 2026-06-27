@@ -517,4 +517,51 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0208").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0209", "Use in keyword for in parameter",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0209.md")]
+    public async Task UseInKeywordForInParameter()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static int M(in int value) => value;
+                public static int Call()
+                {
+                    var x = 42;
+                    return M(x);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0209").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0210", "Use in keyword to call the in overload",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md")]
+    public async Task UseInKeywordToCallTheInOverload()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static int M(int value) => value;
+                public static int M(in int value) => value;
+                public static int Call()
+                {
+                    var x = 42;
+                    return M(x);
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0210").ShouldBeTrue();
+    }
 }
