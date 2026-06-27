@@ -94,6 +94,8 @@ Rules set to `none` or `silent` are omitted.
 | `MA0206` | Remove unnecessary braces in type declaration | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0206.md) |
 | `MA0207` | [FixedAddressValueType] fields must be static | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0207.md) |
 | `MA0208` | [FixedAddressValueType] fields must be value types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0208.md) |
+| `MA0209` | Use in keyword for in parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0209.md) |
+| `MA0210` | Use in keyword to call the in overload | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
