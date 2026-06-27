@@ -37,6 +37,19 @@ Premise validated during planning: GitHub Actions usage is free with no minute c
 *larger* runners are billed, and none are used here. (GitHub reduced hosted-runner prices
 on 2026-01-01 but kept public-repo standard-runner usage free.)
 
+## Updated Packages
+
+| Package | Old Version | New Version |
+|---------|------------|------------|
+| Meziantou.Analyzer | 3.0.114 | 3.0.115 |
+
+## Newly Discovered Rules
+
+| Rule ID | Editorconfig | Status |
+|---------|-------------|--------|
+| MA0209 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+| MA0210 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+
 ## User Stories
 
 1. As a maintainer, I want CI/CD defined in the same repository as the code, so that I
