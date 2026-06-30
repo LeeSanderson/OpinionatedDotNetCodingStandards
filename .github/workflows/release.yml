@@ -75,9 +75,14 @@ jobs:
           name: packages
           path: artifacts/packages/*.nupkg
 
-      # Publish with --skip-duplicate so re-running a release (or an overlapping Azure
-      # release during the parallel-then-cut migration) is a safe no-op. The API key is
-      # read only from the encrypted secret store; it never lives in the repository.
-      # TODO(OIDC): migrate to OIDC trusted publishing to eliminate the stored API key.
+
+      # Get a short-lived NuGet API key
+      - name: NuGet login (OIDC → temp API key)
+        uses: NuGet/login@v1
+        id: login
+        with:
+          user: ${{ secrets.NUGET_USER }}
+    
+      # Push the package
       - name: Publish to NuGet.org
-        run: dotnet nuget push artifacts/packages/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: dotnet nuget push artifacts/packages/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
