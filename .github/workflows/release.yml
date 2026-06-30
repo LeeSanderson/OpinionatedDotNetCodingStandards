@@ -84,6 +84,8 @@ jobs:
         with:
           user: ${{ secrets.NUGET_USER }}
     
-      # Push the package
+      # Push the package (PowerShell does not expand globs, so resolve the path explicitly)
       - name: Publish to NuGet.org
-        run: dotnet nuget push artifacts/packages/*.nupkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: |
+          $pkg = Get-ChildItem artifacts/packages/*.nupkg | Select-Object -First 1 -ExpandProperty FullName
+          dotnet nuget push $pkg --api-key ${{steps.login.outputs.NUGET_API_KEY}} --source https://api.nuget.org/v3/index.json --skip-duplicate
