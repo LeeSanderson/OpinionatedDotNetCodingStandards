@@ -23,7 +23,7 @@ are manual GitHub UI / `gh api` actions, not code changes.
 
 - [x] A `NUGET_API_KEY` repository secret exists with the correct NuGet.org key value (verified by a successful publish path, not by reading the value).
 - [x] `main` branch protection lists both `build` and `OpinionatedDotNetCodingStandards` as required status-check contexts, with `strict: true` retained.
-- [ ] A test PR confirms both required checks must pass before merge is allowed.
+- [x] A test PR confirms both required checks must pass before merge is allowed.
 - [x] No secret value is written into the repository or any workflow file.
 
 ## Blocked by

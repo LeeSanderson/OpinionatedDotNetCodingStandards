@@ -20,11 +20,11 @@ tag (Azure acting as backstop, `--skip-duplicate` making the overlapping push a 
 
 ## Acceptance criteria
 
-- [ ] `ci.yml` has had at least one green run on a PR and `release.yml` has been validated on a real release before any teardown.
-- [ ] `main` branch protection requires only the `build` context (Azure context removed), `strict: true` retained.
-- [ ] The `.azure-pipelines/` directory is deleted from the repo.
-- [ ] The Azure Pipelines GitHub App no longer has access to the repository.
-- [ ] After teardown, a fresh PR is gated solely by the Actions `build` check and a release publishes solely via the Actions `release.yml`.
+- [x] `ci.yml` has had at least one green run on a PR and `release.yml` has been validated on a real release before any teardown.
+- [x] `main` branch protection requires only the `build` context (Azure context removed), `strict: true` retained.
+- [x] The `.azure-pipelines/` directory is deleted from the repo.
+- [x] The Azure Pipelines GitHub App no longer has access to the repository.
+- [x] After teardown, a fresh PR is gated solely by the Actions `build` check and a release publishes solely via the Actions `release.yml`.
 
 ## Blocked by
 
