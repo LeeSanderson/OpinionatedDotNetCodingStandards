@@ -1,11 +1,30 @@
 ---
 name: update-nuget-packages
-description: Check NuGet analyzer packages for newer versions, update Directory.Packages.props and .nuspec, regenerate editorconfigs, then write a PRD and per-rule issues for every new rule discovered. Use when the user wants to bump analyzer dependencies or asks "are there any NuGet updates?".
+description: Check NuGet analyzer packages for newer versions and, if any are found, autonomously drive the entire release end-to-end — PRD and issues, /implementation, cleanup, changelog, PR with auto-merge, tag, and a published NuGet release. Use when the user wants to bump analyzer dependencies or asks "are there any NuGet updates?".
 ---
 
 # Update NuGet Packages
 
-Check the five analyzer NuGet packages for new versions, apply any updates, regenerate editorconfigs, and create work items for every newly-added rule.
+Check the five analyzer NuGet packages for new versions and, if any are found, run the whole
+release lifecycle autonomously: apply the version bump, regenerate editorconfigs, write a PRD and
+per-rule issues, implement them via `/implementation`, clean up, update the changelog, open a PR,
+merge it once it's green, and cut + publish the new patch release.
+
+## What "autonomous" means here — read before invoking
+
+Once you decide there's an update to apply, this skill does not stop to ask before each subsequent
+step — it commits, pushes, opens a PR, merges to `main`, tags, and triggers a real publish to
+NuGet.org, all in one run, because that end-to-end automation is exactly what was asked for. The
+checkpoints that remain are the ones spelled out below, not a general "pause and confirm":
+
+- Step 10's commit is **local only** — nothing is pushed until step 12.5, so up to that point a
+  human still has a natural window to `git reset`/inspect before anything becomes visible upstream.
+- Step 11 only continues into step 12 on an unambiguous, fully-successful `/implementation` run
+  (every targeted issue `done`, none failed/skipped/blocked). Anything less and the run stops and
+  reports — it does not guess or partially proceed.
+- Steps 12.6, 12.8, and 12.9 each have a **stop-and-notify-loudly** condition (PR won't merge,
+  `New-ReleaseTag.ps1` fails, the release workflow fails). None of those are ever silently retried,
+  forced through, or worked around — see the Rules section.
 
 ## 0. Detect context
 
@@ -29,7 +48,7 @@ Set `ACTIVE_PRD_EXISTS = true` and record the path as `ACTIVE_PRD_PATH` when suc
 
 `EXTEND_MODE = ON_FEATURE_BRANCH AND ACTIVE_PRD_EXISTS`
 
-When `EXTEND_MODE` is true, steps 3 and 8 behave differently (detailed below). Steps 1–2, 4–7, 9–10 are unchanged.
+When `EXTEND_MODE` is true, steps 3 and 8 behave differently (detailed below). Steps 1–2, 4–7, 9–12 are unchanged.
 
 ## 1. Read current versions
 
@@ -67,23 +86,24 @@ All analyzer packages are already up to date:
 ## 3. Create and switch to a feature branch
 
 > **This step is skipped entirely when no updates were found in step 2.**
-> **This step is also skipped when `EXTEND_MODE` is true** — the work stays on the current feature branch, which already has a home for the new issues.
+> **This step is also skipped when `EXTEND_MODE` is true** — the work stays on the current feature branch, which already has a home for the new issues (`ACTIVE_PRD_PATH` from step 0).
 
-When `EXTEND_MODE` is **false** (i.e. we are on `main` or there is no active PRD), create a dedicated branch:
+When `EXTEND_MODE` is **false** (i.e. we are on `main` or there is no active PRD), create a dedicated branch. The branch name must follow AGENTS.md's PRD-linked naming rule (`feat/<prd-slug>`) — not an ad hoc name — because `/implementation` derives the exact same branch name from the PRD path when it later implements these issues; a mismatch there would make it refuse to proceed.
 
-1. Derive today's date in `YYYY-MM-DD` format (use the `currentDate` from the system context or run `Get-Date -Format "yyyy-MM-dd"`).
-2. Set the branch name to `feat/bump-analyzers-YYYY-MM-DD` (substituting the real date).
+1. **Decide the PRD path now** (step 8 will only need to write to it, not re-decide it): check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, `ACTIVE_PRD_PATH = issues/prd.md`. If `issues/prd.md` already exists (a stray file with no active branch — unusual, but possible), `ACTIVE_PRD_PATH = issues/prd-update-YYYY-MM-DD.md` (today's date, from the `currentDate` system context or `Get-Date -Format "yyyy-MM-dd"`).
+2. Derive `<prd-slug>` from `ACTIVE_PRD_PATH` by stripping the `issues/` prefix and `.md` suffix, then set the branch name to `feat/<prd-slug>`.
+   Example: `issues/prd.md` → `feat/prd`; `issues/prd-update-2026-07-06.md` → `feat/prd-update-2026-07-06`.
 3. Check whether the branch already exists:
    ```powershell
-   git show-ref --verify --quiet refs/heads/feat/bump-analyzers-YYYY-MM-DD
+   git show-ref --verify --quiet refs/heads/feat/<prd-slug>
    ```
 4. If the branch **does not exist** → create it and switch:
    ```powershell
-   git checkout -b feat/bump-analyzers-YYYY-MM-DD
+   git checkout -b feat/<prd-slug>
    ```
-5. If the branch **already exists** (e.g. a prior run on the same day) → switch to it without creating a duplicate:
+5. If the branch **already exists** (e.g. a prior run created it but the PRD wasn't committed) → switch to it without creating a duplicate:
    ```powershell
-   git checkout feat/bump-analyzers-YYYY-MM-DD
+   git checkout feat/<prd-slug>
    ```
 
 ## 4. Update version files
@@ -154,7 +174,7 @@ Skip the rest of this step (the "create new PRD" path below).
 
 ### When `EXTEND_MODE` is false — create a new PRD
 
-Check whether any open PRD file exists in `issues/` (exclude `issues/done/`). If none, write at `issues/prd.md`. If `issues/prd.md` already exists, write at `issues/prd-update-YYYY-MM-DD.md` (use today's date from the system). Record the path as `ACTIVE_PRD_PATH` for step 9.
+Write to `ACTIVE_PRD_PATH` — already decided in step 3, alongside the branch name derived from it.
 
 Use this template (fill in the real package and rule data):
 
@@ -385,9 +405,24 @@ All per-rule test issues for this PRD (issues NNN through NNN).
 
 > **Important:** this issue must be the **last** issue listed in the PRD and must always be created, even if there is only one per-rule issue. It is the gate that confirms the docs are up to date before the PRD is closed.
 
-## 10. Output a summary
+## 10. Commit the setup
 
-After all files are written, print:
+`/implementation` refuses to start against a dirty working tree (by design — it's how it
+guarantees a clean baseline for its own diffs), and right now the version bump, editorconfigs,
+PRD, and issue files are all uncommitted. Check `git status --porcelain` and confirm it shows
+exactly `Directory.Packages.props`, the `.nuspec`, the regenerated editorconfigs under
+`pkgsrc/config/analyzers/`, `ACTIVE_PRD_PATH`, and the new `issues/NNN-*.md` files — nothing else —
+then commit them as one commit on the feature branch:
+
+```powershell
+git add Directory.Packages.props packages/Opinionated.DotNet.CodingStandards/Opinionated.DotNet.CodingStandards.nuspec
+git add packages/Opinionated.DotNet.CodingStandards/pkgsrc/config/analyzers
+git add "<ACTIVE_PRD_PATH>" issues/*.md
+git commit -m "Bump analyzer packages and add rule-coverage backlog for the new rules"
+```
+
+This is a **local** commit only — nothing is pushed until step 12.5. Print a summary before moving
+on:
 
 ```
 Updated packages:
@@ -403,8 +438,145 @@ Created 13 issues:
   ...
   issues/013-update-rule-reference.md  (regenerate docs/rule-reference.md)
 
-Next step: run `dotnet test` to verify the full suite is still green, then commit.
+Committed to feat/prd (not yet pushed). Handing off to /implementation...
 ```
+
+## 11. Hand off to /implementation
+
+> **This step only runs when step 2 found at least one update** — if step 2 stopped early because
+> everything was already current, there is no PRD to implement and this step doesn't apply.
+
+Continue straight into implementing the PRD — no confirmation needed here. Hand off completely
+rather than reimplementing any of its logic:
+
+```
+Skill(implementation, args: "<ACTIVE_PRD_PATH>")
+```
+
+`/implementation` re-derives the same `feat/<prd-slug>` branch from `ACTIVE_PRD_PATH` (that's why
+step 3 named it that way instead of `feat/bump-analyzers-*`), runs its own read-only investigation
+pass and its own plan confirmation, then implements the issues one at a time — see
+`.claude/skills/implementation/SKILL.md` for exactly what that does.
+
+Read its final report. **Every targeted issue must be `done`** — none `failed`, `skipped`, or
+`blocked-on-human`. (Rule-coverage issues from step 9 never carry a `Type: HITL` marker, so
+`blocked-on-human` shouldn't occur here; if it somehow does, treat it exactly like a failure —
+this skill's later steps assume an unqualified, complete success.)
+
+- **Full success** → continue to step 12.
+- **Anything else** → **stop here.** Leave the branch and PRD exactly as `/implementation` left
+  them. Report the failed/skipped issue(s) or the HITL boundary clearly, and note that the human
+  can resolve it and re-run `/implementation <ACTIVE_PRD_PATH>` (or this skill) later. Do not clean
+  up, do not touch the changelog, do not open a PR on a partially-implemented PRD.
+
+## 12. On full success: clean up, changelog, and release
+
+> Only reached when step 11 reports every targeted issue `done`.
+
+1. **Clean up the PRD and issues.**
+   ```
+   Skill(clean-up-prd)
+   ```
+   When invoking, note explicitly that this is an autonomous continuation of `/update-nuget-packages`
+   and that `/implementation`'s own report in step 11 already established every issue is complete —
+   clean-up-prd's normal "wait for my approval before deleting" step refers to a live human decision,
+   and that decision was already made when the user asked for this end-to-end pipeline; proceed with
+   the deletion without pausing for a further prompt. It deletes `ACTIVE_PRD_PATH` and every issue
+   that referenced it, and commits that deletion itself.
+
+2. **Determine the release version.** List existing tags and find the highest `vMAJOR.MINOR.PATCH`:
+   ```powershell
+   git tag -l 'v*'
+   ```
+   Use the exact same selection logic as `scripts/New-ReleaseTag.ps1` (parse `vX.Y.Z`, ignore
+   anything that doesn't match, sort numerically, take the highest — default to `v0.0.0` if there
+   are none). The release this run will trigger is a **patch** bump of that: `vX.Y.(Z+1)`. Compute
+   it here the same way the script will, so the changelog heading matches exactly what
+   `New-ReleaseTag.ps1 -Patch` looks for in step 12.8.
+
+3. **Update `CHANGELOG.md`.** Insert a new `## [vX.Y.(Z+1)]` section immediately below
+   `## [Unreleased]` (leave `## [Unreleased]` itself empty, matching the existing file), covering
+   everything this run changed:
+   - `### Added` — one line per newly-enforced rule ID from step 5/9's `Added:` output, in the same
+     style as existing entries (severity, one-line rule description, rule ID(s) backticked).
+   - `### Changed` — one line per package bump: `Bumped <Package> from <old> to <new>.` If, while
+     working through the PRD, you noticed a behavior change to an *existing* rule (not a new rule
+     ID) called out in the upstream package's own release notes, add it here too — see the
+     `[v0.0.3]` entry for the style.
+   - `### Removed` — one line per rule ID that appeared in step 5's `Stale:` output (a rule dropped
+     from the newer analyzer version's default set). Omit this heading entirely if nothing went
+     stale.
+4. **Commit the changelog:**
+   ```powershell
+   git add CHANGELOG.md
+   git commit -m "Update changelog for v<version>"
+   ```
+5. **Push the branch and open the PR.** If a PR already exists for this branch (possible when
+   resuming an `EXTEND_MODE` run), reuse it (`gh pr list --head feat/<prd-slug> --json number`)
+   instead of creating a duplicate.
+   ```powershell
+   git push -u origin feat/<prd-slug>
+   gh pr create --base main --title "<summarize the package bumps>" --body "<reuse the PRD's own summary — don't write a second one from scratch>"
+   ```
+6. **Enable auto-merge and confirm mergeability.**
+   ```powershell
+   gh pr merge <number> --merge --auto --delete-branch
+   ```
+   `--merge` matches this repo's existing convention (every past PR here landed as a real merge
+   commit, never a squash) — don't switch strategies. The repo already has "delete branch on merge"
+   enabled server-side; `--delete-branch` is belt-and-braces.
+
+   Wait for the PR's checks:
+   ```powershell
+   gh pr checks <number> --watch
+   ```
+   Then confirm it actually merged:
+   ```powershell
+   gh pr view <number> --json state,mergedAt,mergeStateStatus,statusCheckRollup
+   ```
+   - **`state` is `MERGED`** → continue to step 7.
+   - **`state` is still `OPEN` immediately after checks complete** → GitHub's auto-merge can take a
+     few seconds to actually execute after the last check reports; re-check once after a short
+     pause before treating it as blocked.
+   - **`mergeStateStatus` is `BEHIND`** → `main` requires PR branches to be up to date
+     (`strict: true` in branch protection) and something else landed on `main` while this PR was
+     open. Update the branch (`gh pr update-branch <number>`) and re-watch checks once; if it's
+     still not merging after that, treat it as blocked.
+   - **Any check failed, or it's still `OPEN` after the above** (branch protection blocking it, a
+     required check that never reports, a real conflict, anything) → **stop and notify the user
+     loudly**, quoting the exact blocking reason from the command output. Do not force-merge, do
+     not edit branch protection, do not retry indefinitely. Leave the PR open for a human to
+     resolve.
+7. **Land locally.**
+   ```powershell
+   git checkout main
+   git pull
+   git fetch --prune
+   git branch -D feat/<prd-slug>
+   ```
+   Force-delete (`-D` not `-d`): the PR's confirmed `MERGED` state from step 6 is the real source
+   of truth, not git's local "already merged" heuristic, which can be wrong across merge strategies.
+8. **Tag and release.** From `main`:
+   ```powershell
+   pwsh ./scripts/New-ReleaseTag.ps1 -Patch
+   ```
+   This re-derives the same version computed in step 2 from the now-updated tag list, re-verifies
+   the changelog heading matches, runs the full test suite, then tags and pushes — which triggers
+   `.github/workflows/release.yml`. If this script fails for **any** reason (dependency sync check,
+   stale rule reference, missing changelog heading, failing tests) → **stop and notify the user
+   loudly** with its exact error. Do not pass `-Force` to bypass a check it raised on its own.
+9. **Confirm the release workflow succeeds.**
+   ```powershell
+   gh run list --workflow=release.yml --limit 1 --json databaseId,headBranch,status
+   gh run watch <databaseId> --exit-status
+   ```
+   If the run fails → **stop and notify the user loudly**, including the failing step/logs
+   (`gh run view <databaseId> --log-failed`). Be explicit that the tag and GitHub push already
+   happened even though publishing failed — NuGet.org may not have the new version yet, and that
+   needs a human to investigate and possibly re-run the workflow or push a new patch tag.
+
+If every step above completes cleanly, report the final state: the new version, the merged PR, and
+confirmation that the package is live on NuGet.org.
 
 ## Rules
 
@@ -414,6 +586,26 @@ Next step: run `dotnet test` to verify the full suite is still green, then commi
 - Always create a final `NNN-update-rule-reference.md` issue as the last issue in the PRD.
 - Never create an issue for a rule that already has a `[RuleDoc]`.
 - Never mark a rule untestable without exhausting the confounder playbook.
-- When on a feature branch with an active PRD, extend that PRD and stay on the branch — never create a `feat/bump-analyzers-*` branch in this situation.
+- When on a feature branch with an active PRD, extend that PRD and stay on the branch — never
+  create a new branch in this situation.
+- The feature branch created in step 3 is always named `feat/<prd-slug>` (AGENTS.md's PRD-linked
+  rule), derived from `ACTIVE_PRD_PATH` — never an ad hoc name like `feat/bump-analyzers-*`. This
+  is what lets step 11 hand off to `/implementation` without a branch mismatch.
 - All new issues must reference the correct `ACTIVE_PRD_PATH` in their `## Parent PRD` field.
-- Do not commit — the user reviews and commits when ready.
+- **This skill's autonomy is deliberate, not a shortcut.** Once step 2 finds an update, steps
+  10–12 run through to a published release without stopping to ask — that was explicitly
+  requested so this skill could run unattended. It is not license to skip the specific gates that
+  *do* exist:
+  - Step 11 only proceeds into step 12 on an unambiguous, fully-successful `/implementation` run.
+    Never treat a partial success (any `failed`/`skipped`/`blocked-on-human` issue) as good enough.
+  - Step 12.1's clean-up-prd hand-off skips its interactive approval prompt *only* because
+    `/implementation`'s own report already established completion — state that reasoning
+    explicitly when invoking it; don't silently assume every future clean-up-prd call may skip it.
+  - Steps 12.6, 12.8, and 12.9 each have a **stop-and-notify-loudly** condition. Never force-merge,
+    never edit branch protection, never pass `-Force` to `New-ReleaseTag.ps1` to push past a check
+    it raised, and never silently retry a failed release workflow — all of those turn a visible,
+    fixable problem into a confusing one. Report the exact command output and stop.
+- `gh pr merge` always uses `--merge` (a real merge commit), matching every prior PR in this repo's
+  history — never squash or rebase merge here.
+- `git branch -D` (force) is correct in step 12.7 specifically because step 12.6 already confirmed
+  `state: MERGED` via the GitHub API — that's the authority, not git's local merge-tracking.
