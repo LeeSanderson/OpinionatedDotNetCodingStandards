@@ -254,4 +254,19 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         Both the Blazor-markup precondition and the IsEnabledByDefault gate independently make this rule
         untestable in a standard .csproj build harness.
         """)]
+[RuleDoc("S4792", "Configuring loggers is security-sensitive",
+    HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-4792/",
+    Untestable = """
+        S4792 was deprecated/removed by Sonar upstream. Empirically confirmed by pinning the package's
+        SonarAnalyzer.CSharp dependency to each version in turn and running the exact same triggering
+        code (log4net.Config.XmlConfigurator.Configure(), with SonarLint.xml enabling S4792 as a Sonar
+        Scanner-mode security hotspot): version 10.27.0.140913 fires S4792 in build SARIF; version
+        10.28.0.143324 (this package's current dependency) does not, and
+        scripts/UpdateAnalyzerEditorConfigs.cs's descriptor extraction reports S4792 as "Stale" (not
+        present among any loaded analyzer's SupportedDiagnostics) for 10.28.0.143324. Corroborated by
+        SonarSource/sonar-dotnet GitHub issues #8466 and #8472 ("Deprecate rule S4792"), and by
+        analyzers/rspec/cs/S4792.{html,json} no longer existing in the sonar-dotnet repository's master
+        branch. Genuine structural untestable: the diagnostic is no longer produced by any analyzer in
+        the currently-referenced package version.
+        """)]
 public static class UntestableRules;

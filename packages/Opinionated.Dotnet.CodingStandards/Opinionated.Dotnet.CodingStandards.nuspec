@@ -15,10 +15,10 @@
 		<icon>icon.png</icon>
 		<repository type="git" url="$RepositoryUrl$" commit="$RepositoryCommit$" branch="$RepositoryBranch$" />
 		<dependencies>
-			<dependency id="Meziantou.Analyzer" version="3.0.115" />
-			<dependency id="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="4.14.0" />
+			<dependency id="Meziantou.Analyzer" version="3.0.121" />
+			<dependency id="Microsoft.CodeAnalysis.BannedApiAnalyzers" version="5.6.0" />
 			<dependency id="Microsoft.CodeAnalysis.NetAnalyzers" version="10.0.301" />
-			<dependency id="SonarAnalyzer.CSharp" version="10.27.0.140913" />
+			<dependency id="SonarAnalyzer.CSharp" version="10.28.0.143324" />
 			<dependency id="StyleCop.Analyzers" version="1.2.0-beta.556" />
 		</dependencies>
 	</metadata>

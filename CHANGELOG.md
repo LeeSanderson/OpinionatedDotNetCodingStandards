@@ -8,6 +8,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.0.5]
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.115 to 3.0.121.
+- Bumped Microsoft.CodeAnalysis.BannedApiAnalyzers from 4.14.0 to 5.6.0.
+- Bumped SonarAnalyzer.CSharp from 10.27.0.140913 to 10.28.0.143324.
+
+### Removed
+
+- `S4792` (configuring loggers is security-sensitive) — deprecated upstream by
+  SonarAnalyzer.CSharp; the diagnostic is no longer produced by any bundled analyzer.
+
 ## [v0.0.4]
 
 ### Added
