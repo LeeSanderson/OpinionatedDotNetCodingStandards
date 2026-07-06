@@ -56,7 +56,7 @@ public static class AnalyzerResolver
     {
         var psi = new ProcessStartInfo
         {
-            FileName = "dotnet",
+            FileName = Environment.ProcessPath ?? "dotnet",
             Arguments = $"restore \"{projectPath}\" --nologo --verbosity:quiet",
             RedirectStandardOutput = true,
             RedirectStandardError = true,

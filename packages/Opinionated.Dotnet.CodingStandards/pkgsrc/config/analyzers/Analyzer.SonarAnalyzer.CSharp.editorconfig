@@ -70,7 +70,7 @@ dotnet_diagnostic.S1104.severity = none
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S1109.severity = none
 
-# S1110: Redundant pairs of parentheses should be removed
+# S1110: Unnecessary parentheses should be removed
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S1110.severity = warning
 
@@ -234,7 +234,7 @@ dotnet_diagnostic.S131.severity = warning
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S1312.severity = warning
 
-# S1313: Using hardcoded IP addresses is security-sensitive
+# S1313: IP addresses should not be hardcoded
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S1313.severity = warning
 
@@ -358,11 +358,11 @@ dotnet_diagnostic.S1994.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2068.severity = warning
 
-# S2077: Formatting SQL queries is security-sensitive
+# S2077: SQL queries should not be dynamically formatted
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2077.severity = none
 
-# S2092: Creating cookies without the "secure" flag is security-sensitive
+# S2092: Cookies should have the "secure" flag
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2092.severity = warning
 
@@ -450,7 +450,7 @@ dotnet_diagnostic.S2225.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2234.severity = warning
 
-# S2245: Using pseudorandom number generators (PRNGs) is security-sensitive
+# S2245: Pseudorandom number generators (PRNGs) should not be used in security contexts
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2245.severity = warning
 
@@ -462,7 +462,7 @@ dotnet_diagnostic.S2251.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2252.severity = warning
 
-# S2257: Using non-standard cryptographic algorithms is security-sensitive
+# S2257: Custom cryptographic algorithms should not be used
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S2257.severity = warning
 
@@ -858,7 +858,7 @@ dotnet_diagnostic.S3265.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S3267.severity = warning
 
-# S3330: Creating cookies without the "HttpOnly" flag is security-sensitive
+# S3330: Cookies should have the "HttpOnly" flag
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S3330.severity = warning
 
@@ -1270,7 +1270,7 @@ dotnet_diagnostic.S4027.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4035.severity = warning
 
-# S4036: Searching OS commands in PATH is security-sensitive
+# S4036: OS commands should not rely on PATH resolution
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4036.severity = warning
 
@@ -1438,11 +1438,11 @@ dotnet_diagnostic.S4462.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4487.severity = none
 
-# S4502: Disabling CSRF protections is security-sensitive
+# S4502: CSRF protections should not be disabled
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4502.severity = warning
 
-# S4507: Delivering code in production with debug features activated is security-sensitive
+# S4507: Debugging features should not be enabled in production
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4507.severity = warning
 
@@ -1474,7 +1474,7 @@ dotnet_diagnostic.S4635.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4663.severity = warning
 
-# S4790: Using weak hashing algorithms is security-sensitive
+# S4790: Weak hashing algorithms should not be used
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S4790.severity = none
 
@@ -1494,11 +1494,11 @@ dotnet_diagnostic.S5034.severity = none
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S5042.severity = warning
 
-# S5122: Having a permissive Cross-Origin Resource Sharing policy is security-sensitive
+# S5122: Cross-Origin Resource Sharing (CORS) policy should be restricted to trusted origins
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5122.severity = warning
 
-# S5332: Using clear-text protocols is security-sensitive
+# S5332: Clear-text protocols should not be used
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5332.severity = warning
 
@@ -1506,7 +1506,7 @@ dotnet_diagnostic.S5332.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5344.severity = warning
 
-# S5443: Using publicly writable directories is security-sensitive
+# S5443: Temporary files should not be created in publicly writable directories
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5443.severity = warning
 
@@ -1526,15 +1526,15 @@ dotnet_diagnostic.S5547.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5659.severity = warning
 
-# S5693: Allowing requests with excessive content length is security-sensitive
+# S5693: HTTP request content length should be limited
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5693.severity = warning
 
-# S5753: Disabling ASP.NET "Request Validation" feature is security-sensitive
+# S5753: ASP.NET Request Validation should not be disabled
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5753.severity = warning
 
-# S5766: Creating Serializable objects without data validation checks is security-sensitive
+# S5766: Serializable objects should validate data during deserialization
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S5766.severity = warning
 
@@ -1666,7 +1666,7 @@ dotnet_diagnostic.S6617.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S6618.severity = warning
 
-# S6640: Using unsafe code blocks is security-sensitive
+# S6640: Unsafe code blocks should not be used
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S6640.severity = warning
 
