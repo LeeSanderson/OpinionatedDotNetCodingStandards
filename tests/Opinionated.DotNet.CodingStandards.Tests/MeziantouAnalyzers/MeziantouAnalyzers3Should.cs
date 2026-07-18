@@ -564,4 +564,23 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0210").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0211", "Use multi-line syntax for XML summary comments",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md")]
+    public async Task UseMultiLineSyntaxForXmlSummaryComments()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                /// <summary>Single line summary comment.</summary>
+                public void M() { }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0211").ShouldBeTrue();
+    }
 }
