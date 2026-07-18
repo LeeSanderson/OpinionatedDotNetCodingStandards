@@ -170,7 +170,7 @@ public static class AnalyzerResolver
         return folders;
     }
 
-    private static readonly Regex RoslynVersionPattern = new(@"^roslyn(\d+)\.(\d+)$", RegexOptions.IgnoreCase);
+    private static readonly Regex RoslynVersionPattern = new(@"^roslyn(\d+)\.(\d+)$", RegexOptions.IgnoreCase, TimeSpan.FromSeconds(1));
 
     // Segment counts for the supported analyzer path layouts under the "analyzers/" prefix.
     private const int FlatLegacySegments = 2;          // analyzers/<name>.dll

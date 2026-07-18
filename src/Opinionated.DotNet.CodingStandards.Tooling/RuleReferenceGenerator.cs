@@ -209,7 +209,7 @@ public static class RuleReferenceGenerator
     {
         var rules = new List<(string Id, string Description, string Severity, string HelpLink)>();
         var lines = File.ReadAllLines(filePath);
-        var severityRegex = new Regex(@"^dotnet_diagnostic\.(.+?)\.severity\s*=\s*(\S+)$");
+        var severityRegex = new Regex(@"^dotnet_diagnostic\.(.+?)\.severity\s*=\s*(\S+)$", RegexOptions.None, TimeSpan.FromSeconds(1));
 
         for (var i = 0; i < lines.Length; i++)
         {

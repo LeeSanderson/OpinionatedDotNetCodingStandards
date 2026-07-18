@@ -8,6 +8,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 
+## [v0.0.6]
+
+### Added
+
+- One new enforced rule from Meziantou.Analyzer 3.0.123, at `warning` severity: `MA0211`
+  (use multi-line syntax for XML summary comments).
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.121 to 3.0.123.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.301 to 10.0.302.
+- Bumped SonarAnalyzer.CSharp from 10.28.0.143324 to 10.29.0.143774. No new rules are enforced,
+  but `S6444` (regular expressions should be executed with a timeout) now also flags `Regex`
+  constructions that the prior analyzer version did not catch; pass a `TimeSpan` timeout
+  argument to satisfy the rule.
+
 ## [v0.0.5]
 
 ### Changed

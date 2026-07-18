@@ -96,6 +96,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0208` | [FixedAddressValueType] fields must be value types | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0208.md) |
 | `MA0209` | Use in keyword for in parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0209.md) |
 | `MA0210` | Use in keyword to call the in overload | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md) |
+| `MA0211` | Use multi-line syntax for XML summary comments | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
