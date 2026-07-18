@@ -1578,7 +1578,7 @@ dotnet_diagnostic.S6423.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S6424.severity = none
 
-# S6444: Not specifying a timeout for regular expressions is security-sensitive
+# S6444: Regular expressions should be executed with a timeout
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S6444.severity = warning
 

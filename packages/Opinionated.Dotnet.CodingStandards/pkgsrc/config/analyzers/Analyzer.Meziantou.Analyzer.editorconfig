@@ -1046,3 +1046,8 @@ dotnet_diagnostic.MA0209.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md
 # Enabled: False, Severity: suggestion
 dotnet_diagnostic.MA0210.severity = warning
+
+# MA0211: Use multi-line syntax for XML summary comments
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0211.severity = warning

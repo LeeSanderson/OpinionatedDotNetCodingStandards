@@ -62,7 +62,7 @@ public static class EditorConfigMergeGenerator
     private static (string Header, Dictionary<string, ParsedRuleBlock> Blocks) ParseExistingFile(string text)
     {
         var lines = text.TrimEnd().Split('\n').Select(x => x.TrimEnd('\r')).ToList();
-        var severityPattern = new Regex(@"^dotnet_diagnostic\.(.+?)\.severity\s*=\s*(\S+)$");
+        var severityPattern = new Regex(@"^dotnet_diagnostic\.(.+?)\.severity\s*=\s*(\S+)$", RegexOptions.None, TimeSpan.FromSeconds(1));
         var blocks = new Dictionary<string, ParsedRuleBlock>(StringComparer.OrdinalIgnoreCase);
         int? firstBlockStart = null;
 
