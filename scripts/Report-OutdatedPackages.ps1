@@ -7,13 +7,14 @@
 .DESCRIPTION
     Used by .github/workflows/dependency-check.yml. `dotnet outdated` only writes the JSON
     report file when at least one dependency is outdated; a missing report means nothing is
-    outdated, in which case this script is a no-op (closing an already-open tracking issue
-    in that case is handled separately -- see the "close tracking issue when resolved" issue
-    under the same parent PRD).
+    outdated. When nothing is outdated and the tracking issue is currently open, this script
+    closes it with a short explanatory comment; when the tracking issue is already closed (or
+    was never created), this is a no-op -- it never reopens or recreates anything.
 
-    The issue is looked up by an exact, fixed title so repeated runs update the same issue in
-    place instead of creating duplicates. Requires the `gh` CLI to be authenticated (e.g. via
-    the GH_TOKEN environment variable) and to be run from within the target repository.
+    The issue is looked up by an exact, fixed title so repeated runs update (or close) the same
+    issue in place instead of creating duplicates. Requires the `gh` CLI to be authenticated
+    (e.g. via the GH_TOKEN environment variable) and to be run from within the target
+    repository.
 #>
 [CmdletBinding()]
 param(
@@ -50,6 +51,18 @@ function Format-PackageTable {
     return ($lines -join "`n")
 }
 
+# Looks up the single, persistent tracking issue by its exact, fixed title. Shared by both the
+# "packages found" (create/update) and "nothing outdated" (close) branches below so there is
+# only one place that knows how the issue is identified.
+function Find-OpenTrackingIssue {
+    param([string] $Title)
+
+    return gh issue list --state open --json number,title --limit 100 |
+        ConvertFrom-Json |
+        Where-Object { $_.title -eq $Title } |
+        Select-Object -First 1
+}
+
 # Flatten every project/target-framework's dependency list into one de-duplicated set keyed
 # by package name. A package is only "outdated" when its resolved version genuinely differs
 # from the latest available version -- ignore the tool's UpgradeSeverity field, which can
@@ -75,7 +88,18 @@ if (Test-Path -Path $ReportPath) {
 $outdatedPackages = @($outdated.Values | Sort-Object -Property Name)
 
 if ($outdatedPackages.Count -eq 0) {
-    Write-Host 'No outdated packages detected; nothing to report.'
+    Write-Host 'No outdated packages detected.'
+
+    $existingIssue = Find-OpenTrackingIssue -Title $Title
+    if (-not $existingIssue) {
+        Write-Host 'No open tracking issue to close; nothing to do.'
+        exit 0
+    }
+
+    gh issue close $existingIssue.number `
+        --comment 'All packages are now up to date. Closing this tracking issue automatically.'
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+    Write-Host "Closed tracking issue #$($existingIssue.number)."
     exit 0
 }
 
@@ -109,10 +133,7 @@ $bodyPath = [System.IO.Path]::GetTempFileName()
 Set-Content -Path $bodyPath -Value $body -NoNewline
 
 try {
-    $existingIssue = gh issue list --state open --json number,title --limit 100 |
-        ConvertFrom-Json |
-        Where-Object { $_.title -eq $Title } |
-        Select-Object -First 1
+    $existingIssue = Find-OpenTrackingIssue -Title $Title
 
     if ($existingIssue) {
         gh issue edit $existingIssue.number --body-file $bodyPath
