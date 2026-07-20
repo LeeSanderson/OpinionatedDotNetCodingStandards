@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.7]
+
 ### Changed
 
 - `S1309` (track uses of in-source issue suppressions) downgraded from `warning` to
