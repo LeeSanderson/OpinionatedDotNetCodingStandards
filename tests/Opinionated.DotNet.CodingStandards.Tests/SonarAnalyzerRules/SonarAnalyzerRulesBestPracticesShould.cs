@@ -723,7 +723,33 @@ public class SonarAnalyzerRulesBestPracticesShould(PackageFixture fixture, ITest
             """);
         var buildOutput = await project.BuildAndGetOutputAsync();
 
-        buildOutput.HasError("S1309").ShouldBeTrue();
+        // dotnet_diagnostic.S1309.severity = suggestion, so it surfaces as a SARIF "note"
+        // (TreatWarningsAsErrors only escalates warnings) rather than failing the build.
+        buildOutput.HasNote("S1309").ShouldBeTrue();
+    }
+
+    [Fact]
+    public async Task AllowInlineSuppressionOfAnotherRuleWithoutFailingBuild()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static void Main()
+                {
+            #pragma warning disable S1481, CS0219
+                    int unused = 1;
+            #pragma warning restore S1481, CS0219
+                }
+            }
+
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S1481").ShouldBeFalse();
+        buildOutput.HasError("CS0219").ShouldBeFalse();
+        buildOutput.HasNote("S1309").ShouldBeTrue();
     }
 
     [Fact]

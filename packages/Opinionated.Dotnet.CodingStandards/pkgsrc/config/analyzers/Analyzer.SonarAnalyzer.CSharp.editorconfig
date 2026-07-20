@@ -224,7 +224,7 @@ dotnet_diagnostic.S1301.severity = warning
 
 # S1309: Track uses of in-source issue suppressions
 # Enabled: False, Severity: warning
-dotnet_diagnostic.S1309.severity = warning
+dotnet_diagnostic.S1309.severity = suggestion
 
 # S131: "switch/Select" statements should contain a "default/Case Else" clauses
 # Enabled: False, Severity: warning

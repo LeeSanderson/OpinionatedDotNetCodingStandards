@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- `S1309` (track uses of in-source issue suppressions) downgraded from `warning` to
+  `suggestion`. Inline overrides (`#pragma warning disable`, `[SuppressMessage]`,
+  `// NOSONAR`) for a specific instance no longer fail the build; they still surface as a
+  build-time note so the override stays visible.
 
 ## [v0.0.6]
 

@@ -489,7 +489,7 @@ Rules set to `none` or `silent` are omitted.
 | `S1264` | A "while" loop should be used instead of a "for" loop | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1264/) |
 | `S127` | “for” loop stop conditions should be invariant | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-127/) |
 | `S1301` | "switch" statements should have at least 3 "case" clauses | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1301/) |
-| `S1309` | Track uses of in-source issue suppressions | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1309/) |
+| `S1309` | Track uses of in-source issue suppressions | suggestion | [docs](https://rules.sonarsource.com/csharp/RSPEC-1309/) |
 | `S131` | “switch/Select” statements should contain a “default/Case Else” clause | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-131/) |
 | `S1312` | Logger fields should be 'private static readonly' | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1312/) |
 | `S1313` | Using hardcoded IP addresses is security-sensitive | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-1313/) |
