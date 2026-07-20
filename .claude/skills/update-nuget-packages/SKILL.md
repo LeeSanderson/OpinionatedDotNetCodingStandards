@@ -1,16 +1,48 @@
 ---
 name: update-nuget-packages
-description: Check NuGet analyzer packages for newer versions and, if any are found, autonomously drive the entire release end-to-end — PRD and issues, /implementation, cleanup, changelog, PR with auto-merge, tag, and a published NuGet release. Use when the user wants to bump analyzer dependencies or asks "are there any NuGet updates?".
+description: Check NuGet packages for newer versions. For the five owned analyzer packages, autonomously drive the entire release end-to-end — PRD and issues, /implementation, cleanup, changelog, PR with auto-merge, tag, and a published NuGet release. For any other package (e.g. xunit, Shouldly, CliWrap, Microsoft.NET.Test.Sdk), take a lightweight path instead — update the version reference, build, test, and commit directly, with no PRD or release. Use when the user wants to bump NuGet dependencies (analyzer or not) or asks "are there any NuGet updates?".
 ---
 
 # Update NuGet Packages
 
-Check the five analyzer NuGet packages for new versions and, if any are found, run the whole
-release lifecycle autonomously: apply the version bump, regenerate editorconfigs, write a PRD and
-per-rule issues, implement them via `/implementation`, clean up, update the changelog, open a PR,
-merge it once it's green, and cut + publish the new patch release.
+This skill has two paths — see "Choosing a path" immediately below before doing anything else.
+
+**PATH = full** — for the five analyzer packages this skill fully owns. Check them for new
+versions and, if any are found, run the whole release lifecycle autonomously: apply the version
+bump, regenerate editorconfigs, write a PRD and per-rule issues, implement them via
+`/implementation`, clean up, update the changelog, open a PR, merge it once it's green, and cut +
+publish the new patch release.
+
+**PATH = lightweight** — for every other package (e.g. `xunit`, `Shouldly`, `CliWrap`,
+`Microsoft.NET.Test.Sdk`). Update its single version reference, run a full build and test pass,
+and commit directly on a feature branch — no PRD, no issues, no editorconfig regeneration, no
+changelog, no release. See "Lightweight path" near the end of this document.
+
+## Choosing a path
+
+- **PATH = "full"** when the package(s) this invocation is about include any of the five owned
+  analyzer packages — `Meziantou.Analyzer`, `Microsoft.CodeAnalysis.BannedApiAnalyzers`,
+  `Microsoft.CodeAnalysis.NetAnalyzers`, `SonarAnalyzer.CSharp`, `StyleCop.Analyzers`. This is
+  also the default when the skill is invoked generically with no specific package named (e.g.
+  "are there any NuGet updates?") — steps 1–12 below check exactly these five packages.
+- **PATH = "lightweight"** only when every package this invocation is about is outside that list
+  of five — whether the invocation names one specific non-analyzer package directly (e.g. "bump
+  CliWrap to the latest version", or a package flagged by the dependency-check workflow's
+  tracking issue) or several non-analyzer packages at once.
+- If the invocation mixes at least one owned analyzer package with one or more non-analyzer
+  packages, PATH is always **"full"** for the analyzer package(s): handle those via steps 1–12,
+  and treat any non-analyzer package(s) mentioned in the same request as separate, later
+  lightweight-path invocations rather than folding them into the analyzer PRD. An analyzer-package
+  bump never takes the lightweight shortcut, even when it arrives bundled with unrelated packages.
+
+Skip straight to "## Lightweight path" near the end of this document when PATH = lightweight.
+Continue with step 0 immediately below when PATH = full.
 
 ## What "autonomous" means here — read before invoking
+
+This section describes PATH = full only; the lightweight path has no comparable multi-step
+release lifecycle to be autonomous about — see "## Lightweight path" for its much shorter list of
+checkpoints.
 
 Once you decide there's an update to apply, this skill does not stop to ask before each subsequent
 step — it commits, pushes, opens a PR, merges to `main`, tags, and triggers a real publish to
@@ -575,11 +607,89 @@ this skill's later steps assume an unqualified, complete success.)
    happened even though publishing failed — NuGet.org may not have the new version yet, and that
    needs a human to investigate and possibly re-run the workflow or push a new patch tag.
 
-If every step above completes cleanly, report the final state: the new version, the merged PR, and
-confirmation that the package is live on NuGet.org.
+If every step above completes cleanly, report the final state, leading with which path was taken:
+
+```
+Path taken: full (analyzer pipeline)
+<new version, merged PR link, confirmation the package is live on NuGet.org>
+```
+
+## Lightweight path (non-analyzer packages)
+
+> Only reached when "Choosing a path" above decided PATH = lightweight. None of steps 0–12 apply —
+> this path is a single, self-contained version bump with no PRD, no per-rule issues, no
+> editorconfig regeneration, no changelog entry, and no hand-off to `/implementation`, since it
+> never touches anything that affects the published package's enforced rule set.
+
+1. **Confirm the target and the new version.** Identify the exact package id and the version to
+   bump to — from `dotnet outdated`, the dependency-check workflow's tracking issue, or a version
+   independently confirmed on NuGet.org.
+
+2. **Locate its single version reference.** Check `Directory.Packages.props` first — most package
+   versions in this repo are centrally managed there:
+   ```powershell
+   Select-String -Path Directory.Packages.props -Pattern '"<PackageId>"'
+   ```
+   If it isn't listed there, it's declared directly on a `<PackageReference>` in the project file
+   that uses it — search there instead:
+   ```powershell
+   Select-String -Path *.csproj -Pattern '<PackageId>' -Recurse
+   ```
+   There should be exactly one version reference for the package. If more than one turns up, stop
+   and report the inconsistency rather than guessing which one to change.
+
+3. **Update the version in place.** Change the `Version`/`version` attribute to the new version.
+   Do not touch the `.nuspec`, any `.editorconfig`, or `docs/rule-reference.md` — none of those
+   reference non-analyzer package versions, and this path never regenerates them.
+
+4. **Create (or reuse) a feature branch.** There's no PRD or issue behind this bump, so use
+   AGENTS.md's standalone-issue naming scheme with a descriptive slug in place of an issue number:
+   `feat/bump-<package-slug>`, where `<package-slug>` is the package id lowercased with `.`
+   replaced by `-` (e.g. `Microsoft.NET.Test.Sdk` → `feat/bump-microsoft-net-test-sdk`). Never
+   commit to `main`:
+   ```powershell
+   git rev-parse --abbrev-ref HEAD
+   ```
+   - On `main`/`master` → `git checkout -b feat/bump-<package-slug>`.
+   - Already on a feature branch for this exact bump (a resumed run) → stay on it.
+   - On any other branch → stop and report; do not mix this bump onto unrelated work in progress.
+
+5. **Run a full build and test pass:**
+   ```powershell
+   dotnet build
+   dotnet test
+   ```
+   Both must be clean. If either fails, do **not** commit — report the failure and stop. Never
+   suppress or work around a new failure just to force the bump through; a quick bump must never
+   regress the solution.
+
+6. **Commit directly.** No PRD, no issue file, no changelog entry:
+   ```powershell
+   git add Directory.Packages.props   # or the project file that declared the reference
+   git commit -m "Bump <Package> from <old> to <new>"
+   ```
+   This is a local commit only, exactly like PATH = full's step 10 — do not push and do not open a
+   PR unless separately asked; that stays a human decision.
+
+7. **Report which path was taken:**
+   ```
+   Path taken: lightweight (non-analyzer package)
+   Bumped <Package>: <old> → <new>
+   Branch: feat/bump-<package-slug>
+   Build: passed
+   Tests: passed
+   Committed locally (not pushed).
+   ```
 
 ## Rules
 
+- **Any bump touching one of the five owned analyzer packages always uses the full pipeline
+  (steps 0–12) — never the lightweight shortcut**, even if the same request also mentions
+  non-analyzer packages. The lightweight path is reserved exclusively for packages outside that
+  list of five; see "Choosing a path" above.
+- The lightweight path never creates a PRD, per-rule issues, editorconfig regeneration, or a
+  changelog entry, and never hands off to `/implementation` — there is no PRD/issue queue behind
+  a single, non-analyzer version bump.
 - Always update `Directory.Packages.props` and `.nuspec` together — never drift.
 - Always run `CheckNugetDependenciesMatchProps.cs` after editing versions.
 - Always run the editorconfig update script and build before writing issues.
