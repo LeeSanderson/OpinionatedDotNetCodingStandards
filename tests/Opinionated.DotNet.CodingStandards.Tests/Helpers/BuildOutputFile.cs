@@ -9,10 +9,10 @@ internal sealed class BuildOutputFile
 
     public IEnumerable<BuildOutputFileRunResult> AllResults() => Runs?.SelectMany(r => r.Results ?? []) ?? [];
 
-    public bool HasError() => AllResults().Any(r => r.Level == "error");
-    public bool HasError(string ruleId) => AllResults().Any(r => r.Level == "error" && r.RuleId == ruleId);
-    public bool HasWarning(string ruleId) => AllResults().Any(r => r.Level == "warning" && r.RuleId == ruleId);
-    public bool HasNote(string ruleId) => AllResults().Any(r => r.Level == "note" && r.RuleId == ruleId);
+    public bool HasError() => AllResults().Any(r => r.Level == "error" && !r.IsSuppressed);
+    public bool HasError(string ruleId) => AllResults().Any(r => r.Level == "error" && r.RuleId == ruleId && !r.IsSuppressed);
+    public bool HasWarning(string ruleId) => AllResults().Any(r => r.Level == "warning" && r.RuleId == ruleId && !r.IsSuppressed);
+    public bool HasNote(string ruleId) => AllResults().Any(r => r.Level == "note" && r.RuleId == ruleId && !r.IsSuppressed);
 
     internal sealed class BuildOutputFileRun
     {
@@ -30,6 +30,11 @@ internal sealed class BuildOutputFile
 
         [JsonPropertyName("message")]
         public BuildOutputFileRunResultMessage? Message { get; set; }
+
+        [JsonPropertyName("suppressions")]
+        public object[]? Suppressions { get; set; }
+
+        public bool IsSuppressed => Suppressions is { Length: > 0 };
 
         public override string ToString()
         {
