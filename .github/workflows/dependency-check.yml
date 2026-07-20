@@ -1,0 +1,62 @@
+# Scheduled check for outdated NuGet packages, replacing Renovate's one useful function --
+# noticing that a package is outdated -- with a deterministic mechanism built entirely on
+# tools already proven in this repository (the same `dotnet outdated` tool ci.yml uses).
+#
+# This workflow only detects and reports: it never bumps a version, opens a PR, or invokes
+# any skill itself. When outdated packages are found it creates or updates a single,
+# persistent tracking issue; a human always decides when to act on it. See
+# issues/prd-replace-renovate-with-scheduled-check.md for the full rationale.
+name: Dependency Check
+
+on:
+  schedule:
+    # Weekly, before 9am UTC on Monday -- matches the old renovate.json cadence.
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+# Least privilege: this workflow only reads code and manages the single tracking issue it
+# owns. It never pushes code, bumps a version, or touches anything else.
+permissions:
+  contents: read
+  issues: write
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_NOLOGO: true
+
+jobs:
+  check:
+    name: check
+    runs-on: windows-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK (honours global.json)
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Install dotnet-outdated global tool
+        run: |
+          dotnet tool install --global dotnet-outdated-tool
+          if ($LASTEXITCODE -ne 0) { dotnet tool update --global dotnet-outdated-tool }
+
+      - name: Restore
+        run: dotnet restore Opinionated.DotNet.CodingStandards.slnx
+
+      # No --fail-on-updates: this job reports, it never fails the build. The tool only
+      # writes the JSON report when at least one dependency is outdated; when everything is
+      # current it prints "No outdated dependencies were detected" and writes nothing.
+      # Report-OutdatedPackages.ps1 treats a missing report file as zero outdated packages.
+      - name: Check for outdated packages (JSON report)
+        run: dotnet outdated Opinionated.DotNet.CodingStandards.slnx --output outdated-report.json --output-format json
+
+      - name: Report outdated packages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/Report-OutdatedPackages.ps1 -ReportPath outdated-report.json
