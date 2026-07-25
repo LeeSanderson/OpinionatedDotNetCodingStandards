@@ -97,6 +97,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0209` | Use in keyword for in parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0209.md) |
 | `MA0210` | Use in keyword to call the in overload | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md) |
 | `MA0211` | Use multi-line syntax for XML summary comments | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md) |
+| `MA0212` | Use MemoryMarshal.GetReference instead of indexing at 0 | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
@@ -798,6 +799,9 @@ Rules set to `none` or `silent` are omitted.
 | `S8380` | Return types named "partial" should be escaped with "@" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8380/) |
 | `S8381` | "scoped" should be escaped when used as an identifier or type name in parenthesized lambda parameter lists | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8381/) |
 | `S881` | Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-881/) |
+| `S8949` | The overload accepting a 'CancellationToken' should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-8949/) |
+| `S8969` | Null-forgiving operators should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/S8969/) |
+| `S8970` | Null-forgiving operators should not be used when nullable warnings are disabled | warning | [docs](https://rules.sonarsource.com/csharp/S8970/) |
 | `S907` | goto statement should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-907/) |
 
 ## StyleCop.Analyzers.Unstable
