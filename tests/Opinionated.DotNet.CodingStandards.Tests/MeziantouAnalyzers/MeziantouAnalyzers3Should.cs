@@ -583,4 +583,25 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0211").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0212", "Use MemoryMarshal.GetReference instead of indexing at 0",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md")]
+    public async Task UseMemoryMarshalGetReferenceInsteadOfIndexingAtZero()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public void M(System.Span<byte> span)
+                {
+                    ref byte first = ref span[0];
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0212").ShouldBeTrue();
+    }
 }
