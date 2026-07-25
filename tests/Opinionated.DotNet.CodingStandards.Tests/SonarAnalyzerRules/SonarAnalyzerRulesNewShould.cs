@@ -191,4 +191,28 @@ public class SonarAnalyzerRulesNewShould(PackageFixture fixture, ITestOutputHelp
 
         buildOutput.HasError("S6664").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8949", "The overload accepting a 'CancellationToken' should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8949/")]
+    public async Task UseOverloadAcceptingCancellationToken()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Threading;
+            using System.Threading.Tasks;
+            namespace test;
+            public static class Program
+            {
+                public static async Task MethodAsync(CancellationToken cancellationToken)
+                {
+                    await Task.Delay(100);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8949").ShouldBeTrue();
+    }
 }
