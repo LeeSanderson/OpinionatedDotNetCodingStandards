@@ -12,9 +12,9 @@ Notes sections).
 
 ## Acceptance criteria
 
-- [ ] A new `ubuntu-latest` job exists in `ci.yml`, running the same
+- [x] A new `ubuntu-latest` job exists in `ci.yml`, running the same
       `restore`/`build`/`test`/`pack` sequence as the existing `windows-latest` job.
-- [ ] The new job passes — confirming, via a real Linux `dotnet pack` + build, that the fix from
+- [x] The new job passes — confirming, via a real Linux `dotnet pack` + build, that the fix from
       `issues/002` actually resolves the original consumer-facing bug end-to-end.
 
 ## Blocked by
@@ -64,3 +64,14 @@ end on a real case-sensitive Linux filesystem, and that the fix from `issues/002
 original bug. It does not replace an actual GitHub Actions run of the job (which will happen the
 first time this branch is opened as a PR), but it closes the verification gap that was achievable
 from this checkout.
+
+## Verification (real GitHub Actions run)
+
+PR #21 (`feat/fix-case-sensitive-build` → `main`) confirmed this end-to-end on real infrastructure:
+the `build (ubuntu)` job (run
+[30175226951](https://github.com/LeeSanderson/OpinionatedDotNetCodingStandards/actions/runs/30175226951))
+passed in 14m25s — restore, build, test (805 passed, 4 skipped, 0 failed), and pack all succeeded on
+`ubuntu-latest`. Acceptance criterion 2 is now genuinely met, not just reproduced locally in a
+container. (The sibling `build` (windows) job on the same run failed, but only on its unrelated
+"Check for outdated packages" step — three analyzer/test-dependency packages have newer versions
+available. That's pre-existing, out of this PRD's scope, and orthogonal to the case-sensitivity fix.)
