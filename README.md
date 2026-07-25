@@ -71,7 +71,7 @@ src/
                         MSBuild project that produces the NuGet package
 
 packages/
-    Opinionated.Dotnet.CodingStandards/
+    Opinionated.DotNet.CodingStandards/
         pkgsrc/
             build/      MSBuild .props and .targets injected at build time
             buildTransitive/

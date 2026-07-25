@@ -6,10 +6,10 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
 public class RuleDocCoverageShould
 {
     private static readonly string AnalyzerDir =
-        Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "analyzers");
+        Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.DotNet.CodingStandards", "pkgsrc", "config", "analyzers");
 
     private static readonly string EditorConfigPath =
-        Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
+        Path.Combine(PathHelpers.GetRootDirectory(), "packages", "Opinionated.DotNet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
 
     [Fact]
     public void AllActiveRulesAreCovered()
