@@ -70,7 +70,7 @@ dotnet_diagnostic.S1104.severity = none
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S1109.severity = none
 
-# S1110: Unnecessary parentheses should be removed
+# S1110: Redundant pairs of parentheses should be removed
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S1110.severity = warning
 
@@ -1809,6 +1809,18 @@ dotnet_diagnostic.S8381.severity = warning
 # S881: Increment (++) and decrement (--) operators should not be used in a method call or mixed with other operators in an expression
 # Enabled: False, Severity: warning
 dotnet_diagnostic.S881.severity = warning
+
+# S8949: The overload accepting a 'CancellationToken' should be used
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S8949.severity = warning
+
+# S8969: Null-forgiving operators should not be redundant
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S8969.severity = warning
+
+# S8970: Null-forgiving operators should not be used when nullable warnings are disabled
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S8970.severity = warning
 
 # S907: "goto" statement should not be used
 # Enabled: True, Severity: warning

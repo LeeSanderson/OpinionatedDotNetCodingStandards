@@ -48,6 +48,22 @@ import-path casing mismatch before a consumer's case-sensitive build breaks.
    never be cut while this class of bug is present.
 6. Document the fix in `CHANGELOG.md` and cut a patch release (`v0.0.8`) once merged and green.
 
+## Updated Packages
+
+| Package | Old Version | New Version |
+|---------|------------|------------|
+| Meziantou.Analyzer | 3.0.123 | 3.0.125 |
+| SonarAnalyzer.CSharp | 10.29.0.143774 | 10.30.0.144632 |
+
+## Newly Discovered Rules
+
+| Rule ID | Editorconfig | Status |
+|---------|-------------|--------|
+| MA0212 | Analyzer.Meziantou.Analyzer.editorconfig | Added |
+| S8949 | Analyzer.SonarAnalyzer.CSharp.editorconfig | Added |
+| S8969 | Analyzer.SonarAnalyzer.CSharp.editorconfig | Added |
+| S8970 | Analyzer.SonarAnalyzer.CSharp.editorconfig | Added |
+
 ## User Stories
 
 1. As a consumer building on Linux CI, I want the package's shipped MSBuild imports to resolve
