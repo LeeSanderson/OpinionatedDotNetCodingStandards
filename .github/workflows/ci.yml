@@ -46,6 +46,9 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Check MSBuild import path casing
+        run: dotnet ./scripts/CheckImportPathCasing.cs
+
       - name: Install dotnet-outdated global tool
         run: |
           dotnet tool install --global dotnet-outdated-tool

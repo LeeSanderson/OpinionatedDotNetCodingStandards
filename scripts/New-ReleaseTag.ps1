@@ -37,6 +37,10 @@ Write-Host "Checking rule reference..."
 dotnet ./scripts/GenerateRuleReference.cs --check
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
+Write-Host "Checking MSBuild import path casing..."
+dotnet ./scripts/CheckImportPathCasing.cs
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
 $tags = git tag -l 'v*'
 $highest = $tags |
     Where-Object { $_ -match '^v(\d+)\.(\d+)\.(\d+)$' } |
