@@ -1051,3 +1051,8 @@ dotnet_diagnostic.MA0210.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md
 # Enabled: False, Severity: suggestion
 dotnet_diagnostic.MA0211.severity = warning
+
+# MA0212: Use MemoryMarshal.GetReference instead of indexing at 0
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md
+# Enabled: False, Severity: warning
+dotnet_diagnostic.MA0212.severity = warning

@@ -9,8 +9,8 @@ using Opinionated.DotNet.CodingStandards.Tooling;
 Console.WriteLine("Generating rule reference...");
 
 var rootDir = GetRootDirectory();
-var analyzerDir = Path.Combine(rootDir, "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "analyzers");
-var editorConfigPath = Path.Combine(rootDir, "packages", "Opinionated.Dotnet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
+var analyzerDir = Path.Combine(rootDir, "packages", "Opinionated.DotNet.CodingStandards", "pkgsrc", "config", "analyzers");
+var editorConfigPath = Path.Combine(rootDir, "packages", "Opinionated.DotNet.CodingStandards", "pkgsrc", "config", "Opinionated.editorconfig");
 var outputFile = Path.Combine(rootDir, "docs", "rule-reference.md");
 
 var content = RuleReferenceGenerator.Generate(analyzerDir, typeof(RuleDocCoverageShould).Assembly, editorConfigPath);

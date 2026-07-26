@@ -46,6 +46,9 @@ jobs:
         with:
           global-json-file: global.json
 
+      - name: Check MSBuild import path casing
+        run: dotnet ./scripts/CheckImportPathCasing.cs
+
       - name: Install dotnet-outdated global tool
         run: |
           dotnet tool install --global dotnet-outdated-tool
@@ -88,6 +91,47 @@ jobs:
             Write-Host "::error::Generated files are stale. Regenerate locally with 'dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs' then 'dotnet ./scripts/GenerateRuleReference.cs', and commit the result."
             exit 1
           }
+
+      - name: Test
+        run: dotnet test Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-build
+
+      - name: Pack
+        run: dotnet pack Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-build --output artifacts/packages
+
+  build-ubuntu:
+    name: build (ubuntu)
+    # Real case-sensitive filesystem regression guard: proves the package's shipped MSBuild
+    # imports (and everything else) actually resolve on Linux, not just on the
+    # case-insensitive windows-latest runner above. Mirrors that job's restore/build/test/pack
+    # sequence only — the outdated-package/nuspec-sync/generated-files freshness checks are
+    # OS-independent and already run once on windows-latest.
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK (honours global.json)
+        uses: actions/setup-dotnet@v5
+        with:
+          global-json-file: global.json
+
+      - name: Cache NuGet packages
+        uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Directory.Packages.props', '**/*.csproj') }}
+          restore-keys: |
+            nuget-${{ runner.os }}-
+
+      - name: Restore
+        run: dotnet restore Opinionated.DotNet.CodingStandards.slnx
+
+      - name: Build (Release)
+        run: dotnet build Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-restore
 
       - name: Test
         run: dotnet test Opinionated.DotNet.CodingStandards.slnx --configuration Release --no-build

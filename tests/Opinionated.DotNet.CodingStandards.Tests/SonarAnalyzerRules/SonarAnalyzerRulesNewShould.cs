@@ -191,4 +191,76 @@ public class SonarAnalyzerRulesNewShould(PackageFixture fixture, ITestOutputHelp
 
         buildOutput.HasError("S6664").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S8949", "The overload accepting a 'CancellationToken' should be used",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-8949/")]
+    public async Task UseOverloadAcceptingCancellationToken()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Threading;
+            using System.Threading.Tasks;
+            namespace test;
+            public static class Program
+            {
+                public static async Task MethodAsync(CancellationToken cancellationToken)
+                {
+                    await Task.Delay(100);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8949").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S8969", "Null-forgiving operators should not be redundant",
+        HelpLink = "https://rules.sonarsource.com/csharp/S8969/")]
+    public async Task ProhibitRedundantNullForgivingOperators()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static void M()
+                {
+                    string value = "hello";
+                    string other = value!;
+                    System.Console.WriteLine(other);
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8969").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S8970", "Null-forgiving operators should not be used when nullable warnings are disabled",
+        HelpLink = "https://rules.sonarsource.com/csharp/S8970/")]
+    public async Task ProhibitNullForgivingOperatorsWhenNullableWarningsDisabled()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static string M(string? value)
+                {
+            #nullable disable warnings
+                    return value!;
+            #nullable restore
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S8970").ShouldBeTrue();
+    }
 }
