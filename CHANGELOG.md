@@ -7,6 +7,34 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.8]
+
+### Fixed
+
+- Fixed `MSB4019` build failures on case-sensitive filesystems (e.g. `ubuntu-latest` CI runners).
+  Every previously published version (`0.0.1`–`0.0.7`) shipped with a casing mismatch between an
+  MSBuild `<Import Project="...">` path and the actual shipped file name; NTFS/APFS resolve this
+  case-insensitively, so it only ever surfaced on Linux. Consumers building on Windows or macOS are
+  unaffected and require no changes. The already-published `0.0.1`–`0.0.7` versions on nuget.org are
+  not retroactively fixed or re-published — upgrade to `v0.0.8` to unblock Linux builds.
+- Added `scripts/CheckImportPathCasing.cs`, a new pre-flight check wired into `New-ReleaseTag.ps1`
+  and CI, that verifies every `.props`/`.targets` `<Import Project="...">` resolves with exact,
+  case-sensitive casing — preventing this class of bug from shipping again.
+
+### Added
+
+- Four new enforced rules exposed by the analyzer bump below, all at `warning` severity: `MA0212`
+  (use `MemoryMarshal.GetReference` instead of indexing at 0), `S8949` (use the overload accepting
+  a `CancellationToken`), `S8969` (null-forgiving operators should not be redundant), and `S8970`
+  (null-forgiving operators should not be used when nullable warnings are disabled).
+- A new `ubuntu-latest` CI job mirroring the existing `windows-latest` job (full
+  restore/build/test/pack), guarding against future cross-platform packaging regressions.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.123 to 3.0.125.
+- Bumped SonarAnalyzer.CSharp from 10.29.0.143774 to 10.30.0.144632.
+
 ## [v0.0.7]
 
 ### Changed

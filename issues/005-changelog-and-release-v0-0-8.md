@@ -35,3 +35,19 @@ autonomously.
 - User story 11
 - User story 12
 - User story 13
+
+## Progress note
+
+`CHANGELOG.md` now has a `v0.0.8` entry covering:
+
+- The `MSB4019` case-sensitivity fix (consumer-facing `Fixed` section) and the new
+  `CheckImportPathCasing.cs` pre-flight guard.
+- The `Added` new rules exposed by the analyzer bump (`MA0212`, `S8949`, `S8969`, `S8970`) and the
+  new `ubuntu-latest` CI job.
+- The `Changed` analyzer version bumps (Meziantou.Analyzer 3.0.123 → 3.0.125, SonarAnalyzer.CSharp
+  10.29.0.143774 → 10.30.0.144632).
+
+**Remaining (HITL, not done):** the maintainer still needs to explicitly confirm before
+`scripts/New-ReleaseTag.ps1 -Patch` is run and the resulting `v*` tag is pushed, which triggers
+`release.yml` and publishes to nuget.org. This issue stays open (not moved to `issues/done/`) until
+that release completes successfully.
