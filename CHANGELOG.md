@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.9]
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.125 to 3.0.140. No new rules are enforced, but `MA0060`
+  (the return value of the method should be used) is substantially broadened. It previously only
+  flagged an ignored `Stream.Read`/`Stream.ReadAsync` result; it now also flags ignored return
+  values from `TextReader`/`BinaryReader` reads, the non-mutating `System.String` methods
+  (`Trim`, `Replace`, `Substring`, `ToUpper`, `Split`, …), the immutable collection interfaces,
+  any method annotated `[Pure]`, and any `bool`-returning `TryParse*` method that has an
+  `out`/`ref` parameter — plus `out` parameters marked `[DoNotIgnore]` that are discarded with
+  `out _`. Expect new `MA0060` warnings on code that throws these results away; the `TryParse`
+  half can be disabled on its own with
+  `dotnet_diagnostic.MA0060.enable_tryparse_pattern = false`. The bump also reduces false
+  positives in two other enforced rules, `MA0202` (comment-only branches) and `MA0211` (fields).
+- Bumped SonarAnalyzer.CSharp from 10.30.0.144632 to 10.31.0.145097. No new rules are enforced —
+  the two rules introduced in this release (`S8733`, `S8718`) ship as SonarQube server-side rules
+  with no Roslyn analyzer in the NuGet package, so they cannot fire during a build. The bump does
+  fix false positives in three already-enforced rules: `S1144` (no longer raised for types
+  registered with `Microsoft.Extensions.DependencyInjection`), `S3267` (no longer raised on Entity
+  Framework `IQueryable`s), and `S1244` (no longer raised for a NaN check written as
+  `x.Equals(double.NaN)`).
+
 ## [v0.0.8]
 
 ### Fixed
