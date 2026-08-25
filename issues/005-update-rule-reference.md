@@ -31,7 +31,13 @@ MA0214/MA0215/MA0217 as `suggestion`.
 
 ## Blocked by
 
-All per-rule test issues for this PRD (issues 001 through 004).
+All per-rule test issues for this PRD — the generated reference links to the tests, so it must be
+regenerated only after every one of them is complete:
+
+- `issues/001-test-ma0213.md`
+- `issues/002-test-ma0214.md`
+- `issues/003-test-ma0215.md`
+- `issues/004-test-ma0217.md`
 
 ## User stories addressed
 
