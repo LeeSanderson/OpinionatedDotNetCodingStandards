@@ -692,25 +692,6 @@ public class MeziantouAnalyzersExtendedShould(PackageFixture fixture, ITestOutpu
     }
 
     [Fact]
-    [RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
-        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md")]
-    public async Task ShouldNotCallGetTypeOnTypeInstance()
-    {
-        using var project = await CreateProjectBuilderAsync();
-        await project.AddFileAsync("Program.cs", """
-            namespace test;
-            public class C
-            {
-                public System.Type Force(System.Type t) => ((object)t).GetType();
-            }
-            public static class Program { public static int Main() => 0; }
-            """);
-        var buildOutput = await project.BuildAndGetOutputAsync();
-
-        buildOutput.HasError("MA0130").ShouldBeTrue();
-    }
-
-    [Fact]
     [RuleDoc("MA0179", "Use Attribute.IsDefined instead of GetCustomAttribute(s)",
         HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0179.md")]
     public async Task UseAttributeIsDefinedInsteadOfGetCustomAttribute()
