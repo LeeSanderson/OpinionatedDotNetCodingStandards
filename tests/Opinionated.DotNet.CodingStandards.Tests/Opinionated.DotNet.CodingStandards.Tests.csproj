@@ -3,17 +3,20 @@
   <PropertyGroup>
     <TargetFramework>net10.0</TargetFramework>
     <IsPackable>false</IsPackable>
+    <!--
+      xunit.v3 4.x runs on Microsoft.Testing.Platform; the VSTest target it used to run under is no
+      longer supported on the .NET 10 SDK. MTP test projects are executables, and `dotnet test`
+      needs the opt-in below to drive them. Microsoft.NET.Test.Sdk and xunit.runner.visualstudio are
+      VSTest components and are no longer referenced - xunit.v3 brings its own MTP runner.
+    -->
+    <OutputType>Exe</OutputType>
+    <TestingPlatformDotnetTestSupport>true</TestingPlatformDotnetTestSupport>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.8.1" />
     <PackageReference Include="Shouldly" Version="4.3.0" />
-    <PackageReference Include="xunit.v3" Version="3.2.2" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.5">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="CliWrap" Version="3.10.4" />
+    <PackageReference Include="xunit.v3" Version="4.0.0" />
+    <PackageReference Include="CliWrap" Version="3.10.5" />
   </ItemGroup>
 
   <ItemGroup>

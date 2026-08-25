@@ -7,6 +7,50 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.10]
+
+### Added
+
+- `MA0213` (simplify negated boolean expression) is now enforced as a **warning**. It fires on a
+  negated `&&`/`||` expression where at least one operand is itself negated, e.g.
+  `!(!first && second)`.
+- `MA0214` (use `await` instead of returning the task), `MA0215` (return the task instead of
+  awaiting it) and `MA0217` (use a static lambda) are enforced as **suggestions**, not warnings, so
+  they surface as notes without failing a build. Two deliberate reasons:
+  - `MA0214` and `MA0215` are exact inverses that fire on the *same* expression. At `warning` they
+    form an unsatisfiable pair — returning a task trips `MA0214`, awaiting it trips `MA0215` — which
+    would leave no way to make the build pass.
+  - `MA0217` fires on every non-capturing lambda, including idiomatic LINQ, so enforcing it as a
+    warning would break the build of essentially any consumer that uses LINQ.
+
+  The rationale is also recorded in the header of `Analyzer.Meziantou.Analyzer.editorconfig`.
+- `MA0216` (remove unnecessary closed modifier) is configured as a **warning**, but only actually
+  enforces for consumers whose SDK ships Roslyn 5.9 or newer. Meziantou.Analyzer multi-targets
+  Roslyn, and the analyzer behind `MA0216` exists only in its `roslyn5.9` folder — the compiler
+  picks the folder matching its own Roslyn version, so on older SDKs no loaded analyzer defines the
+  id and the editorconfig entry is simply ignored. It is configured rather than omitted so it
+  starts enforcing automatically as consumers move to newer SDKs.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.140 to 3.0.177. **`MA0130` (GetType() should not be used on
+  System.Type instances) no longer fires at all in this release** — an upstream regression, not a
+  deliberate narrowing. Its analyzer reports only when the `GetType()` receiver resolves to
+  something inheriting `System.Type`; 3.0.140 resolved that receiver through the implicit conversion
+  to `object`, while 3.0.177 does not, and since calling `object.GetType()` on a `System.Type`
+  receiver always goes through that conversion, the receiver now always resolves to `System.Object`.
+  Confirmed by bisection (the same test passes on 3.0.140 and fails on 3.0.177 with an identical
+  checkout and SDK) and by five distinct source shapes producing no diagnostic. The rule is
+  deliberately left configured at `warning` so it resumes working automatically once upstream is
+  fixed; consumers should not rely on `MA0130` coverage in the meantime.
+- `MA0023` was broadened upstream and is now titled "Use RegexOptions.ExplicitCapture or named
+  groups" (previously "Add RegexOptions.ExplicitCapture"), so named groups now satisfy it. This
+  package configures `MA0023` as a suggestion, so the change surfaces as a note.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.302 to 10.0.400. No new rules are enforced
+  and no enforced rule changed behaviour in this project's test suite.
+- Bumped SonarAnalyzer.CSharp from 10.31.0.145097 to 10.33.0.1635. No new rules are enforced and no
+  enforced rule changed behaviour in this project's test suite.
+
 ## [v0.0.9]
 
 ### Changed

@@ -2,6 +2,16 @@
 is_global = true
 global_level = 0
 
+# Deliberate severity choices worth recording (per-rule comments below are regenerated, so notes
+# that must survive `UpdateAnalyzerEditorConfigs.cs` belong here):
+#
+# MA0214 / MA0215 are kept at suggestion. They are exact inverses that fire on the same expression,
+# so at warning they form an unsatisfiable pair: returning a task trips MA0214, awaiting it trips
+# MA0215, and a consumer hitting that shape would have no way to make the build pass.
+#
+# MA0217 is kept at suggestion. It fires on every non-capturing lambda, including idiomatic LINQ,
+# so promoting it to warning would break the build of essentially any consumer that uses LINQ.
+
 # MA0001: StringComparison is missing
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0001.md
 # Enabled: True, Severity: suggestion
@@ -112,7 +122,7 @@ dotnet_diagnostic.MA0021.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.MA0022.severity = warning
 
-# MA0023: Add RegexOptions.ExplicitCapture
+# MA0023: Use RegexOptions.ExplicitCapture or named groups
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0023.md
 # Enabled: True, Severity: warning
 dotnet_diagnostic.MA0023.severity = suggestion
@@ -1056,3 +1066,28 @@ dotnet_diagnostic.MA0211.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md
 # Enabled: False, Severity: warning
 dotnet_diagnostic.MA0212.severity = warning
+
+# MA0213: Simplify negated boolean expression
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0213.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0213.severity = warning
+
+# MA0214: Use 'await' instead of returning the task
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0214.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0214.severity = suggestion
+
+# MA0215: Return the task instead of awaiting it
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0215.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0215.severity = suggestion
+
+# MA0216: Remove unnecessary closed modifier
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0216.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0216.severity = warning
+
+# MA0217: Use a static lambda
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0217.severity = suggestion

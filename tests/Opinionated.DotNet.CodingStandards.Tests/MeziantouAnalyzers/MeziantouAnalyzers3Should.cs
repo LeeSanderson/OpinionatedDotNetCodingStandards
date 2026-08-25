@@ -604,4 +604,96 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0212").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0213", "Simplify negated boolean expression",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0213.md")]
+    public async Task SimplifyNegatedBooleanExpression()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static bool M(bool first, bool second) => !(!first && second);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0213").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0214", "Use 'await' instead of returning the task",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0214.md")]
+    public async Task UseAwaitInsteadOfReturningTask()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Worker
+            {
+                public static System.Threading.Tasks.Task<int> RunAsync(string path)
+                    => RunAsync(path, System.Threading.CancellationToken.None);
+
+                public static async System.Threading.Tasks.Task<int> RunAsync(
+                    string path,
+                    System.Threading.CancellationToken token)
+                {
+                    await System.Threading.Tasks.Task.Delay(1, token);
+                    return path.Length;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasNote("MA0214").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0215", "Return the task instead of awaiting it",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0215.md")]
+    public async Task ReturnTaskInsteadOfAwaitingIt()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Worker
+            {
+                public static async System.Threading.Tasks.Task<int> RunAsync(string path)
+                    => await RunAsync(path, System.Threading.CancellationToken.None);
+
+                public static async System.Threading.Tasks.Task<int> RunAsync(
+                    string path,
+                    System.Threading.CancellationToken token)
+                {
+                    await System.Threading.Tasks.Task.Delay(1, token);
+                    return path.Length;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasNote("MA0215").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0217", "Use a static lambda",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md")]
+    public async Task UseStaticLambda()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                // The lambda captures nothing, so it should be declared 'static x => x.Length'.
+                public int[] M(string[] items) => items.Select(x => x.Length).ToArray();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasNote("MA0217").ShouldBeTrue();
+    }
 }

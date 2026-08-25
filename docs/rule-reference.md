@@ -98,6 +98,11 @@ Rules set to `none` or `silent` are omitted.
 | `MA0210` | Use in keyword to call the in overload | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md) |
 | `MA0211` | Use multi-line syntax for XML summary comments | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md) |
 | `MA0212` | Use MemoryMarshal.GetReference instead of indexing at 0 | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md) |
+| `MA0213` | Simplify negated boolean expression | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0213.md) |
+| `MA0214` | Use 'await' instead of returning the task | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0214.md) |
+| `MA0215` | Return the task instead of awaiting it | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0215.md) |
+| `MA0216` | Remove unnecessary closed modifier | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0216.md) |
+| `MA0217` | Use a static lambda | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

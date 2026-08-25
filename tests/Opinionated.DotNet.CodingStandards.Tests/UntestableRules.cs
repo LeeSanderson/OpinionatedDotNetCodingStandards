@@ -1,5 +1,61 @@
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
+[RuleDoc("MA0216", "Remove unnecessary closed modifier",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0216.md",
+    Untestable = """
+        ANALYZER-FOLDER GATE: MA0216's analyzer only exists in Meziantou.Analyzer's roslyn5.9 folder, and
+        the C# compiler this solution builds with loads the roslyn5.6 folder, so the analyzer is never
+        loaded at `dotnet build` and no source shape can make it report.
+
+        Meziantou.Analyzer 3.0.177 multi-targets Roslyn (analyzers/dotnet/roslyn4.8, roslyn5.0, roslyn5.6,
+        roslyn5.9). Enumerating types shows Meziantou.Analyzer.Rules.RemoveUnnecessaryClosedModifierAnalyzer
+        is present ONLY in roslyn5.9/cs/Meziantou.Analyzer.dll and absent from roslyn5.6/cs/Meziantou.Analyzer.dll
+        - expected, since the `closed` modifier it inspects is a very recent language feature needing newer
+        Roslyn APIs. MSBuild picks the analyzer folder from the compiler's Roslyn version, and
+        `dotnet msbuild <test csproj> -t:ResolveReferences -getItem:Analyzer` resolves to
+        .../meziantou.analyzer/3.0.177/analyzers/dotnet/roslyn5.6/cs/Meziantou.Analyzer.dll for this solution's
+        SDK. Correspondingly, `scripts/UpdateAnalyzerEditorConfigs.cs` only discovered MA0216 once the tooling's
+        Microsoft.CodeAnalysis.CSharp reference was raised to 5.9.0 (which is what the generator loads
+        descriptors with); at 5.6.0 the rule was not in the extracted set at all.
+
+        The rule is still configured (at warning) rather than omitted, because it is correct for consumers
+        whose SDK ships Roslyn 5.9 or newer - there the analyzer does load and the rule does enforce. An
+        editorconfig entry for a diagnostic id that no loaded analyzer defines is simply ignored, so this is
+        harmless for consumers on older SDKs. Revisit this entry (and write a real test) once this solution's
+        SDK advances far enough that MSBuild selects the roslyn5.9 folder.
+        """)]
+[RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md",
+    Untestable = """
+        UPSTREAM REGRESSION in Meziantou.Analyzer 3.0.177 - unlike the other entries here, this is not a
+        structural gate, and it should be revisited (and this rule returned to a real test) once upstream
+        fixes it. MA0130 could be triggered under 3.0.140 and cannot be triggered under 3.0.177.
+
+        ObjectGetTypeOnTypeInstanceAnalyzer reports only when the GetType() receiver resolves to something
+        inheriting System.Type. In 3.0.140 it called `Instance.GetActualType()`, the overload that unwraps an
+        IConversionOperation to its operand (`if (operation is IConversionOperation val) return
+        val.Operand.GetActualType(); return operation.Type;`), so a System.Type receiver was seen through the
+        conversion to object and the diagnostic fired. In 3.0.177 the call became
+        `Instance.GetActualType(cancellationToken)` - a different overload that does NOT unwrap the conversion.
+        Because invoking object.GetType() on a System.Type receiver always goes through that conversion, the
+        receiver now always resolves to System.Object, which never inherits System.Type, so no source shape
+        reports the diagnostic.
+
+        Verified by bisection on an otherwise identical checkout and SDK (10.0.303): with Meziantou 3.0.140 the
+        original test (`public System.Type Force(System.Type t) => ((object)t).GetType();`) PASSES; with
+        3.0.177 it fails. Five distinct shapes were tried against 3.0.177 and none produced MA0130 -
+        `typeof(string).GetType()`, a bare `System.Type` parameter's `t.GetType()`, the explicit
+        `((object)t).GetType()`, a local initialised from `typeof(int)` then `local.GetType()`, and a
+        `System.Reflection.TypeInfo` parameter's `ti.GetType()` - while unrelated Meziantou rules (e.g. MA0181)
+        fired in the very same builds, proving the analyzer assembly loads and runs.
+
+        The severity is deliberately left at warning rather than none so the rule resumes working
+        automatically if upstream restores the conversion-unwrapping behaviour. Source (decompiled):
+        Meziantou.Analyzer.Rules.ObjectGetTypeOnTypeInstanceAnalyzer and
+        Meziantou.Analyzer.Internals.OperationExtensions.GetActualType in
+        analyzers/dotnet/roslyn5.6/cs/Meziantou.Analyzer.dll (roslyn5.6 is the folder MSBuild selects for this
+        solution's SDK).
+        """)]
 [RuleDoc("IDE0001", "Simplify name",
     HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/style-rules/ide0001",
     Untestable = """

@@ -107,6 +107,8 @@ Parse the `versions` array. Strategy per package:
 
 Compare to current. Collect a list of packages that have a newer version available.
 
+Also check for newer versions of other packages by running `dotnet outdated` in the repo root.
+
 If no packages need updating, output a summary and stop:
 ```
 All analyzer packages are already up to date:
