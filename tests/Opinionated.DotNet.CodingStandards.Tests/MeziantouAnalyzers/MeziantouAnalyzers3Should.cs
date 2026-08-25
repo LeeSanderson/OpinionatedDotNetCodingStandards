@@ -622,4 +622,31 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0213").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0214", "Use 'await' instead of returning the task",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0214.md")]
+    public async Task UseAwaitInsteadOfReturningTask()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Worker
+            {
+                public static System.Threading.Tasks.Task<int> RunAsync(string path)
+                    => RunAsync(path, System.Threading.CancellationToken.None);
+
+                public static async System.Threading.Tasks.Task<int> RunAsync(
+                    string path,
+                    System.Threading.CancellationToken token)
+                {
+                    await System.Threading.Tasks.Task.Delay(1, token);
+                    return path.Length;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasNote("MA0214").ShouldBeTrue();
+    }
 }
