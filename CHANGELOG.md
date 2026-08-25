@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     warning would break the build of essentially any consumer that uses LINQ.
 
   The rationale is also recorded in the header of `Analyzer.Meziantou.Analyzer.editorconfig`.
+- `MA0216` (remove unnecessary closed modifier) is configured as a **warning**, but only actually
+  enforces for consumers whose SDK ships Roslyn 5.9 or newer. Meziantou.Analyzer multi-targets
+  Roslyn, and the analyzer behind `MA0216` exists only in its `roslyn5.9` folder — the compiler
+  picks the folder matching its own Roslyn version, so on older SDKs no loaded analyzer defines the
+  id and the editorconfig entry is simply ignored. It is configured rather than omitted so it
+  starts enforcing automatically as consumers move to newer SDKs.
 
 ### Changed
 

@@ -96,8 +96,12 @@ Run from `REPO_ROOT`, only the layer(s) you actually touched:
 
 ```powershell
 dotnet build
-dotnet test --no-build --filter "FullyQualifiedName~YourNewTestMethod"
+dotnet test --no-build -- --filter-method "*YourNewTestMethod*"
 ```
+
+The test project runs on Microsoft.Testing.Platform, so filters go after a bare `--` and are
+glob-based (`--filter-method`, `--filter-class`, `--filter-namespace`). The old VSTest form
+`--filter "FullyQualifiedName~..."` errors out on the .NET 10 SDK — see AGENTS.md **§Commands**.
 
 Decide whether the full suite is needed per AGENTS.md **§Test speed**. Skip it only if ALL hold:
 

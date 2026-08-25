@@ -1,5 +1,29 @@
 namespace Opinionated.DotNet.CodingStandards.Tests;
 
+[RuleDoc("MA0216", "Remove unnecessary closed modifier",
+    HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0216.md",
+    Untestable = """
+        ANALYZER-FOLDER GATE: MA0216's analyzer only exists in Meziantou.Analyzer's roslyn5.9 folder, and
+        the C# compiler this solution builds with loads the roslyn5.6 folder, so the analyzer is never
+        loaded at `dotnet build` and no source shape can make it report.
+
+        Meziantou.Analyzer 3.0.177 multi-targets Roslyn (analyzers/dotnet/roslyn4.8, roslyn5.0, roslyn5.6,
+        roslyn5.9). Enumerating types shows Meziantou.Analyzer.Rules.RemoveUnnecessaryClosedModifierAnalyzer
+        is present ONLY in roslyn5.9/cs/Meziantou.Analyzer.dll and absent from roslyn5.6/cs/Meziantou.Analyzer.dll
+        - expected, since the `closed` modifier it inspects is a very recent language feature needing newer
+        Roslyn APIs. MSBuild picks the analyzer folder from the compiler's Roslyn version, and
+        `dotnet msbuild <test csproj> -t:ResolveReferences -getItem:Analyzer` resolves to
+        .../meziantou.analyzer/3.0.177/analyzers/dotnet/roslyn5.6/cs/Meziantou.Analyzer.dll for this solution's
+        SDK. Correspondingly, `scripts/UpdateAnalyzerEditorConfigs.cs` only discovered MA0216 once the tooling's
+        Microsoft.CodeAnalysis.CSharp reference was raised to 5.9.0 (which is what the generator loads
+        descriptors with); at 5.6.0 the rule was not in the extracted set at all.
+
+        The rule is still configured (at warning) rather than omitted, because it is correct for consumers
+        whose SDK ships Roslyn 5.9 or newer - there the analyzer does load and the rule does enforce. An
+        editorconfig entry for a diagnostic id that no loaded analyzer defines is simply ignored, so this is
+        harmless for consumers on older SDKs. Revisit this entry (and write a real test) once this solution's
+        SDK advances far enough that MSBuild selects the roslyn5.9 folder.
+        """)]
 [RuleDoc("MA0130", "GetType() should not be used on System.Type instances",
     HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0130.md",
     Untestable = """

@@ -19,27 +19,38 @@ The package emits **no production assembly** — the shipped payload is the file
 - Packaging is driven by a hand-maintained `.nuspec` (not auto-generated metadata).
 - Tests: **xUnit + Shouldly + CliWrap**. They pack the real package, build a throwaway
   project that references it, and assert on the SARIF build output.
+- The test project runs on **Microsoft.Testing.Platform (MTP)**, not VSTest: xunit.v3 4.x dropped
+  VSTest support on the .NET 10 SDK. That means the test project is an `Exe`, `global.json` carries
+  `"test": { "runner": "Microsoft.Testing.Platform" }`, and there is no reference to
+  `Microsoft.NET.Test.Sdk` or `xunit.runner.visualstudio` (both are VSTest components). The
+  practical consequence is the filter syntax below — plain `dotnet test` is unchanged.
 
 ## Commands
 
 ```powershell
 dotnet build Opinionated.DotNet.CodingStandards.slnx          # build (warnings = errors)
 dotnet test  Opinionated.DotNet.CodingStandards.slnx          # run the integration tests
-dotnet test  --filter "FullyQualifiedName~CodeAnalysisRulesDesign"  # run one test class
-dotnet test  --filter "FullyQualifiedName~CodeAnalysisRules"   # run a subdirectory of classes
+dotnet test --no-build -- --filter-class "*CodeAnalysisRulesDesign*"   # run one test class
+dotnet test --no-build -- --filter-namespace "*CodeAnalysisRules*"     # run a subdirectory of classes
+dotnet test --no-build -- --filter-method "*MyNewTestMethod*"          # run one test method
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs          # verify nuspec deps == Directory.Packages.props
 ```
+
+**Do not use `--filter "FullyQualifiedName~..."`.** That is VSTest syntax; passing it routes
+`dotnet test` down the VSTest path, which errors out on the .NET 10 SDK. MTP filter options go
+after a bare `--` so they reach the test app: `--filter-class`, `--filter-method`,
+`--filter-namespace`, `--filter-trait` and their `--filter-not-*` counterparts, all glob-based.
 
 CI builds with `-c Release`. Tests spin up real `dotnet pack`/`dotnet build` processes,
 so they need network access to nuget.org and are slower than typical unit tests (~40 min full suite).
 
 ## Test speed
 
-**Always verify a new test in isolation first** using `--filter` before running the full suite:
+**Always verify a new test in isolation first** using a filter before running the full suite:
 
 ```powershell
 dotnet build
-dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+dotnet test --no-build -- --filter-method "*MyNewTestMethod*"
 ```
 
 **Skip the full suite and commit directly** when ALL of the following hold — these changes
@@ -125,7 +136,7 @@ public class MyAnalyzerRulesShould(PackageFixture fixture, ITestOutputHelper tes
 4. **Verify in isolation** before committing:
    ```powershell
    dotnet build
-   dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+   dotnet test --no-build -- --filter-method "*MyNewTestMethod*"
    ```
 
 ## Test conventions
