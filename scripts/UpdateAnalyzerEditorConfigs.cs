@@ -20,10 +20,21 @@ if (packages.Count == 0)
 }
 
 var anyDrift = false;
+var anyExtractionFailure = false;
 
 foreach (var package in packages)
 {
-    anyDrift |= await ProcessPackageAsync(package, checkMode);
+    var outcome = await ProcessPackageAsync(package, checkMode);
+    anyDrift |= outcome.HasDrift;
+    anyExtractionFailure |= outcome.ExtractionFailed;
+}
+
+if (anyExtractionFailure)
+{
+    await Console.Error.WriteLineAsync(
+        "\nAborted: no rules could be extracted from one or more analyzer packages (see above)."
+        + " Those editorconfigs were left untouched.");
+    return 1;
 }
 
 if (checkMode && anyDrift)
@@ -35,9 +46,19 @@ if (checkMode && anyDrift)
 Console.WriteLine(checkMode ? "\nCheck passed." : "\nDone.");
 return 0;
 
-static async Task<bool> ProcessPackageAsync(AnalyzerPackageInfo package, bool checkMode)
+static async Task<(bool HasDrift, bool ExtractionFailed)> ProcessPackageAsync(AnalyzerPackageInfo package, bool checkMode)
 {
     var descriptors = DescriptorExtractor.Extract(package.DllPaths);
+
+    // Zero descriptors never means "this package has no rules" — it means the analyzer DLL failed
+    // to load (typically built against a newer Roslyn than this tool references). Rewriting on that
+    // basis would report every existing rule as stale, so refuse instead of writing.
+    if (descriptors.Count == 0)
+    {
+        await ReportExtractionFailureAsync(package);
+        return (HasDrift: false, ExtractionFailed: true);
+    }
+
     var existingText = File.Exists(package.EditorConfigPath)
         ? await File.ReadAllTextAsync(package.EditorConfigPath)
         : string.Empty;
@@ -52,7 +73,7 @@ static async Task<bool> ProcessPackageAsync(AnalyzerPackageInfo package, bool ch
     if (!hasChanges)
     {
         Console.WriteLine("  Up to date.");
-        return false;
+        return (HasDrift: false, ExtractionFailed: false);
     }
 
     if (!checkMode)
@@ -61,7 +82,21 @@ static async Task<bool> ProcessPackageAsync(AnalyzerPackageInfo package, bool ch
     }
 
     Console.WriteLine(checkMode ? "  DRIFT DETECTED." : "  Written.");
-    return true;
+    return (HasDrift: true, ExtractionFailed: false);
+}
+
+static async Task ReportExtractionFailureAsync(AnalyzerPackageInfo package)
+{
+    Console.WriteLine($"\n{Path.GetFileName(package.EditorConfigPath)}:");
+    await Console.Error.WriteLineAsync(
+        $"  ERROR: extracted 0 rules from '{package.PackageId}'. The selected analyzer DLL most likely"
+        + " targets a newer Roslyn than this tool references (see Microsoft.CodeAnalysis.CSharp in"
+        + " Opinionated.DotNet.CodingStandards.Tooling.csproj). DLLs inspected:");
+
+    foreach (var dll in package.DllPaths)
+    {
+        await Console.Error.WriteLineAsync($"    {dll}");
+    }
 }
 
 static string GetRootDirectory()

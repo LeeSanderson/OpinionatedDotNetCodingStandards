@@ -112,7 +112,7 @@ public static class AnalyzerResolver
             }
 
             var candidates = CollectCsharpAnalyzerFiles(files);
-            var selected = SelectBestRoslynVersion(candidates);
+            var selected = SelectBestRoslynVersion(candidates, LoadedRoslynVersion);
 
             if (selected.Count == 0)
             {
@@ -240,35 +240,45 @@ public static class AnalyzerResolver
         return false;
     }
 
-    // When there are roslyn-versioned DLLs, keeps only those from the highest roslyn version.
-    // Flat legacy DLLs (analyzers/<name>.dll) and platform-neutral DLLs are always included.
-    private static List<string> SelectBestRoslynVersion(List<string> candidates)
+    // The Roslyn version this tooling process itself loads. A roslyn-versioned analyzer DLL built
+    // against a NEWER Roslyn than this cannot be loaded here — AnalyzerFileReference.GetAnalyzers()
+    // throws and DescriptorExtractor silently yields no descriptors for the whole package, which
+    // reads downstream as "every rule went stale". So selection is capped at this version.
+    private static readonly Version LoadedRoslynVersion =
+        typeof(Microsoft.CodeAnalysis.SyntaxTree).Assembly.GetName().Version ?? new Version(0, 0);
+
+    // When there are roslyn-versioned DLLs, keeps only those from the highest roslyn version that
+    // the caller can actually load (folder version <= maxRoslynVersion). Flat legacy DLLs
+    // (analyzers/<name>.dll) and platform-neutral DLLs are always included.
+    public static IReadOnlyList<string> SelectBestRoslynVersion(IEnumerable<string> candidates, Version maxRoslynVersion)
     {
-        var flat = candidates.Where(p => p.Split('/').Length == FlatLegacySegments).ToList();
-        var platformNeutral = candidates.Where(p => p.Split('/').Length == PlatformNeutralSegments).ToList();
-        var versioned = candidates.Where(p => p.Split('/').Length == RoslynVersionedSegments).ToList();
-        var direct = candidates.Where(p => p.Split('/').Length == DirectCsharpSegments).ToList();
+        var all = candidates.ToList();
+        var flat = all.Where(p => p.Split('/').Length == FlatLegacySegments).ToList();
+        var platformNeutral = all.Where(p => p.Split('/').Length == PlatformNeutralSegments).ToList();
+        var versioned = all.Where(p => p.Split('/').Length == RoslynVersionedSegments).ToList();
+        var direct = all.Where(p => p.Split('/').Length == DirectCsharpSegments).ToList();
 
         if (versioned.Count == 0)
         {
             return [.. flat, .. platformNeutral, .. direct];
         }
 
-        var bestFolder = versioned
+        var parsedFolders = versioned
             .Select(p => p.Split('/')[RoslynFolderIndex])
             .Distinct(StringComparer.OrdinalIgnoreCase)
-            .Select(folder =>
-            {
-                var m = RoslynVersionPattern.Match(folder);
-                return m.Success
-                    ? (folder, major: int.Parse(m.Groups[1].Value), minor: int.Parse(m.Groups[2].Value))
-                    : (folder, major: -1, minor: -1);
-            })
-            .Where(x => x.major >= 0)
-            .OrderByDescending(x => x.major)
-            .ThenByDescending(x => x.minor)
-            .Select(x => x.folder)
-            .FirstOrDefault();
+            .Select(folder => (folder, match: RoslynVersionPattern.Match(folder)))
+            .Where(x => x.match.Success)
+            .Select(x => (
+                x.folder,
+                version: new Version(int.Parse(x.match.Groups[1].Value), int.Parse(x.match.Groups[2].Value))))
+            .OrderByDescending(x => x.version)
+            .ToList();
+
+        // Highest folder we can actually load. If every folder targets a newer Roslyn than we have,
+        // fall back to the lowest one — it still won't load, but returning the *closest* candidate
+        // keeps the failure diagnosable rather than arbitrary.
+        var loadable = parsedFolders.Find(x => x.version <= maxRoslynVersion);
+        var bestFolder = loadable.folder ?? (parsedFolders.Count > 0 ? parsedFolders[^1].folder : null);
 
         if (bestFolder is null)
         {
