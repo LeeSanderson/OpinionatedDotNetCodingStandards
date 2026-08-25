@@ -676,4 +676,24 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasNote("MA0215").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0217", "Use a static lambda",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md")]
+    public async Task UseStaticLambda()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                // The lambda captures nothing, so it should be declared 'static x => x.Length'.
+                public int[] M(string[] items) => items.Select(x => x.Length).ToArray();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasNote("MA0217").ShouldBeTrue();
+    }
 }
