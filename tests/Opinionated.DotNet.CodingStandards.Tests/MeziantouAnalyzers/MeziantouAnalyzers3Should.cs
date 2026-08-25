@@ -604,4 +604,22 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
         var buildOutput = await project.BuildAndGetOutputAsync();
         buildOutput.HasError("MA0212").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0213", "Simplify negated boolean expression",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0213.md")]
+    public async Task SimplifyNegatedBooleanExpression()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class C
+            {
+                public static bool M(bool first, bool second) => !(!first && second);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+        buildOutput.HasError("MA0213").ShouldBeTrue();
+    }
 }
