@@ -419,3 +419,8 @@ FodyWeavers.xsd
 *.msm
 *.msp
 .claude/scheduled_tasks.lock
+
+# Artifacts of the dependency-check workflow's `dotnet outdated` run, which land in the
+# working directory when that command is run locally to debug the check.
+outdated-report.json
+outdated-tool-output.txt

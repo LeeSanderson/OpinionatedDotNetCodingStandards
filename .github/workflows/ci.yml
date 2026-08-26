@@ -49,11 +49,6 @@ jobs:
       - name: Check MSBuild import path casing
         run: dotnet ./scripts/CheckImportPathCasing.cs
 
-      - name: Install dotnet-outdated global tool
-        run: |
-          dotnet tool install --global dotnet-outdated-tool
-          if ($LASTEXITCODE -ne 0) { dotnet tool update --global dotnet-outdated-tool }
-
       # Faithful port of Azure Cache@2: caches the user NuGet packages folder keyed on
       # Directory.Packages.props + all .csproj files. This speeds up only the main-solution
       # restore; the integration tests use per-fixture temporary globalPackagesFolders.
@@ -65,11 +60,16 @@ jobs:
           restore-keys: |
             nuget-${{ runner.os }}-
 
+      # dotnet-outdated is pinned in .config/dotnet-tools.json rather than installed
+      # floating, so this check and dependency-check.yml always run the same version.
+      - name: Restore local dotnet tools
+        run: dotnet tool restore
+
       - name: Restore
         run: dotnet restore Opinionated.DotNet.CodingStandards.slnx
 
       - name: Check for outdated packages
-        run: dotnet outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
+        run: dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
 
       - name: Check .nuspec dependencies match Directory.Packages.props
         run: dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
