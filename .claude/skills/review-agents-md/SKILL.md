@@ -13,7 +13,7 @@ Always wait for my approval before saving.
 
 ## Best practices for reviewing AGENTS.md:
 
-- Put commands early: Put relevant executable commands in an early section: `dotnet build`, `dotnet test`, `dotnet format`. Include flags and options, not just tool names (e.g. `dotnet test --filter`, `dotnet build -c Release`). Your agent will reference these often.
+- Put commands early: Put relevant executable commands in an early section: `dotnet build`, `dotnet test`, `dotnet format`. Include flags and options, not just tool names (e.g. the project's actual test-filter form — `dotnet test -- --filter-method` on Microsoft.Testing.Platform, `dotnet test --filter` on VSTest — and `dotnet build -c Release`). Your agent will reference these often, so a stale or wrong-platform flag turns into a failing command on every run.
 
 - Code examples over explanations: One real code snippet showing your style beats three paragraphs describing it. Show what good output looks like.
 
