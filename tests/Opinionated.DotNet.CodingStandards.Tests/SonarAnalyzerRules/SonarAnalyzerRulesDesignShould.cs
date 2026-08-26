@@ -506,7 +506,7 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
     [Fact]
     [RuleDoc("S3242", "Method parameters should be declared with base types",
         HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-3242/")]
-    public async Task WarnOnParameterDeclaredWithDerivedTypeWhenBaseTypeSuffices()
+    public async Task SuggestOnParameterDeclaredWithDerivedTypeWhenBaseTypeSuffices()
     {
         using var project = await CreateProjectBuilderAsync();
         await project.AddFileAsync("Program.cs", """
@@ -529,7 +529,7 @@ public class SonarAnalyzerRulesDesignShould(PackageFixture fixture, ITestOutputH
             """);
         var buildOutput = await project.BuildAndGetOutputAsync();
 
-        buildOutput.HasError("S3242").ShouldBeTrue();
+        buildOutput.HasNote("S3242").ShouldBeTrue();
     }
 
     [Fact]

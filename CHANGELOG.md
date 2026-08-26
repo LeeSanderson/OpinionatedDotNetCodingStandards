@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.11]
+
+### Changed 
+
+- Set `end_of_line` to `crlf` to ensure consistent line endings across different platforms
+- `S3242` reduce severity level from warning to suggestion due to false positives as outlined [here](https://github.com/SonarSource/sonar-dotnet/issues/1036)
+
 ## [v0.0.10]
 
 ### Added

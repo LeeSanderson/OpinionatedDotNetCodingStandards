@@ -614,7 +614,7 @@ Rules set to `none` or `silent` are omitted.
 | `S3237` | "value" contextual keyword should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3237/) |
 | `S3240` | The simplest possible condition syntax should be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3240/) |
 | `S3241` | Methods should not return values that are never used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3241/) |
-| `S3242` | Method parameters should be declared with base types | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3242/) |
+| `S3242` | Method parameters should be declared with base types | suggestion | [docs](https://rules.sonarsource.com/csharp/RSPEC-3242/) |
 | `S3246` | Generic type parameters should be co/contravariant when possible | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3246/) |
 | `S3247` | Duplicate casts should not be made | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3247/) |
 | `S3249` | Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals" | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-3249/) |
