@@ -6,13 +6,34 @@
 # any skill itself. When outdated packages are found it creates or updates a single,
 # persistent tracking issue; a human always decides when to act on it. See
 # issues/prd-replace-renovate-with-scheduled-check.md for the full rationale.
+#
+# Report-OutdatedPackages.ps1 owns the tracking issue's whole lifecycle -- create, comment
+# on change, close when everything is current -- so nothing else needs to close it. That is
+# why the push trigger below exists: a bump landing on `main` re-runs the check within a
+# minute or so, and the issue closes itself instead of waiting for the next Monday. Tag
+# pushes deliberately do not need to do anything (New-ReleaseTag.ps1 stays out of this) --
+# the merge that carried the version bump is what touches these paths, and that covers both
+# the analyzer pipeline (props + .nuspec) and a lightweight single-package bump (.csproj).
 name: Dependency Check
 
 on:
   schedule:
     # Weekly, before 9am UTC on Monday -- matches the old renovate.json cadence.
     - cron: "0 8 * * 1"
+  push:
+    branches: [main]
+    paths:
+      - Directory.Packages.props
+      - "**/*.nuspec"
+      - "**/*.csproj"
   workflow_dispatch:
+
+# The push and schedule triggers can overlap (a bump merged just before 8am Monday). Queue
+# rather than cancel: each run's job is to leave the tracking issue in the right state, and
+# a cancelled run leaves it stale.
+concurrency:
+  group: dependency-check
+  cancel-in-progress: false
 
 # Least privilege: this workflow only reads code and manages the single tracking issue it
 # owns. It never pushes code, bumps a version, or touches anything else.
@@ -28,7 +49,11 @@ env:
 jobs:
   check:
     name: check
-    runs-on: windows-latest
+    # Nothing here compiles -- it restores, reads a JSON report, and calls `gh`. Linux
+    # runners are billed at 1x where windows-latest is 2x, and ci.yml already proves the
+    # restore works on ubuntu.
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     defaults:
       run:
         shell: pwsh
@@ -41,22 +66,41 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Install dotnet-outdated global tool
-        run: |
-          dotnet tool install --global dotnet-outdated-tool
-          if ($LASTEXITCODE -ne 0) { dotnet tool update --global dotnet-outdated-tool }
+      # Pinned via .config/dotnet-tools.json rather than installed floating: this job parses
+      # the tool's JSON output, so an unannounced schema change in a new dotnet-outdated
+      # release must not arrive silently.
+      - name: Restore local dotnet tools
+        run: dotnet tool restore
 
       - name: Restore
         run: dotnet restore Opinionated.DotNet.CodingStandards.slnx
 
       # No --fail-on-updates: this job reports, it never fails the build. The tool only
       # writes the JSON report when at least one dependency is outdated; when everything is
-      # current it prints "No outdated dependencies were detected" and writes nothing.
-      # Report-OutdatedPackages.ps1 treats a missing report file as zero outdated packages.
+      # current it prints "No outdated dependencies were detected" and writes nothing. The
+      # captured stdout is what lets Report-OutdatedPackages.ps1 tell that apart from a
+      # crashed tool instead of assuming a missing report means "all clear".
       - name: Check for outdated packages (JSON report)
-        run: dotnet outdated Opinionated.DotNet.CodingStandards.slnx --output outdated-report.json --output-format json
+        run: dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --output outdated-report.json --output-format json | Tee-Object -FilePath outdated-tool-output.txt
 
       - name: Report outdated packages
         env:
           GH_TOKEN: ${{ github.token }}
-        run: ./scripts/Report-OutdatedPackages.ps1 -ReportPath outdated-report.json
+        run: >
+          ./scripts/Report-OutdatedPackages.ps1
+          -ReportPath outdated-report.json
+          -ToolOutputPath outdated-tool-output.txt
+          -Assignee ${{ github.repository_owner }}
+
+      # Keeps the evidence for a run whose conclusion looks surprising. Neither file is
+      # guaranteed to exist (no report is written when everything is current).
+      - name: Upload outdated report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outdated-report
+          path: |
+            outdated-report.json
+            outdated-tool-output.txt
+          if-no-files-found: ignore
+          retention-days: 30
