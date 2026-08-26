@@ -82,8 +82,13 @@ For a new command handler, the tracer bullet is usually the happy-path "does the
 **Verify each RED→GREEN cycle with a targeted filter, not the full suite:**
 
 ```powershell
-dotnet test --no-build --filter "FullyQualifiedName~MyTestMethodName"
+dotnet test --no-build -- --filter-method "*MyTestMethodName*"
 ```
+
+That is Microsoft.Testing.Platform (MTP) syntax — filters go after a bare `--` and are
+glob-based (`--filter-method`, `--filter-class`, `--filter-namespace`). On a VSTest project the
+equivalent is `--filter "FullyQualifiedName~MyTestMethodName"`; check which one the solution uses,
+since passing VSTest syntax to an MTP project fails on the .NET 10 SDK and vice versa.
 
 Run the full suite only once — before committing — and only when shared infrastructure
 changed (see AGENTS.md §Test speed for when it is safe to skip the full suite).
@@ -112,7 +117,7 @@ After all tests pass, look for [refactor candidates](refactoring.md):
 - [ ] Deepen modules (move complexity behind simple interfaces)
 - [ ] Apply SOLID principles where natural
 - [ ] Consider what new code reveals about existing code
-- [ ] Run `dotnet test --filter "FullyQualifiedName~<affected class>"` after each refactor step; full suite only if shared helpers changed
+- [ ] Run `dotnet test --no-build -- --filter-class "*<affected class>*"` after each refactor step; full suite only if shared helpers changed
 
 **Never refactor while RED.** Get to GREEN first.
 

@@ -260,7 +260,9 @@ regenerate all analyzer editorconfigs, and add test coverage for each newly-disc
   `[Fact]` test, or a class-level one in `UntestableRules.cs`.
 - Before marking any rule untestable, exhaust the confounder playbook (see AGENTS.md and each
   per-rule issue).
-- Run new tests in isolation: `dotnet test --no-build --filter "FullyQualifiedName~MyNewTest"`.
+- Run new tests in isolation: `dotnet test --no-build -- --filter-method "*MyNewTest*"` (the test
+  project runs on Microsoft.Testing.Platform, so filters go after a bare `--` and are glob-based;
+  the old `--filter "FullyQualifiedName~..."` VSTest form fails on the .NET 10 SDK).
 - Only run the full suite if shared helpers or package content changed.
 
 ## Out of Scope
@@ -333,7 +335,7 @@ Add a test (or untestable declaration) for rule **{RULEID}** — *{rule descript
 - [ ] Either a `[Fact]` with `[RuleDoc("{RULEID}", ...)]` exists in `{target test file}`, or a
       class-level `[RuleDoc("{RULEID}", ..., Untestable = "...")]` exists in `UntestableRules.cs`
 - [ ] `RuleDocCoverageShould` passes (no duplicate or missing `[RuleDoc]` entries)
-- [ ] If testable: `dotnet test --no-build --filter "FullyQualifiedName~{SuggestedMethodName}"` passes
+- [ ] If testable: `dotnet test --no-build -- --filter-method "*{SuggestedMethodName}*"` passes
 
 ## How to implement the test
 

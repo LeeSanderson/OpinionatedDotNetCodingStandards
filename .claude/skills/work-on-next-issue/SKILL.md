@@ -61,9 +61,11 @@ For code changes:
 
 2. **Run only the new/changed test(s) with a filter** (fast — seconds, not minutes):
    ```powershell
-   dotnet test --no-build --filter "FullyQualifiedName~MyNewTestMethod"
+   dotnet test --no-build -- --filter-method "*MyNewTestMethod*"
    ```
-   Fix failures before proceeding.
+   Filters go after a bare `--` and are glob-based — that is Microsoft.Testing.Platform syntax.
+   On a VSTest project use `--filter "FullyQualifiedName~MyNewTestMethod"` instead; the two are not
+   interchangeable. Fix failures before proceeding.
 
 3. **Decide whether the full suite is needed.** Consult AGENTS.md §Test speed.
    Skip the full suite if ALL hold:
