@@ -50,12 +50,27 @@ Run these from the repository root:
 # Verify NuGet dependency versions in nuspec match Directory.Packages.props
 dotnet ./scripts/CheckNugetDependenciesMatchProps.cs
 
+# Regenerate the analyzer editorconfigs after bumping an analyzer package
+dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
+
 # Regenerate docs/rule-reference.md after editing an analyzer editorconfig
 dotnet ./scripts/GenerateRuleReference.cs
 
-# Verify docs/rule-reference.md is in sync with the editorconfigs (same check as CI)
-dotnet ./scripts/CheckRuleReferenceFreshness.cs
+# Verify the editorconfigs and docs/rule-reference.md are in sync (same check as CI):
+# regenerate both, then confirm nothing changed
+dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs
+dotnet ./scripts/GenerateRuleReference.cs
+git diff --exit-code -- packages/Opinionated.DotNet.CodingStandards/pkgsrc/config/analyzers/ docs/
+
+# Verify MSBuild import paths resolve with correct casing
+dotnet ./scripts/CheckImportPathCasing.cs
 ```
+
+Both generators are idempotent, so regenerating and diffing is the reliable freshness check —
+that is exactly what CI asserts. `GenerateRuleReference.cs` has no check mode (it ignores any
+arguments and always rewrites). `UpdateAnalyzerEditorConfigs.cs` does accept `--check`, but on a
+Windows checkout with `core.autocrlf=true` it reports drift unconditionally: it compares its
+LF output against the CRLF file in the working tree. Prefer the regenerate-and-diff form above.
 
 ---
 
@@ -86,9 +101,13 @@ docs/
                         run scripts/GenerateRuleReference.cs to refresh)
 
 scripts/
+    CheckImportPathCasing.cs
     CheckNugetDependenciesMatchProps.cs
-    CheckRuleReferenceFreshness.cs
     GenerateRuleReference.cs
+    UpdateAnalyzerEditorConfigs.cs
+    New-ReleaseTag.ps1
+    Remove-LastReleaseTag.ps1
+    Report-OutdatedPackages.ps1
 
 tests/
     Opinionated.DotNet.CodingStandards.Tests/
