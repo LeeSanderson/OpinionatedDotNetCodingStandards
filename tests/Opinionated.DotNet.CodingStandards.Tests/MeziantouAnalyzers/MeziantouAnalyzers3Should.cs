@@ -718,4 +718,26 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0218").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0219", "Set the language attribute in XML comment",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0219.md")]
+    public async Task RecommendLanguageAttributeInXmlComment()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                /// <summary>
+                /// Sample <c>{ "value": 1 }</c>.
+                /// </summary>
+                public int Value { get; set; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasNote("MA0219").ShouldBeTrue();
+    }
 }
