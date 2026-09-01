@@ -740,4 +740,33 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasNote("MA0219").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0220", "The configured regular expression is not valid",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0220.md")]
+    public async Task ProhibitInvalidConfiguredRegularExpression()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0220 validates .editorconfig option values rather than source code:
+        // InvalidRegexConfigurationAnalyzer reads the options per syntax tree and tries to compile
+        // each configured pattern, so the key is scoped with [*.cs] and spelled bare -- there is no
+        // dotnet_diagnostic./dotnet_code_quality. prefix on the keys it looks up
+        // (MA0003.excluded_methods_regex, MA0104.namespaces_regex and the legacy misspelled
+        // MA0104.namepaces_regex). '[' is an unterminated character class, so the value cannot be
+        // compiled to a Regex. MA0104's own severity is irrelevant: the analyzer validates the
+        // configured value regardless of whether the owning rule is enabled.
+        await project.AddFileAsync(
+            ".editorconfig",
+            """
+            [*.cs]
+            MA0104.namespaces_regex = [
+            """);
+
+        // Fully compliant source (as per the happy-path test), so MA0220 is the only diagnostic.
+        await project.AddFileAsync("Program.cs", "return;\r\n");
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0220").ShouldBeTrue();
+    }
 }
