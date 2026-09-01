@@ -11,6 +11,13 @@ global_level = 0
 #
 # MA0217 is kept at suggestion. It fires on every non-capturing lambda, including idiomatic LINQ,
 # so promoting it to warning would break the build of essentially any consumer that uses LINQ.
+#
+# MA0219 is kept at suggestion. It fires on every <c>/<code> element in an XML comment that has no
+# language attribute, so at warning it would break the build of essentially any consumer that
+# documents its API. The attribute is only a convention — it is not part of the XML documentation
+# comment specification, tools may ignore it, and upstream ships the rule at hidden severity for
+# exactly that reason. MA0218 (an explicitly empty language attribute) stays at warning: that is an
+# unambiguous typo rather than a missing optional convention.
 
 # MA0001: StringComparison is missing
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0001.md
@@ -1091,3 +1098,18 @@ dotnet_diagnostic.MA0216.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md
 # Enabled: False, Severity: suggestion
 dotnet_diagnostic.MA0217.severity = suggestion
+
+# MA0218: The language attribute is empty
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0218.md
+# Enabled: True, Severity: suggestion
+dotnet_diagnostic.MA0218.severity = warning
+
+# MA0219: Set the language attribute in XML comment
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0219.md
+# Enabled: True, Severity: silent
+dotnet_diagnostic.MA0219.severity = suggestion
+
+# MA0220: The configured regular expression is not valid
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0220.md
+# Enabled: True, Severity: warning
+dotnet_diagnostic.MA0220.severity = warning

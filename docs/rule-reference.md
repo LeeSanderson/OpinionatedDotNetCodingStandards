@@ -103,6 +103,9 @@ Rules set to `none` or `silent` are omitted.
 | `MA0215` | Return the task instead of awaiting it | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0215.md) |
 | `MA0216` | Remove unnecessary closed modifier | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0216.md) |
 | `MA0217` | Use a static lambda | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0217.md) |
+| `MA0218` | The language attribute is empty | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0218.md) |
+| `MA0219` | Set the language attribute in XML comment | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0219.md) |
+| `MA0220` | The configured regular expression is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0220.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
