@@ -696,4 +696,26 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasNote("MA0217").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0218", "The language attribute is empty",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0218.md")]
+    public async Task ProhibitEmptyLanguageAttributeInXmlComment()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                /// <summary>
+                /// Sample <c language="">{ "value": 1 }</c>.
+                /// </summary>
+                public int Value { get; set; }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0218").ShouldBeTrue();
+    }
 }
