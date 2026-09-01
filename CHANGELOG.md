@@ -7,6 +7,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.12]
+
+### Added
+
+- `MA0220` (the configured regular expression is not valid) is now enforced as a **warning**. It
+  does not analyse source code — it validates `.editorconfig` option values, reporting when one of
+  the regex-valued options (`MA0003.excluded_methods_regex`, `MA0104.namespaces_regex`, and the
+  legacy misspelled `MA0104.namepaces_regex`) cannot be compiled to a `Regex`. Without it a typo in
+  one of those options silently changes the owning rule's behaviour. Note that it validates the
+  value regardless of whether the owning rule is itself enabled.
+- `MA0218` (the language attribute is empty) is now enforced as a **warning**. It fires when the
+  `language`/`lang` attribute of a `<c>` or `<code>` element in an XML comment is present but has
+  no value, e.g. `/// <summary>Sample <c language="">{ "value": 1 }</c>.</summary>` — an
+  unambiguous typo rather than a missing optional convention.
+- `MA0219` (set the language attribute in XML comment) is enforced as a **suggestion**, not a
+  warning, so it surfaces as a note without failing a build. It fires on *every* `<c>`/`<code>`
+  element that has no `language` attribute, so at `warning` it would break the build of
+  essentially any consumer that documents its API. The attribute is only a convention — it is not
+  part of the XML documentation comment specification, tools may ignore it, and upstream ships the
+  rule at `hidden` severity for exactly that reason. This mirrors the existing `MA0214`/`MA0215`/
+  `MA0217` decisions, and the rationale is recorded in the header of
+  `Analyzer.Meziantou.Analyzer.editorconfig`. Note the rule does not fire when the element contains
+  a single C# keyword — `MA0154` already covers that case with `<see langword="..." />`.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.177 to 3.0.200. The three rules above are the only new rule
+  IDs; no already-enforced rule changed behaviour in this project's test suite.
+
 ## [v0.0.11]
 
 ### Changed 
