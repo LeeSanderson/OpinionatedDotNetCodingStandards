@@ -106,6 +106,11 @@ Rules set to `none` or `silent` are omitted.
 | `MA0218` | The language attribute is empty | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0218.md) |
 | `MA0219` | Set the language attribute in XML comment | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0219.md) |
 | `MA0220` | The configured regular expression is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0220.md) |
+| `MA0221` | TryGetValue method should use [MaybeNullWhen(false)] on the value parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0221.md) |
+| `MA0222` | JsonSourceGenerationOptions should set RespectNullableAnnotations | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0222.md) |
+| `MA0223` | JsonSourceGenerationOptions should set RespectRequiredConstructorParameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0223.md) |
+| `MA0224` | JsonSerializerOptions should set RespectNullableAnnotations | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0224.md) |
+| `MA0225` | JsonSerializerOptions should set RespectRequiredConstructorParameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0225.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
