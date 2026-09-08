@@ -801,4 +801,40 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0221").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0222", "JsonSourceGenerationOptions should set RespectNullableAnnotations",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0222.md")]
+    public async Task RequireRespectNullableAnnotationsOnJsonSourceGenerationOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // JsonSourceGenerationOptionsAnalyzer reports on every type inheriting from
+        // JsonSerializerContext whose [JsonSourceGenerationOptions] attribute does not explicitly
+        // name RespectNullableAnnotations (any value satisfies it -- only the omission is
+        // reported). The bare attribute below is therefore the minimal trigger. Do NOT pass
+        // JsonSerializerDefaults.Strict as the constructor argument: that opts into both
+        // properties at once and suppresses the diagnostic. The type must stay 'partial' so the
+        // System.Text.Json source generator can emit the other half of the context; the analyzer
+        // deliberately reports against the hand-written declaration rather than the generated one.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json.Serialization;
+            namespace test;
+            internal sealed class Payload
+            {
+                public string? Name { get; set; }
+            }
+
+            [JsonSourceGenerationOptions]
+            [JsonSerializable(typeof(Payload))]
+            internal sealed partial class PayloadContext : JsonSerializerContext
+            {
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0222").ShouldBeTrue();
+    }
 }
