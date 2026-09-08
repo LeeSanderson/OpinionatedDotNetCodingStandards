@@ -874,4 +874,39 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0223").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0224", "JsonSerializerOptions should set RespectNullableAnnotations",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0224.md")]
+    public async Task RequireRespectNullableAnnotationsOnJsonSerializerOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0224 is the runtime-options counterpart of MA0222: JsonSerializerOptionsAnalyzer
+        // reports every JsonSerializerOptions creation that does not explicitly name
+        // RespectNullableAnnotations (any value satisfies it -- only the omission is reported).
+        // The property must exist on the type, which it does from .NET 9 onwards. Three shapes
+        // structurally suppress the diagnostic and must be avoided here: the copy constructor
+        // (new JsonSerializerOptions(other)), the JsonSerializerDefaults.Strict argument (which
+        // opts into both properties at once), and assigning the creation to a local that a later
+        // statement configures. Setting an unrelated property such as WriteIndented does not
+        // suppress it, so the initializer below is a genuine trigger.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json;
+            namespace test;
+            public sealed class Serializer
+            {
+                public bool IsIndented()
+                {
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    return options.WriteIndented;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0224").ShouldBeTrue();
+    }
 }
