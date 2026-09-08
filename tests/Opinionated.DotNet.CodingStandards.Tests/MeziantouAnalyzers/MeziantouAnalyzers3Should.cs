@@ -769,4 +769,36 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0220").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0221", "TryGetValue method should use [MaybeNullWhen(false)] on the value parameter",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0221.md")]
+    public async Task UseMaybeNullWhenFalseOnTryGetValueOutParameter()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MissingMaybeNullWhenAttributeOnTryGetValueAnalyzer only inspects the TryGetValue reached
+        // through a constructed IDictionary<TKey, TValue> on the analysed type, so a free-standing
+        // TryGetValue method is never reported. It additionally requires the out parameter to be
+        // nullable-annotated (hence TValue = string?, resolved as Annotated because the harness
+        // csproj sets <Nullable>enable</Nullable>). Re-listing IDictionary<string, string?> on the
+        // derived type re-implements the interface, so the explicit member below -- rather than
+        // Dictionary<,>'s own already-attributed TryGetValue -- is the implementation the analyzer
+        // looks at, and it lacks [MaybeNullWhen(false)].
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public sealed class MyDictionary : Dictionary<string, string?>, IDictionary<string, string?>
+            {
+                bool IDictionary<string, string?>.TryGetValue(string key, out string? value)
+                {
+                    value = null;
+                    return false;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0221").ShouldBeTrue();
+    }
 }
