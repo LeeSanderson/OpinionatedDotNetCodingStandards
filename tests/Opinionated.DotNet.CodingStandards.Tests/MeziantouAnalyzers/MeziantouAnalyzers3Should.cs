@@ -909,4 +909,38 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0224").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0225", "JsonSerializerOptions should set RespectRequiredConstructorParameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0225.md")]
+    public async Task RequireRespectRequiredConstructorParametersOnJsonSerializerOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0225 is MA0224's sibling on the same creation expression: JsonSerializerOptionsAnalyzer
+        // reports it whenever a JsonSerializerOptions creation does not explicitly name
+        // RespectRequiredConstructorParameters. RespectNullableAnnotations is set below purely to
+        // satisfy MA0224, so this snippet isolates MA0225 as the only rule of the pair left unmet.
+        // Avoid the three suppressing shapes: the copy constructor (new JsonSerializerOptions(other),
+        // which the analyzer skips outright), a JsonSerializerDefaults.Strict argument (which opts
+        // into both properties at once), and assigning the creation to a local that a later statement
+        // configures. Merely *using* the local afterwards, as below, does not count as configuring it.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json;
+            namespace test;
+            public sealed class Writer
+            {
+                public string Write(int value)
+                {
+                    var serializerOptions = new JsonSerializerOptions { RespectNullableAnnotations = true };
+                    return JsonSerializer.Serialize(value, serializerOptions);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0225").ShouldBeTrue();
+    }
 }
