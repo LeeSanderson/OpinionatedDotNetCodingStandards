@@ -769,4 +769,178 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0220").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0221", "TryGetValue method should use [MaybeNullWhen(false)] on the value parameter",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0221.md")]
+    public async Task UseMaybeNullWhenFalseOnTryGetValueOutParameter()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MissingMaybeNullWhenAttributeOnTryGetValueAnalyzer only inspects the TryGetValue reached
+        // through a constructed IDictionary<TKey, TValue> on the analysed type, so a free-standing
+        // TryGetValue method is never reported. It additionally requires the out parameter to be
+        // nullable-annotated (hence TValue = string?, resolved as Annotated because the harness
+        // csproj sets <Nullable>enable</Nullable>). Re-listing IDictionary<string, string?> on the
+        // derived type re-implements the interface, so the explicit member below -- rather than
+        // Dictionary<,>'s own already-attributed TryGetValue -- is the implementation the analyzer
+        // looks at, and it lacks [MaybeNullWhen(false)].
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public sealed class MyDictionary : Dictionary<string, string?>, IDictionary<string, string?>
+            {
+                bool IDictionary<string, string?>.TryGetValue(string key, out string? value)
+                {
+                    value = null;
+                    return false;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0221").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0222", "JsonSourceGenerationOptions should set RespectNullableAnnotations",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0222.md")]
+    public async Task RequireRespectNullableAnnotationsOnJsonSourceGenerationOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // JsonSourceGenerationOptionsAnalyzer reports on every type inheriting from
+        // JsonSerializerContext whose [JsonSourceGenerationOptions] attribute does not explicitly
+        // name RespectNullableAnnotations (any value satisfies it -- only the omission is
+        // reported). The bare attribute below is therefore the minimal trigger. Do NOT pass
+        // JsonSerializerDefaults.Strict as the constructor argument: that opts into both
+        // properties at once and suppresses the diagnostic. The type must stay 'partial' so the
+        // System.Text.Json source generator can emit the other half of the context; the analyzer
+        // deliberately reports against the hand-written declaration rather than the generated one.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json.Serialization;
+            namespace test;
+            internal sealed class Payload
+            {
+                public string? Name { get; set; }
+            }
+
+            [JsonSourceGenerationOptions]
+            [JsonSerializable(typeof(Payload))]
+            internal sealed partial class PayloadContext : JsonSerializerContext
+            {
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0222").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0223", "JsonSourceGenerationOptions should set RespectRequiredConstructorParameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0223.md")]
+    public async Task RequireRespectRequiredConstructorParametersOnJsonSourceGenerationOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0223 is MA0222's sibling on the same attribute: JsonSourceGenerationOptionsAnalyzer
+        // reports it on every type inheriting from JsonSerializerContext whose
+        // [JsonSourceGenerationOptions] attribute does not explicitly name
+        // RespectRequiredConstructorParameters. RespectNullableAnnotations is set below purely to
+        // satisfy MA0222, so this snippet isolates MA0223 as the only rule of the pair left unmet.
+        // Do NOT pass JsonSerializerDefaults.Strict as the constructor argument: that opts into
+        // both properties at once and suppresses the diagnostic. The type must stay 'partial' so
+        // the System.Text.Json source generator can emit the other half of the context; the
+        // analyzer reports against the hand-written declaration rather than the generated one.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json.Serialization;
+            namespace test;
+            internal sealed class RequiredPayload
+            {
+                public string? Name { get; set; }
+            }
+
+            [JsonSourceGenerationOptions(RespectNullableAnnotations = true)]
+            [JsonSerializable(typeof(RequiredPayload))]
+            internal sealed partial class RequiredPayloadContext : JsonSerializerContext
+            {
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0223").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0224", "JsonSerializerOptions should set RespectNullableAnnotations",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0224.md")]
+    public async Task RequireRespectNullableAnnotationsOnJsonSerializerOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0224 is the runtime-options counterpart of MA0222: JsonSerializerOptionsAnalyzer
+        // reports every JsonSerializerOptions creation that does not explicitly name
+        // RespectNullableAnnotations (any value satisfies it -- only the omission is reported).
+        // The property must exist on the type, which it does from .NET 9 onwards. Three shapes
+        // structurally suppress the diagnostic and must be avoided here: the copy constructor
+        // (new JsonSerializerOptions(other)), the JsonSerializerDefaults.Strict argument (which
+        // opts into both properties at once), and assigning the creation to a local that a later
+        // statement configures. Setting an unrelated property such as WriteIndented does not
+        // suppress it, so the initializer below is a genuine trigger.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json;
+            namespace test;
+            public sealed class Serializer
+            {
+                public bool IsIndented()
+                {
+                    var options = new JsonSerializerOptions { WriteIndented = true };
+                    return options.WriteIndented;
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0224").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0225", "JsonSerializerOptions should set RespectRequiredConstructorParameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0225.md")]
+    public async Task RequireRespectRequiredConstructorParametersOnJsonSerializerOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0225 is MA0224's sibling on the same creation expression: JsonSerializerOptionsAnalyzer
+        // reports it whenever a JsonSerializerOptions creation does not explicitly name
+        // RespectRequiredConstructorParameters. RespectNullableAnnotations is set below purely to
+        // satisfy MA0224, so this snippet isolates MA0225 as the only rule of the pair left unmet.
+        // Avoid the three suppressing shapes: the copy constructor (new JsonSerializerOptions(other),
+        // which the analyzer skips outright), a JsonSerializerDefaults.Strict argument (which opts
+        // into both properties at once), and assigning the creation to a local that a later statement
+        // configures. Merely *using* the local afterwards, as below, does not count as configuring it.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json;
+            namespace test;
+            public sealed class Writer
+            {
+                public string Write(int value)
+                {
+                    var serializerOptions = new JsonSerializerOptions { RespectNullableAnnotations = true };
+                    return JsonSerializer.Serialize(value, serializerOptions);
+                }
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0225").ShouldBeTrue();
+    }
 }
