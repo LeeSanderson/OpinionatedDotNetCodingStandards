@@ -837,4 +837,41 @@ public class MeziantouAnalyzers3Should(PackageFixture fixture, ITestOutputHelper
 
         buildOutput.HasError("MA0222").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0223", "JsonSourceGenerationOptions should set RespectRequiredConstructorParameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0223.md")]
+    public async Task RequireRespectRequiredConstructorParametersOnJsonSourceGenerationOptions()
+    {
+        using var project = await CreateProjectBuilderAsync();
+
+        // MA0223 is MA0222's sibling on the same attribute: JsonSourceGenerationOptionsAnalyzer
+        // reports it on every type inheriting from JsonSerializerContext whose
+        // [JsonSourceGenerationOptions] attribute does not explicitly name
+        // RespectRequiredConstructorParameters. RespectNullableAnnotations is set below purely to
+        // satisfy MA0222, so this snippet isolates MA0223 as the only rule of the pair left unmet.
+        // Do NOT pass JsonSerializerDefaults.Strict as the constructor argument: that opts into
+        // both properties at once and suppresses the diagnostic. The type must stay 'partial' so
+        // the System.Text.Json source generator can emit the other half of the context; the
+        // analyzer reports against the hand-written declaration rather than the generated one.
+        await project.AddFileAsync("Program.cs", """
+            using System.Text.Json.Serialization;
+            namespace test;
+            internal sealed class RequiredPayload
+            {
+                public string? Name { get; set; }
+            }
+
+            [JsonSourceGenerationOptions(RespectNullableAnnotations = true)]
+            [JsonSerializable(typeof(RequiredPayload))]
+            internal sealed partial class RequiredPayloadContext : JsonSerializerContext
+            {
+            }
+
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0223").ShouldBeTrue();
+    }
 }
