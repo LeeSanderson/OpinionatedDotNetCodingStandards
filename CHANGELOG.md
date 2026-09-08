@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.13]
+
+### Added
+
+- `MA0221` (`TryGetValue` method should use `[MaybeNullWhen(false)]` on the value parameter) is now
+  enforced as a **warning**. It fires only on the `IDictionary<TKey, TValue>.TryGetValue`
+  implementation of a type, and only when the `out` parameter is nullable-annotated (`out TValue?`)
+  but carries no `[MaybeNullWhen(false)]`. Without the attribute a caller in a nullable context is
+  not told that the value is only meaningful when the method returned `true`, so the compiler
+  cannot warn about dereferencing it on the `false` path.
+- `MA0222` (`JsonSourceGenerationOptions` should set `RespectNullableAnnotations`) and `MA0223`
+  (`JsonSourceGenerationOptions` should set `RespectRequiredConstructorParameters`) are now enforced
+  as **warnings**. Both fire on any `JsonSerializerContext`-derived type whose
+  `[JsonSourceGenerationOptions]` attribute does not explicitly set the property — including a type
+  with no such attribute at all. Setting either property to `true` or `false` satisfies the rule; a
+  single `[JsonSourceGenerationOptions(JsonSerializerDefaults.Strict)]` satisfies both, since
+  `Strict` configures each of them.
+- `MA0224` (`JsonSerializerOptions` should set `RespectNullableAnnotations`) and `MA0225`
+  (`JsonSerializerOptions` should set `RespectRequiredConstructorParameters`) are now enforced as
+  **warnings**. These are the runtime counterparts of the two rules above, firing on a
+  `new JsonSerializerOptions(...)` expression that never sets the property — whether in the object
+  initializer or by later assignment. Both `System.Text.Json` options default to `false` for
+  backwards compatibility, which means deserialization silently tolerates a `null` for a
+  non-nullable reference type and a missing `required` constructor parameter; the rules force that
+  choice to be made explicitly. `JsonSerializerDefaults.Strict` again satisfies both, and the copy
+  constructor (`new JsonSerializerOptions(other)`) is exempt.
+
+All five rules are disabled by default upstream; this package turns each of them on at `warning`.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.200 to 3.0.228. The five rules above are the only new rule
+  IDs; no already-enforced rule changed behaviour in this project's test suite.
+
+### Removed
+
+- `MA0165` (make interpolated string) no longer exists in Meziantou.Analyzer as of this version. It
+  was already configured at `severity = none` in this package, so nothing changes for consumers;
+  the now-inert entry is left in `Analyzer.Meziantou.Analyzer.editorconfig` alongside the other
+  long-standing stale entries.
+
 ## [v0.0.12]
 
 ### Added
