@@ -211,7 +211,7 @@ dotnet_diagnostic.S125.severity = warning
 dotnet_diagnostic.S126.severity = warning
 
 # S1264: A "while" loop should be used instead of a "for" loop
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S1264.severity = warning
 
 # S127: "for" loop stop conditions should be invariant
@@ -611,7 +611,7 @@ dotnet_diagnostic.S2681.severity = warning
 dotnet_diagnostic.S2688.severity = none
 
 # S2692: "IndexOf" checks should not be for positive numbers
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S2692.severity = warning
 
 # S2696: Instance members should not write to "static" fields
@@ -807,7 +807,7 @@ dotnet_diagnostic.S3246.severity = warning
 dotnet_diagnostic.S3247.severity = warning
 
 # S3249: Classes directly extending "object" should not call "base" in "GetHashCode" or "Equals"
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S3249.severity = warning
 
 # S3251: Implementations should be provided for "partial" methods
@@ -1075,7 +1075,7 @@ dotnet_diagnostic.S3881.severity = none
 dotnet_diagnostic.S3884.severity = warning
 
 # S3885: "Assembly.Load" should be used
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S3885.severity = warning
 
 # S3887: Mutable, non-private fields should not be "readonly"
@@ -1687,7 +1687,7 @@ dotnet_diagnostic.S6668.severity = warning
 dotnet_diagnostic.S6669.severity = warning
 
 # S6670: "Trace.Write" and "Trace.WriteLine" should not be used
-# Enabled: True, Severity: warning
+# Enabled: False, Severity: warning
 dotnet_diagnostic.S6670.severity = warning
 
 # S6672: Generic logger injection should match enclosing type
