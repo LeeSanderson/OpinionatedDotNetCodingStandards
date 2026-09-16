@@ -509,4 +509,30 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0227").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0239", "Use 'typeof' instead of 'GetType()' when the type is sealed",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md")]
+    public async Task UseTypeofInsteadOfGetTypeOnSealedType()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The receiver's static type must be sealed: only then can the virtual GetType() call be
+        // replaced by the compile-time typeof(SealedFoo). The same call on a non-sealed type does
+        // NOT trigger the rule, because it may legitimately return a derived type. Upstream ships
+        // MA0239 at suggestion, but this package enforces it at warning => surfaces as SARIF error.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public sealed class SealedFoo
+            {
+            }
+            public class C
+            {
+                public System.Type M(SealedFoo value) => value.GetType();
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0239").ShouldBeTrue();
+    }
 }
