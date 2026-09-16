@@ -143,4 +143,25 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0232").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0233", "An abstract EventSource must not declare event methods",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0233.md")]
+    public async Task ProhibitEventMethodsOnAbstractEventSource()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public abstract class MyEventSourceBase : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0233").ShouldBeTrue();
+    }
 }
