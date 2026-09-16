@@ -485,4 +485,28 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasNote("MA0023").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0227", "Avoid using 'Enumerable.Contains' on a set",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0227.md")]
+    public async Task ProhibitEnumerableContainsOnASet()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Passing a comparer forces the LINQ Enumerable.Contains extension to be selected instead
+        // of HashSet<string>.Contains, so the set's own O(1) lookup (and its comparer) is bypassed
+        // and the call degrades to a linear scan. A bare set.Contains(value) binds to the instance
+        // method and correctly does NOT trigger the rule. System.Linq is an implicit using here.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public bool M(HashSet<string> set, string value)
+                    => set.Contains(value, StringComparer.Ordinal);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0227").ShouldBeTrue();
+    }
 }
