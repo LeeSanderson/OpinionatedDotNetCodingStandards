@@ -111,6 +111,20 @@ Rules set to `none` or `silent` are omitted.
 | `MA0223` | JsonSourceGenerationOptions should set RespectRequiredConstructorParameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0223.md) |
 | `MA0224` | JsonSerializerOptions should set RespectNullableAnnotations | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0224.md) |
 | `MA0225` | JsonSerializerOptions should set RespectRequiredConstructorParameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0225.md) |
+| `MA0226` | EventSource class should be sealed | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0226.md) |
+| `MA0227` | Avoid using 'Enumerable.Contains' on a set | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0227.md) |
+| `MA0228` | The event id of an EventSource must be greater than zero | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0228.md) |
+| `MA0229` | The event id of an EventSource is already used by another event | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0229.md) |
+| `MA0230` | The event name of an EventSource is already used by another event | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0230.md) |
+| `MA0231` | An EventSource event method must not be static | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0231.md) |
+| `MA0232` | An EventSource event method must not be an explicit interface implementation | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0232.md) |
+| `MA0233` | An abstract EventSource must not declare event methods | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0233.md) |
+| `MA0234` | The event id written by an EventSource event method must match its [Event] attribute | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0234.md) |
+| `MA0235` | The payload written by an EventSource event method must match its parameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0235.md) |
+| `MA0236` | The payload written by an EventSource event method must use the order of its parameters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0236.md) |
+| `MA0237` | An EventSource event method writing a related activity id must declare it as its first parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0237.md) |
+| `MA0238` | The parameter type of an EventSource event method is not supported | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0238.md) |
+| `MA0239` | Use 'typeof' instead of 'GetType()' when the type is sealed | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

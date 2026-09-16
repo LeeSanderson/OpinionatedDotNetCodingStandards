@@ -1,0 +1,278 @@
+using Opinionated.DotNet.CodingStandards.Tests.Helpers;
+using Shouldly;
+
+namespace Opinionated.DotNet.CodingStandards.Tests.MeziantouAnalyzers;
+
+public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOutputHelper testOutputHelper)
+    : CodingStandardsTestBase(fixture, testOutputHelper)
+{
+    [Fact]
+    [RuleDoc("MA0226", "EventSource class should be sealed",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0226.md")]
+    public async Task RequireEventSourceClassToBeSealed()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0226").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0228", "The event id of an EventSource must be greater than zero",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0228.md")]
+    public async Task RequireEventIdGreaterThanZero()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(0)]
+                public void Started(string message) => WriteEvent(0, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0228").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0229", "The event id of an EventSource is already used by another event",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0229.md")]
+    public async Task ProhibitDuplicateEventId()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(1, message);
+
+                [Event(1)]
+                public void Stopped(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0229").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0230", "The event name of an EventSource is already used by another event",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0230.md")]
+    public async Task ProhibitDuplicateEventName()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started() => WriteEvent(1);
+
+                [Event(2)]
+                public void Started(string message) => WriteEvent(2, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0230").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0231", "An EventSource event method must not be static",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0231.md")]
+    public async Task ProhibitStaticEventSourceEventMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public static void Started(string message)
+                {
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0231").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0232", "An EventSource event method must not be an explicit interface implementation",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0232.md")]
+    public async Task ProhibitExplicitInterfaceEventSourceEventMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public interface IMyEvents
+            {
+                void Started(string message);
+            }
+            public sealed class MyEventSource : EventSource, IMyEvents
+            {
+                [Event(1)]
+                void IMyEvents.Started(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0232").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0233", "An abstract EventSource must not declare event methods",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0233.md")]
+    public async Task ProhibitEventMethodsOnAbstractEventSource()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public abstract class MyEventSourceBase : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0233").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0234", "The event id written by an EventSource event method must match its [Event] attribute",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0234.md")]
+    public async Task RequireWrittenEventIdToMatchEventAttribute()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(2, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0234").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0235", "The payload written by an EventSource event method must match its parameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0235.md")]
+    public async Task RequireWrittenPayloadToMatchParameters()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message, int count) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0235").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0236", "The payload written by an EventSource event method must use the order of its parameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0236.md")]
+    public async Task RequireWrittenPayloadToUseParameterOrder()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message, int count) => WriteEvent(1, count, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0236").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0237", "An EventSource event method writing a related activity id must declare it as its first parameter",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0237.md")]
+    public async Task RequireRelatedActivityIdAsFirstParameter()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System;
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message, Guid relatedActivityId) =>
+                    WriteEventWithRelatedActivityId(1, relatedActivityId, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0237").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0238", "The parameter type of an EventSource event method is not supported",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0238.md")]
+    public async Task ProhibitUnsupportedEventSourceParameterType()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class Payload
+            {
+                public int Value { get; set; }
+            }
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(Payload payload) => WriteEvent(1, payload);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0238").ShouldBeTrue();
+    }
+}
