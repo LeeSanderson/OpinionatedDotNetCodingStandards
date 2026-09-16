@@ -227,4 +227,27 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0236").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0237", "An EventSource event method writing a related activity id must declare it as its first parameter",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0237.md")]
+    public async Task RequireRelatedActivityIdAsFirstParameter()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System;
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message, Guid relatedActivityId) =>
+                    WriteEventWithRelatedActivityId(1, relatedActivityId, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0237").ShouldBeTrue();
+    }
 }
