@@ -250,4 +250,29 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0237").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0238", "The parameter type of an EventSource event method is not supported",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0238.md")]
+    public async Task ProhibitUnsupportedEventSourceParameterType()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class Payload
+            {
+                public int Value { get; set; }
+            }
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(Payload payload) => WriteEvent(1, payload);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0238").ShouldBeTrue();
+    }
 }
