@@ -50,7 +50,7 @@ All fourteen rules are disabled by default upstream; this package turns each of 
 
 ### Changed
 
-- Bumped Meziantou.Analyzer from 3.0.228 to 3.0.258. The fourteen rules above are the only new rule
+- Bumped Meziantou.Analyzer from 3.0.228 to 3.0.259. The fourteen rules above are the only new rule
   IDs, but upstream also widened three rules this package already enforces: `MA0206` now also
   reports on `record struct` and interface declarations, `MA0068` now reports on
   `[NotNullIfNotNull]` parameter and property placements, and `MA0179` now detects a constant on
