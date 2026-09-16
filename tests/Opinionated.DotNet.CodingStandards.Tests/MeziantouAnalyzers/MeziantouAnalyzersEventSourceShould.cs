@@ -47,4 +47,28 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0228").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0229", "The event id of an EventSource is already used by another event",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0229.md")]
+    public async Task ProhibitDuplicateEventId()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(1, message);
+
+                [Event(1)]
+                public void Stopped(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0229").ShouldBeTrue();
+    }
 }
