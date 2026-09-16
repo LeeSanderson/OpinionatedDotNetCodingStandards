@@ -118,4 +118,29 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0231").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0232", "An EventSource event method must not be an explicit interface implementation",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0232.md")]
+    public async Task ProhibitExplicitInterfaceEventSourceEventMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public interface IMyEvents
+            {
+                void Started(string message);
+            }
+            public sealed class MyEventSource : EventSource, IMyEvents
+            {
+                [Event(1)]
+                void IMyEvents.Started(string message) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0232").ShouldBeTrue();
+    }
 }
