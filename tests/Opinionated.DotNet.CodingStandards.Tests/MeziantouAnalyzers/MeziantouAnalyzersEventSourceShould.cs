@@ -95,4 +95,27 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0230").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0231", "An EventSource event method must not be static",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0231.md")]
+    public async Task ProhibitStaticEventSourceEventMethod()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public static void Started(string message)
+                {
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0231").ShouldBeTrue();
+    }
 }
