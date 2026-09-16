@@ -164,4 +164,25 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0233").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0234", "The event id written by an EventSource event method must match its [Event] attribute",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0234.md")]
+    public async Task RequireWrittenEventIdToMatchEventAttribute()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message) => WriteEvent(2, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0234").ShouldBeTrue();
+    }
 }
