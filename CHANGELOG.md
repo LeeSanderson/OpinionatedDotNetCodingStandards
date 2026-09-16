@@ -7,6 +7,65 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.14]
+
+### Added
+
+- Twelve new rules covering `System.Diagnostics.Tracing.EventSource` correctness are now enforced
+  as **warnings**. ETW builds an event's manifest reflectively from the concrete `EventSource`
+  subclass, and `EventSource` swallows manifest-construction failures by design, so every defect in
+  this family is silent at compile time *and* at runtime — the event simply never fires, or is
+  decoded against the wrong schema. They fall into three groups:
+  - *Shape of the type* — `MA0226` (an `EventSource` subclass should be `sealed`), `MA0233` (an
+    abstract `EventSource` must not declare event methods), `MA0231` (an event method must not be
+    `static`) and `MA0232` (an event method must not be an explicit interface implementation).
+    Each describes a member that ETW's reflective discovery cannot see.
+  - *Event identity* — `MA0228` (the event id must be greater than zero; ETW reserves `0`),
+    `MA0229` (the id is already used by another event) and `MA0230` (the name is already used).
+    Note that an event's name **is its method name**, so `MA0230` fires on overloads, not on the
+    `EventName` argument.
+  - *What is actually written* — `MA0234` (the id passed to `WriteEvent` must match the `[Event]`
+    attribute), `MA0235` (the payload must match the method's parameters — an arity check),
+    `MA0236` (the payload must use the parameters' declared order), `MA0237` (a method calling
+    `WriteEventWithRelatedActivityId` must declare the related activity id as its first parameter,
+    named `relatedActivityId`) and `MA0238` (the parameter type is not one ETW can serialise —
+    `DateTime`, `Guid`, `byte[]`, `IntPtr`, enums, `string` and the primitives are; `Uri`, `object`,
+    `DateTimeOffset`, `decimal` and collections are not).
+- `MA0227` (avoid using `Enumerable.Contains` on a set) is now enforced as a **warning**. It fires
+  on the two shapes where a set's O(1) lookup silently degrades to a linear scan: passing a
+  comparer (`set.Contains(value, StringComparer.Ordinal)`, which has no `ICollection<T>` fast path
+  at all), and searching for a value whose type differs from the set's element type (an `object` in
+  a `HashSet<string>`, say). `Enumerable.Contains` only delegates to the set's own lookup when the
+  source implements `ICollection<T>` *for the searched value's type*. Covers `HashSet<T>`,
+  `ISet<T>`, `IReadOnlySet<T>` and `IImmutableSet<T>` receivers.
+- `MA0239` (use `typeof` instead of `GetType()` when the type is sealed) is now enforced as a
+  **warning**. When the receiver's static type is `sealed`, `GetType()` is a virtual call that can
+  only ever return that one type, so `typeof(T)` is exactly equivalent, resolved at compile time,
+  and cannot throw on a null receiver. Upstream ships this rule at `suggestion`; it is enforced
+  here at `warning` because it fires only on that narrow, mechanically fixable shape — unlike
+  `MA0214`/`MA0215`/`MA0217`/`MA0219`, which were deliberately downgraded for firing on ubiquitous
+  idiomatic code.
+
+All fourteen rules are disabled by default upstream; this package turns each of them on.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.228 to 3.0.258. The fourteen rules above are the only new rule
+  IDs, but upstream also widened three rules this package already enforces: `MA0206` now also
+  reports on `record struct` and interface declarations, `MA0068` now reports on
+  `[NotNullIfNotNull]` parameter and property placements, and `MA0179` now detects a constant on
+  the left-hand side of a length comparison. `MA0209` and `MA0210` each had false positives fixed,
+  so they should fire slightly less often. `MA0070` (enforced here at `suggestion`) now reports on
+  every declaration that can be obsolete. Other rules changed upstream in this range — `MA0018`,
+  `MA0028`, `MA0051`, `MA0089`, `MA0147`, `MA0148` and `MA0149` — are all configured to `none` in
+  this package, so those changes are invisible to consumers.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.400 to 10.0.401. No new or removed rule IDs.
+- Bumped SonarAnalyzer.CSharp from 10.33.0.1635 to 10.34.0.3385. No new or removed rule IDs, but
+  five rules — `S1264`, `S2692`, `S3249`, `S3885` and `S6670` — became disabled-by-default
+  upstream. This package sets each of them to `warning` explicitly, so **nothing changes for
+  consumers**; only the regenerated metadata comments in
+  `Analyzer.SonarAnalyzer.CSharp.editorconfig` moved.
+
 ## [v0.0.13]
 
 ### Added
