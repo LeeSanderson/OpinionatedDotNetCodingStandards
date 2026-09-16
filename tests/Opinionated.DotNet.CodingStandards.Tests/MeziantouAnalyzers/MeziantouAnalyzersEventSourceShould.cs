@@ -26,4 +26,25 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0226").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0228", "The event id of an EventSource must be greater than zero",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0228.md")]
+    public async Task RequireEventIdGreaterThanZero()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(0)]
+                public void Started(string message) => WriteEvent(0, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0228").ShouldBeTrue();
+    }
 }
