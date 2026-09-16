@@ -185,4 +185,25 @@ public class MeziantouAnalyzersEventSourceShould(PackageFixture fixture, ITestOu
 
         buildOutput.HasError("MA0234").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0235", "The payload written by an EventSource event method must match its parameters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0235.md")]
+    public async Task RequireWrittenPayloadToMatchParameters()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Diagnostics.Tracing;
+            namespace test;
+            public sealed class MyEventSource : EventSource
+            {
+                [Event(1)]
+                public void Started(string message, int count) => WriteEvent(1, message);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0235").ShouldBeTrue();
+    }
 }
