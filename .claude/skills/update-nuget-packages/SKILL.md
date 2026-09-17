@@ -30,10 +30,26 @@ changelog, no release. See "Lightweight path" near the end of this document.
   CliWrap to the latest version", or a package flagged by the dependency-check workflow's
   tracking issue) or several non-analyzer packages at once.
 - If the invocation mixes at least one owned analyzer package with one or more non-analyzer
-  packages, PATH is always **"full"** for the analyzer package(s): handle those via steps 1–12,
-  and treat any non-analyzer package(s) mentioned in the same request as separate, later
-  lightweight-path invocations rather than folding them into the analyzer PRD. An analyzer-package
-  bump never takes the lightweight shortcut, even when it arrives bundled with unrelated packages.
+  packages, PATH is always **"full"** for the analyzer package(s): handle those via steps 1–12. An
+  analyzer-package bump never takes the lightweight shortcut, even when it arrives bundled with
+  unrelated packages.
+
+> **The repo-wide outdated gate overrides the tempting split here.** CI runs
+> `dotnet tool run dotnet-outdated <solution> --fail-on-updates` (`.github/workflows/ci.yml`, step
+> "Check for outdated packages"), which fails the PR when **any** referenced package in the
+> solution has a newer version — analyzer or not. So a full-path run cannot defer non-analyzer
+> bumps to a later invocation and still merge: the PR sits red until every package is current.
+>
+> Resolve it by scope, not by path. On a full-path run, **every** outdated package gets bumped on
+> the same branch, but only the five owned analyzer packages get the PRD/issue/changelog treatment:
+>
+> | | Bumped on the PRD branch? | Gets PRD + per-rule issues? | Gets a CHANGELOG entry? |
+> |---|---|---|---|
+> | Owned analyzer package | yes | yes | yes |
+> | Any other outdated package | **yes — CI requires it** | no | no — it is not a dependency of the published package (the `.nuspec` lists only the five analyzers) |
+>
+> A *lightweight* invocation is still the right path when no analyzer package is involved at all;
+> it just cannot be used to postpone a non-analyzer bump that is blocking a full-path PR.
 
 Skip straight to "## Lightweight path" near the end of this document when PATH = lightweight.
 Continue with step 0 immediately below when PATH = full.
@@ -107,15 +123,35 @@ Parse the `versions` array. Strategy per package:
 
 Compare to current. Collect a list of packages that have a newer version available.
 
-Also check for newer versions of other packages by running `dotnet outdated` in the repo root.
+Then run the **same check CI runs**, so nothing can surprise the PR later:
 
-If no packages need updating, output a summary and stop:
+```powershell
+dotnet tool restore
+dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
+```
+
+Record its findings as two separate lists — they are handled differently from here on:
+
+- `ANALYZER_OUTDATED` — the owned analyzer packages with a newer version. These drive steps 3–12
+  (PRD, issues, changelog, release).
+- `OTHER_OUTDATED` — every other outdated package it reports (e.g. `xunit.v3`). These are bumped in
+  step 4 on the same branch, and otherwise ignored: no issue, no changelog entry. See the table in
+  "Choosing a path" for why they cannot be deferred.
+
+Use `dotnet-outdated` (the pinned local tool) rather than a bare `dotnet outdated`, so this check
+and CI's always agree; a discrepancy between them is exactly the failure this is here to prevent.
+
+If **both** lists are empty, output a summary and stop:
 ```
 All analyzer packages are already up to date:
   Meziantou.Analyzer: 3.0.104 (current)
   Microsoft.CodeAnalysis.BannedApiAnalyzers: 4.14.0 (current)
   ...
+No other outdated packages.
 ```
+
+If `ANALYZER_OUTDATED` is empty but `OTHER_OUTDATED` is not, there is no PRD to write — that is a
+**lightweight-path** run for those packages. Say so and switch to "## Lightweight path".
 
 ## 3. Create and switch to a feature branch
 
@@ -142,7 +178,8 @@ When `EXTEND_MODE` is **false** (i.e. we are on `main` or there is no active PRD
 
 ## 4. Update version files
 
-For each package with a new version, update **both** files in a single pass — they must never drift:
+For each package in `ANALYZER_OUTDATED`, update **both** files in a single pass — they must never
+drift:
 
 ### `Directory.Packages.props`
 
@@ -151,6 +188,32 @@ Change the `version=` attribute on the matching `<PackageReference>` element.
 ### `packages/Opinionated.DotNet.CodingStandards/Opinionated.DotNet.CodingStandards.nuspec`
 
 Change the `version=` attribute on the matching `<dependency>` element inside `<metadata>/<dependencies>`.
+
+### Then bump everything in `OTHER_OUTDATED`
+
+Each of these has exactly **one** version reference. Look in `Directory.Packages.props` first, then
+the `.csproj` that uses it:
+
+```powershell
+Select-String -Path Directory.Packages.props -Pattern '"<PackageId>"'
+Select-String -Path *.csproj -Pattern '<PackageId>' -Recurse
+```
+
+Change that one attribute and nothing else — **do not** touch the `.nuspec` for these. The
+`.nuspec` declares the published package's dependencies, and it lists only the five analyzers; a
+test-only package like `xunit.v3` does not belong there, and adding it would fail
+`CheckNugetDependenciesMatchProps.cs` in step 6. If a package turns up in more than one place, stop
+and report the inconsistency rather than guessing which to change.
+
+Confirm the gate is now satisfied before going on — this is the check that failed the PR when the
+skill previously deferred these:
+
+```powershell
+dotnet restore
+dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
+```
+
+It must print `No outdated dependencies were detected`.
 
 ## 5. Run the editorconfig update script
 
@@ -267,7 +330,9 @@ regenerate all analyzer editorconfigs, and add test coverage for each newly-disc
 
 ## Out of Scope
 
-- Bumping non-analyzer dependencies (e.g., `xunit`, `CliWrap`).
+- Rule coverage for non-analyzer dependencies (e.g., `xunit`, `CliWrap`). Any that were outdated
+  are bumped on this branch — CI's repo-wide `--fail-on-updates` gate leaves no choice — but they
+  are not part of the published package, so they get no issue here and no changelog entry.
 - Changing rule severities for existing rules — that is a separate, deliberate change.
 
 ## Further Notes
@@ -547,9 +612,35 @@ this skill's later steps assume an unqualified, complete success.)
    git add CHANGELOG.md
    git commit -m "Update changelog for v<version>"
    ```
-5. **Push the branch and open the PR.** If a PR already exists for this branch (possible when
-   resuming an `EXTEND_MODE` run), reuse it (`gh pr list --head feat/<prd-slug> --json number`)
-   instead of creating a duplicate.
+5. **Re-check freshness, then push the branch and open the PR.**
+
+   A full-path run takes hours — long enough for an upstream package to publish a new version
+   between step 2 and here, which would fail CI's outdated gate on a PR that was correct when it
+   was written. Re-run the gate immediately before pushing, and again after any CI failure:
+
+   ```powershell
+   dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
+   ```
+
+   If it reports anything, resolve by **what the newer version contains**, not by how late it is:
+
+   - **A non-analyzer package** → bump it as in step 4. No issue, no changelog entry. Continue.
+   - **An owned analyzer package whose new version adds no rules** → bump it in
+     `Directory.Packages.props` *and* the `.nuspec`, re-run
+     `dotnet ./scripts/UpdateAnalyzerEditorConfigs.cs`, and confirm it reports `Added: (none)` with
+     zero drift in `git status`. That proves there is no new rule to cover, so no PRD work is
+     implied: amend the `### Changed` line in the changelog to the new version and continue. Say in
+     the commit message why it was safe to fold in (cite the `Added: (none)` result and the upstream
+     release notes).
+   - **An owned analyzer package whose new version adds rules** → **stop and ask the user.** This is
+     genuine new coverage work, not a version-number fix. Folding it in silently would ship rules
+     with no test and no `[RuleDoc]`, and `RuleDocCoverageShould` would fail anyway. The options are
+     to extend the current PRD with issues for the new rules (the `EXTEND_MODE` path — the branch
+     and PRD already exist, so steps 8–11 can simply run again), or to release what is already
+     green and pick the newer version up in the next run. Both are defensible; the user picks.
+
+   Then push. If a PR already exists for this branch (possible when resuming an `EXTEND_MODE` run),
+   reuse it (`gh pr list --head feat/<prd-slug> --json number`) instead of creating a duplicate.
    ```powershell
    git push -u origin feat/<prd-slug>
    gh pr create --base main --title "<summarize the package bumps>" --body "<reuse the PRD's own summary — don't write a second one from scratch>"
@@ -578,11 +669,23 @@ this skill's later steps assume an unqualified, complete success.)
      (`strict: true` in branch protection) and something else landed on `main` while this PR was
      open. Update the branch (`gh pr update-branch <number>`) and re-watch checks once; if it's
      still not merging after that, treat it as blocked.
-   - **Any check failed, or it's still `OPEN` after the above** (branch protection blocking it, a
-     required check that never reports, a real conflict, anything) → **stop and notify the user
-     loudly**, quoting the exact blocking reason from the command output. Do not force-merge, do
-     not edit branch protection, do not retry indefinitely. Leave the PR open for a human to
-     resolve.
+   - **The `Check for outdated packages` step failed** → this one is *expected and fixable*, not a
+     hand-off. It means a package published a newer version while this run was in flight. Go back
+     to step 5's re-check and work its three cases (non-analyzer → bump; analyzer with no new rules
+     → bump and amend the changelog; analyzer **with** new rules → stop and ask). Push the fix; CI
+     re-runs and auto-merge stays armed, so no further action is needed if it goes green. Read the
+     exact flagged versions from the job log rather than guessing:
+     ```powershell
+     gh run view <run-id> --json jobs --jq '.jobs[] | {name, conclusion, failed:[.steps[]|select(.conclusion=="failure")|.name]}'
+     gh api repos/{owner}/{repo}/actions/jobs/<job-id>/logs
+     ```
+     Fixing your own PR to satisfy a legitimate gate is not the same as forcing past one. Treat it
+     as blocked only if the same fix fails twice — at that point something else is wrong.
+   - **Any other check failed, or it's still `OPEN` after the above** (a genuine build or test
+     failure, branch protection blocking it, a required check that never reports, a real conflict,
+     anything) → **stop and notify the user loudly**, quoting the exact blocking reason from the
+     command output. Do not force-merge, do not edit branch protection, do not retry indefinitely.
+     Leave the PR open for a human to resolve.
 7. **Land locally.**
    ```powershell
    git checkout main
@@ -626,8 +729,14 @@ Path taken: full (analyzer pipeline)
 > never touches anything that affects the published package's enforced rule set.
 
 1. **Confirm the target and the new version.** Identify the exact package id and the version to
-   bump to — from `dotnet outdated`, the dependency-check workflow's tracking issue, or a version
-   independently confirmed on NuGet.org.
+   bump to — from the dependency-check workflow's tracking issue, a version independently confirmed
+   on NuGet.org, or the pinned local tool, which is the same one CI's gate uses:
+   ```powershell
+   dotnet tool restore
+   dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx
+   ```
+   If that listing includes **any of the five owned analyzer packages**, this is not a lightweight
+   run — go back to "Choosing a path" and take the full pipeline for those.
 
 2. **Locate its single version reference.** Check `Directory.Packages.props` first — most package
    versions in this repo are centrally managed there:
@@ -658,11 +767,16 @@ Path taken: full (analyzer pipeline)
    - Already on a feature branch for this exact bump (a resumed run) → stay on it.
    - On any other branch → stop and report; do not mix this bump onto unrelated work in progress.
 
-5. **Run a full build and test pass:**
+5. **Run the gate, then a full build and test pass:**
    ```powershell
+   dotnet tool run dotnet-outdated Opinionated.DotNet.CodingStandards.slnx --fail-on-updates
    dotnet build
    dotnet test
    ```
+   The first command is what CI runs; it must print `No outdated dependencies were detected`. If it
+   still reports something, that package needs bumping too before this branch can ever merge —
+   bump it here if it is a non-analyzer package, or switch to the full pipeline if it is one of the
+   five.
    Both must be clean. If either fails, do **not** commit — report the failure and stop. Never
    suppress or work around a new failure just to force the bump through; a quick bump must never
    regress the solution.
@@ -689,11 +803,23 @@ Path taken: full (analyzer pipeline)
 
 - **Any bump touching one of the five owned analyzer packages always uses the full pipeline
   (steps 0–12) — never the lightweight shortcut**, even if the same request also mentions
-  non-analyzer packages. The lightweight path is reserved exclusively for packages outside that
-  list of five; see "Choosing a path" above.
+  non-analyzer packages. The lightweight path is reserved for runs where **no** analyzer package is
+  involved at all — it is not a way to split non-analyzer packages out of a full-path run, which
+  must bump them too; see "Choosing a path" above.
 - The lightweight path never creates a PRD, per-rule issues, editorconfig regeneration, or a
   changelog entry, and never hands off to `/implementation` — there is no PRD/issue queue behind
   a single, non-analyzer version bump.
+- **A full-path run leaves nothing outdated behind.** CI's `--fail-on-updates` gate is repo-wide, so
+  every outdated package is bumped on the PRD branch, not deferred to a later invocation. Scope is
+  controlled by what each package *gets* (PRD, issues, changelog) — see the table in "Choosing a
+  path" — never by leaving it un-bumped.
+- Only the five owned analyzer packages ever appear in the `.nuspec`. Never add a non-analyzer
+  package to it, however it was bumped; `CheckNugetDependenciesMatchProps.cs` enforces this.
+- A package that is not a dependency of the published package gets **no CHANGELOG entry**. The
+  changelog is consumer-facing and describes the shipped rule set.
+- Re-run the outdated gate immediately before pushing (step 12.5) and after any CI failure on it.
+  A long run can go stale mid-flight; a newer analyzer version that adds **no** rules may be folded
+  in, but one that **adds** rules is new coverage work and requires asking the user first.
 - Always update `Directory.Packages.props` and `.nuspec` together — never drift.
 - Always run `CheckNugetDependenciesMatchProps.cs` after editing versions.
 - Always run the editorconfig update script and build before writing issues.
