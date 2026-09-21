@@ -1208,3 +1208,13 @@ dotnet_diagnostic.MA0238.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md
 # Enabled: False, Severity: suggestion
 dotnet_diagnostic.MA0239.severity = warning
+
+# MA0240: Do not use banned syntax
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md
+# Enabled: True, Severity: warning
+dotnet_diagnostic.MA0240.severity = warning
+
+# MA0241: The banned syntax entry is not valid
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md
+# Enabled: True, Severity: warning
+dotnet_diagnostic.MA0241.severity = warning
