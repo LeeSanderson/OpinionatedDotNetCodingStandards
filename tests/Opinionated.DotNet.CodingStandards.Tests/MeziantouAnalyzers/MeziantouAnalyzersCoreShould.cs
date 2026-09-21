@@ -535,4 +535,33 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0239").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0240", "Do not use banned syntax",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md")]
+    public async Task ProhibitBannedSyntax()
+    {
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["BannedSyntaxes.txt"]);
+        // MA0240 is enabled by default but inert until the project supplies a BannedSyntaxes.txt
+        // additional file, so the file IS the trigger. A bare SyntaxKind member name is the cheapest
+        // form of query (matched directly against the node kind, no XPath, no semantic model) — but
+        // it is case-sensitive, and a misspelling reports MA0241 instead of MA0240.
+        await project.AddFileAsync("BannedSyntaxes.txt", "GotoStatement; Use structured control flow instead");
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public int M()
+                {
+                    goto end;
+                end:
+                    return 0;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0240").ShouldBeTrue();
+    }
 }
