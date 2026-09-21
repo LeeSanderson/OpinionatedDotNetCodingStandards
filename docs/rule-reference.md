@@ -125,6 +125,8 @@ Rules set to `none` or `silent` are omitted.
 | `MA0237` | An EventSource event method writing a related activity id must declare it as its first parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0237.md) |
 | `MA0238` | The parameter type of an EventSource event method is not supported | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0238.md) |
 | `MA0239` | Use 'typeof' instead of 'GetType()' when the type is sealed | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md) |
+| `MA0240` | Do not use banned syntax | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md) |
+| `MA0241` | The banned syntax entry is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

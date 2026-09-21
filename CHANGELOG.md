@@ -7,6 +7,48 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.15]
+
+### Added
+
+- `MA0240` (do not use banned syntax) and `MA0241` (the banned syntax entry is not valid) are now
+  enforced as **warnings**. Together they are the syntax-level counterpart of this package's
+  `BannedSymbols.txt` / `RS0030` setup: instead of banning an API, they let a project ban a
+  *language construct* — `goto`, `lock`, primary constructors, nested conditional expressions,
+  methods with too many parameters — and explain what to use instead, without anyone writing a
+  dedicated analyzer.
+  - `MA0240` reports each construct listed in a `BannedSyntaxes.txt` file, with that entry's
+    message. Each line is either the case-sensitive name of a `Microsoft.CodeAnalysis.CSharp.SyntaxKind`
+    member (`GotoStatement`), which is matched in a single pass over the syntax tree, or an XPath 1.0
+    query over the tree exposed as an XML document (`//ClassDeclaration/ParameterList`). As of
+    Meziantou.Analyzer 3.0.265/3.0.266 those XPath queries can also read the semantic model through
+    a `semantic:` attribute family, so an entry can select a construct by the type or symbol it
+    binds to rather than by shape alone — a query that uses no `semantic:` prefix never requests a
+    semantic model, so it stays cheap.
+  - `MA0241` reports the lines of that file which `MA0240` cannot apply — a misspelled `SyntaxKind`
+    member (the names are case-sensitive, so `gotostatement` is invalid), an invalid XPath query, a
+    query that returns something other than a node-set, an undefined namespace prefix, or an unknown
+    `semantic:` attribute. The remaining valid lines still apply, so the diagnostic exists precisely
+    so that a typo cannot silently disable a ban.
+- **Neither rule changes anything for existing consumers.** Both are enabled at `warning` upstream
+  by default and this package leaves them there, but `MA0240` does nothing at all until a project
+  supplies a banned syntax file, and this package ships none — the choice of which language
+  constructs to ban belongs to the consuming repository, not to these standards. To use them, add a
+  `BannedSyntaxes.txt` beside a project or at the root of the repository; Meziantou.Analyzer picks
+  up the closest one the way MSBuild finds the closest `Directory.Build.props`, and also reads any
+  `BannedSyntaxes.*.txt` added explicitly as an `AdditionalFiles` item. Set
+  `MeziantouIncludeBannedSyntaxesFile=false` in a `Directory.Build.props` to stop that automatic
+  discovery.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.259 to 3.0.266. `MA0240` and `MA0241` are the only new rule
+  IDs. Upstream also fixed a false positive in `MA0005` (no longer reported for the `params` array
+  synthesized by a collection expression) and in `MA0028` (no longer reported for the concatenation
+  of constant strings and chars); both are configured to `none` in this package, so those fixes are
+  invisible to consumers. `MA0234`, which this package enforces at `warning`, had its internal
+  collections swapped from concurrent to locked ones with no change to what it reports.
+
 ## [v0.0.14]
 
 ### Added

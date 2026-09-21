@@ -535,4 +535,53 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0239").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0240", "Do not use banned syntax",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md")]
+    public async Task ProhibitBannedSyntax()
+    {
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["BannedSyntaxes.txt"]);
+        // MA0240 is enabled by default but inert until the project supplies a BannedSyntaxes.txt
+        // additional file, so the file IS the trigger. A bare SyntaxKind member name is the cheapest
+        // form of query (matched directly against the node kind, no XPath, no semantic model) — but
+        // it is case-sensitive, and a misspelling reports MA0241 instead of MA0240.
+        await project.AddFileAsync("BannedSyntaxes.txt", "GotoStatement; Use structured control flow instead");
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public class C
+            {
+                public int M()
+                {
+                    goto end;
+                end:
+                    return 0;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0240").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0241", "The banned syntax entry is not valid",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md")]
+    public async Task InvalidBannedSyntaxEntry()
+    {
+        using var project = await CreateProjectBuilderAsync(additionalFiles: ["BannedSyntaxes.txt"]);
+        // A single-name query must be an exact, case-sensitive SyntaxKind member. "GotoStatment" is a
+        // typo for "GotoStatement", so MA0240 cannot apply the line and MA0241 reports it against the
+        // BannedSyntaxes.txt line itself. No C# code needs to trigger anything here — the defect is in
+        // the additional file, so a minimal Program.cs is enough.
+        await project.AddFileAsync("BannedSyntaxes.txt", "GotoStatment; Use structured control flow instead");
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0241").ShouldBeTrue();
+    }
 }
