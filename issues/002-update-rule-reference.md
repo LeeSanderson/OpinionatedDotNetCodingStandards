@@ -26,7 +26,7 @@ Verify `MA0242` appears in `docs/rule-reference.md`, then commit.
 
 ## Blocked by
 
-Issue 001 (the MA0242 test) — the generator reads `[RuleDoc]` attributes from the built test
+`issues/001-test-ma0242.md` — the generator reads `[RuleDoc]` attributes from the built test
 assembly, so the reference will be missing or mislinked if it runs first.
 
 ## User stories addressed
