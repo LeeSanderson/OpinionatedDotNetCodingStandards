@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.16]
+
+### Added
+
+- `MA0242` (use a value factory to compute the value only when the key is not in the
+  `ConcurrentDictionary`) is now enforced as a **warning**. `ConcurrentDictionary.GetOrAdd(key,
+  value)` and `AddOrUpdate(key, addValue, updateValueFactory)` evaluate their value argument
+  *before* the call, so the work is done on every call even when the key is already present and
+  the result is thrown away. The `Func<TKey, TValue>` overloads defer it to the miss path.
+  The rule is deliberately narrow: it reports only values that are not cheap to evaluate — method
+  calls, object creations, collection expressions, string concatenations, interpolated strings,
+  indexers and `await` expressions — and stays silent for constants, locals, fields, properties,
+  casts and built-in operators over those, so it does not flag `GetOrAdd(key, 0)`. Upstream enables
+  it at `suggestion`; this package raises it to `warning`. Where the discarded evaluation has side
+  effects that must always happen, suppress the diagnostic deliberately rather than reshaping the
+  call.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.266 to 3.0.294. `MA0242` is the only new rule ID, and
+  `MA0212` was removed (see below). No other already-enforced rule changed what it reports in this
+  project's test suite.
+- Bumped SonarAnalyzer.CSharp from 10.34.0.3385 to 10.35.0.4138. This version adds no new rule IDs
+  and no already-enforced rule changed what it reports — all 352 Sonar rule tests pass unchanged.
+
+### Removed
+
+- `MA0212` (use `MemoryMarshal.GetReference` instead of indexing at 0) no longer exists in
+  Meziantou.Analyzer as of 3.0.294. This package had it at `warning`, so consumers lose that
+  diagnostic — nothing replaces it, and no consumer action is needed. As with `MA0165` in
+  [v0.0.13], the now-inert entry is left in `Analyzer.Meziantou.Analyzer.editorconfig` at
+  `severity = none` alongside the other long-standing stale entries.
+
 ## [v0.0.15]
 
 ### Added

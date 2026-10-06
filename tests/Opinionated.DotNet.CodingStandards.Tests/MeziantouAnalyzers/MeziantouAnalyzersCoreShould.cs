@@ -584,4 +584,30 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0241").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0242", "Use a value factory to compute the value only when the key is not in the ConcurrentDictionary",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md")]
+    public async Task UseValueFactoryForConcurrentDictionary()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // GetOrAdd(key, value) evaluates the value eagerly even when the key is already present, so
+        // the analyzer reports only values that are NOT cheap: method calls, object creations,
+        // collection expressions, string concatenations, interpolated strings, indexers and awaits.
+        // "new List<int>()" is an object creation and so is firmly in the reported set; a bare local,
+        // constant, field or property is a deliberate false negative, so do not simplify the trigger.
+        await project.AddFileAsync("Program.cs", """
+            using System.Collections.Concurrent;
+            namespace test;
+            public class C
+            {
+                public List<int> M(ConcurrentDictionary<string, List<int>> dict)
+                    => dict.GetOrAdd("key", new List<int>());
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0242").ShouldBeTrue();
+    }
 }

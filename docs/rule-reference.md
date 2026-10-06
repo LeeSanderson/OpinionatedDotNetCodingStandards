@@ -97,7 +97,6 @@ Rules set to `none` or `silent` are omitted.
 | `MA0209` | Use in keyword for in parameter | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0209.md) |
 | `MA0210` | Use in keyword to call the in overload | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0210.md) |
 | `MA0211` | Use multi-line syntax for XML summary comments | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0211.md) |
-| `MA0212` | Use MemoryMarshal.GetReference instead of indexing at 0 | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0212.md) |
 | `MA0213` | Simplify negated boolean expression | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0213.md) |
 | `MA0214` | Use 'await' instead of returning the task | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0214.md) |
 | `MA0215` | Return the task instead of awaiting it | suggestion | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0215.md) |
@@ -127,6 +126,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0239` | Use 'typeof' instead of 'GetType()' when the type is sealed | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md) |
 | `MA0240` | Do not use banned syntax | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md) |
 | `MA0241` | The banned syntax entry is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md) |
+| `MA0242` | Use a value factory to compute the value only when the key is not in the ConcurrentDictionary | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
