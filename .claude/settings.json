@@ -5,7 +5,13 @@
       "Bash(gh pr merge:*)",
       "Bash(gh pr merge *)",
       "PowerShell(gh pr merge:*)",
-      "PowerShell(gh pr merge *)"
+      "PowerShell(gh pr merge *)",
+      "PowerShell(pwsh ./scripts/New-ReleaseTag.ps1:*)",
+      "PowerShell(pwsh ./scripts/New-ReleaseTag.ps1 *)",
+      "PowerShell(pwsh -NoProfile -File ./scripts/New-ReleaseTag.ps1:*)",
+      "PowerShell(pwsh -NoProfile -File ./scripts/New-ReleaseTag.ps1 *)",
+      "Bash(pwsh ./scripts/New-ReleaseTag.ps1:*)",
+      "Bash(pwsh ./scripts/New-ReleaseTag.ps1 *)"
     ]
   }
 }
