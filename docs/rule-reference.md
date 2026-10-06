@@ -127,6 +127,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0239` | Use 'typeof' instead of 'GetType()' when the type is sealed | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0239.md) |
 | `MA0240` | Do not use banned syntax | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md) |
 | `MA0241` | The banned syntax entry is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md) |
+| `MA0242` | Use a value factory to compute the value only when the key is not in the ConcurrentDictionary | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
