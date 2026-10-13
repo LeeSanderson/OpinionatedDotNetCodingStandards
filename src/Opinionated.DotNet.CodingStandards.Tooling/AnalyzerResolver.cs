@@ -7,8 +7,11 @@ namespace Opinionated.DotNet.CodingStandards.Tooling;
 public static class AnalyzerResolver
 {
     // Maps NuGet package id (lowercase) to the corresponding editorconfig file name.
-    // StyleCop ships as a metapackage; its analyzer DLL lives in the transitive
-    // stylecop.analyzers.unstable package, so that id is used here.
+    // Up to 1.2.0-beta.556, StyleCop.Analyzers was a metapackage whose analyzer DLL lived in
+    // the transitive stylecop.analyzers.unstable package, which is where the editorconfig's
+    // ".Unstable" name comes from. From 1.3.1-beta the DLL ships in StyleCop.Analyzers itself
+    // and the .Unstable package is gone, so the id is keyed here; the editorconfig keeps its
+    // original file name because it is part of the shipped package payload.
     private static readonly IReadOnlyDictionary<string, string> PackageAllowMap =
         new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
@@ -16,7 +19,7 @@ public static class AnalyzerResolver
             ["microsoft.codeanalysis.bannedapianalyzers"] = "Analyzer.Microsoft.CodeAnalysis.BannedApiAnalyzers.editorconfig",
             ["microsoft.codeanalysis.netanalyzers"] = "Analyzer.Microsoft.CodeAnalysis.NetAnalyzers.editorconfig",
             ["sonaranalyzer.csharp"] = "Analyzer.SonarAnalyzer.CSharp.editorconfig",
-            ["stylecop.analyzers.unstable"] = "Analyzer.StyleCop.Analyzers.Unstable.editorconfig",
+            ["stylecop.analyzers"] = "Analyzer.StyleCop.Analyzers.Unstable.editorconfig",
         };
 
     public static Task<IReadOnlyList<AnalyzerPackageInfo>> ResolveAsync(

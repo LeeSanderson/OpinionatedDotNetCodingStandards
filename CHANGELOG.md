@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.17]
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.294 to 3.0.302. No rule IDs were added or removed. Upstream
+  changed what two rules report — `MA0002` now treats the xunit assertions that take an
+  `IEqualityComparer<T>` as ordinal under `report_only_non_ordinal`, and `MA0031` no longer
+  suggests `Skip(n).Any()` when `n` is not a constant — but this package has both at `none`, so
+  nothing changes for consumers. The remaining releases are performance work in `MA0001`, `MA0002`,
+  `MA0011`, `MA0015`, `MA0026`, `MA0043`, `MA0074`, `MA0150` and `MA0202`. All 117 Meziantou rule
+  tests pass unchanged.
+- Bumped StyleCop.Analyzers from 1.2.0-beta.556 to 1.3.1-beta, the first StyleCop release in
+  several years. Upstream audited every rule against C# 8 through the C# 15 previews (records,
+  file-scoped namespaces, primary constructors, collection expressions, partial properties,
+  extension blocks, the `field` keyword, unions), fixed a long backlog of false positives and
+  crashes, and now lets every `stylecop.json` setting be set from `.editorconfig`. This package
+  enforces only `SA1649` (file name should match first type name) from StyleCop; every other
+  StyleCop rule stays at `none`, so the upstream behaviour changes to rules such as `SA1600`,
+  `SA1316`, `SA1312`, `SA1205`, `SA1304`, `SA1122` and `SA1130` only reach projects that re-enable
+  those rules in their own `.editorconfig` — read the upstream
+  [1.3.1-beta release notes](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/releases/tag/1.3.1-beta)
+  before doing so. `SA1649` itself now also checks C# 15 union declarations and C# 14 extension
+  blocks, matches escaped identifiers (`@class`) to file names, and its code fix handles linked
+  files. The existing `SA1649` test passes unchanged.
+  - **Packaging note:** `StyleCop.Analyzers` is no longer a metapackage. Up to 1.2.0-beta.556 the
+    analyzer DLL came from a transitive `StyleCop.Analyzers.Unstable` dependency; from 1.3.1-beta
+    it ships in `StyleCop.Analyzers` itself, so that transitive package disappears from consumers'
+    restore graphs and lock files. No action is needed. StyleCop's per-rule documentation also moved
+    from the repository's `documentation/` folder to GitHub Pages
+    (`https://dotnetanalyzers.github.io/StyleCopAnalyzers/<id>.html`), which is what the help-link
+    comments in the shipped `Analyzer.StyleCop.Analyzers.Unstable.editorconfig` now point at.
+
 ## [v0.0.16]
 
 ### Added
