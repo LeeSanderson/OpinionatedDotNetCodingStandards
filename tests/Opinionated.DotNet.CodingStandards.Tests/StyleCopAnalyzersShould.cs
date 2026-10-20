@@ -19,4 +19,29 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1649").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1143", "Conditional expressions must be formatted consistently",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1143.md")]
+    public async Task RequireConsistentConditionalExpressionFormatting()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // '?' and ':' trail their lines instead of leading indented lines — SA1143 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main(string[] args)
+                {
+                    return args.Length > 0 ?
+                        1 :
+                        0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1143").ShouldBeTrue();
+    }
 }
