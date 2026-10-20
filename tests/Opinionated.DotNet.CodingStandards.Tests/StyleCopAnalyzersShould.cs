@@ -132,4 +132,31 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1653").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1654", "Properly encode generic brackets",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1654.md")]
+    public async Task RequireEncodedGenericBracketsInDocumentation()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The cref uses escaped angle brackets (&lt;T&gt;) instead of braces ({T}) — SA1654 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// See <see cref="System.Collections.Generic.List&lt;T&gt;"/>.
+            /// </summary>
+            public static class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1654").ShouldBeTrue();
+    }
 }
