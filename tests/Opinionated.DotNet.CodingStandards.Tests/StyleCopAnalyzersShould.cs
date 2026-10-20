@@ -74,4 +74,28 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1315").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1317", "Identifier should be named only with Latin letters",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1317.md")]
+    public async Task RequireLatinLettersInIdentifiers()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The local is named with a Greek alpha (emitted via escape to keep this file ASCII) — SA1317 fires.
+        await project.AddFileAsync("Program.cs", $$"""
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var value{{"α"}} = 0;
+                    return value{{"α"}};
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1317").ShouldBeTrue();
+    }
 }
