@@ -159,4 +159,20 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1654").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SX1412", "Store files as UTF-8 without byte order mark",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1412.md")]
+    public async Task RequireUtf8WithoutByteOrderMark()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // A leading U+FEFF (kept as an ASCII escape) is written as the EF BB BF BOM bytes — SX1412 fires.
+        await project.AddFileAsync("Program.cs", "\uFEFF" + """
+            namespace test;
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SX1412").ShouldBeTrue();
+    }
 }
