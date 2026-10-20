@@ -610,4 +610,26 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0242").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0243", "Use an escape sequence for invisible characters",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0243.md")]
+    public async Task RequireEscapeSequenceForInvisibleCharacters()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The raw tab is emitted through an interpolation hole so the generated file contains a real
+        // U+0009 inside the string literal while this test source itself stays free of invisible
+        // characters (MA0243 would otherwise fire on this repo's own code).
+        await project.AddFileAsync("Program.cs", $$"""
+            namespace test;
+            public static class Greeter
+            {
+                public static string GetMessage() => "Hello{{"\t"}}World";
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0243").ShouldBeTrue();
+    }
 }
