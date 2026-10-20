@@ -399,7 +399,9 @@ Add a test (or untestable declaration) for rule **{RULEID}** — *{rule descript
 
 - [ ] Either a `[Fact]` with `[RuleDoc("{RULEID}", ...)]` exists in `{target test file}`, or a
       class-level `[RuleDoc("{RULEID}", ..., Untestable = "...")]` exists in `UntestableRules.cs`
-- [ ] `RuleDocCoverageShould` passes (no duplicate or missing `[RuleDoc]` entries)
+- [ ] `RuleDocCoverageShould` reports no missing or duplicate `[RuleDoc]` for **{RULEID}**
+      (other new rules from this bump may still be listed as missing until their own issues
+      land — that is expected and is not a failure of this issue)
 - [ ] If testable: `dotnet test --no-build -- --filter-method "*{SuggestedMethodName}*"` passes
 
 ## How to implement the test
@@ -482,6 +484,8 @@ issues are complete to include the correct test links.
 
 ## Acceptance criteria
 
+- [ ] `RuleDocCoverageShould` passes outright (no missing or duplicate `[RuleDoc]` entries) —
+      this is the first issue where every new rule is covered, so the full check belongs here
 - [ ] `docs/rule-reference.md` has been regenerated and the new rule IDs appear in it
 - [ ] The file is committed
 
