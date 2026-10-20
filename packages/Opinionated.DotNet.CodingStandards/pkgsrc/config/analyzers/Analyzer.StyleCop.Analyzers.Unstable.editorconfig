@@ -545,7 +545,7 @@ dotnet_diagnostic.SA1316.severity = none
 # SA1317: Identifier should be named only with Latin letters
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1317.html
 # Enabled: True, Severity: warning
-dotnet_diagnostic.SA1317.severity = warning
+dotnet_diagnostic.SA1317.severity = suggestion
 
 # SA1400: Access modifier should be declared
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1400.html
@@ -1015,4 +1015,4 @@ dotnet_diagnostic.SX1309S.severity = none
 # SX1412: Store files as UTF-8 without byte order mark
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SX1412.html
 # Enabled: False, Severity: warning
-dotnet_diagnostic.SX1412.severity = warning
+dotnet_diagnostic.SX1412.severity = suggestion

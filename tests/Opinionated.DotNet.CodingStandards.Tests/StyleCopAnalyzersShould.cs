@@ -96,7 +96,7 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
             """);
         var buildOutput = await project.BuildAndGetOutputAsync();
 
-        buildOutput.HasError("SA1317").ShouldBeTrue();
+        buildOutput.HasNote("SA1317").ShouldBeTrue();
     }
 
     [Fact]
@@ -173,6 +173,6 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
             """);
         var buildOutput = await project.BuildAndGetOutputAsync();
 
-        buildOutput.HasError("SX1412").ShouldBeTrue();
+        buildOutput.HasNote("SX1412").ShouldBeTrue();
     }
 }
