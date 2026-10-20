@@ -44,4 +44,34 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1143").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1315", "Parameter names should match inherited names",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md")]
+    public async Task RequireParameterNamesToMatchInheritedNames()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The override renames 'sound' to 'noise' — SA1315 fires (CA1725 also fires; not asserted here).
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public abstract class Animal
+            {
+                public abstract void Speak(string sound);
+            }
+
+            public class Dog : Animal
+            {
+                public override void Speak(string noise) { }
+            }
+
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1315").ShouldBeTrue();
+    }
 }
