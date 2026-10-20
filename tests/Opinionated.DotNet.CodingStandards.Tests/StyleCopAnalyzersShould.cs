@@ -98,4 +98,38 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1317").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1653", "Only one partial declaration should contain summary documentation",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1653.md")]
+    public async Task RequireSummaryOnOnlyOnePartialDeclaration()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Both partial declarations of Program carry a <summary> — SA1653 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// The program entry point.
+            /// </summary>
+            public static partial class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+
+            /// <summary>
+            /// More documentation for the program.
+            /// </summary>
+            public static partial class Program
+            {
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1653").ShouldBeTrue();
+    }
 }
