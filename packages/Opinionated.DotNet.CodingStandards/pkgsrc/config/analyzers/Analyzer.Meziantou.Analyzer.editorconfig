@@ -1223,3 +1223,8 @@ dotnet_diagnostic.MA0241.severity = warning
 # Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md
 # Enabled: True, Severity: suggestion
 dotnet_diagnostic.MA0242.severity = warning
+
+# MA0243: Use an escape sequence for invisible characters
+# Help link: https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0243.md
+# Enabled: False, Severity: suggestion
+dotnet_diagnostic.MA0243.severity = warning

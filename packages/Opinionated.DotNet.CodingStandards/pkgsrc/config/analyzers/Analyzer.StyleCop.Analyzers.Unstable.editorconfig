@@ -367,6 +367,11 @@ dotnet_diagnostic.SA1141.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1142.severity = none
 
+# SA1143: Conditional expressions must be formatted consistently
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1143.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1143.severity = warning
+
 # SA1200: Using directives should be placed correctly
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1200.html
 # Enabled: True, Severity: warning
@@ -477,7 +482,7 @@ dotnet_diagnostic.SA1303.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1304.severity = none
 
-# SA1305: Field names should not use Hungarian notation
+# SA1305: Names should not use Hungarian notation
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1305.html
 # Enabled: False, Severity: warning
 dotnet_diagnostic.SA1305.severity = none
@@ -527,10 +532,20 @@ dotnet_diagnostic.SA1313.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1314.severity = none
 
+# SA1315: Parameter names should match inherited names
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1315.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1315.severity = warning
+
 # SA1316: Tuple element names should use correct casing
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1316.html
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1316.severity = none
+
+# SA1317: Identifier should be named only with Latin letters
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1317.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1317.severity = warning
 
 # SA1400: Access modifier should be declared
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1400.html
@@ -567,7 +582,7 @@ dotnet_diagnostic.SA1405.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1406.severity = none
 
-# SA1407: Arithmetic expressions should declare precedence
+# SA1407: Arithmetic, bitwise, and shift expressions should declare precedence
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1407.html
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1407.severity = none
@@ -837,7 +852,7 @@ dotnet_diagnostic.SA1623.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1624.severity = none
 
-# SA1625: Element documentation should not be copied and pasted
+# SA1625: Element documentation should not contain duplicate entries
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1625.html
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1625.severity = none
@@ -972,6 +987,16 @@ dotnet_diagnostic.SA1650.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1651.severity = none
 
+# SA1653: Only one partial declaration should contain summary documentation
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1653.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1653.severity = warning
+
+# SA1654: Properly encode generic brackets
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1654.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1654.severity = warning
+
 # SX1101: Do not prefix local calls with 'this.'
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SX1101.html
 # Enabled: False, Severity: warning
@@ -986,3 +1011,8 @@ dotnet_diagnostic.SX1309.severity = none
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SX1309S.html
 # Enabled: False, Severity: warning
 dotnet_diagnostic.SX1309S.severity = none
+
+# SX1412: Store files as UTF-8 without byte order mark
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SX1412.html
+# Enabled: False, Severity: warning
+dotnet_diagnostic.SX1412.severity = warning

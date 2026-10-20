@@ -205,11 +205,11 @@ public class SonarAnalyzerRulesBestPractices2Should(PackageFixture fixture, ITes
     public async Task WarnOnRawWhitespaceInStringLiteral()
     {
         using var project = await CreateProjectBuilderAsync();
-        await project.AddFileAsync("Program.cs", """
+        await project.AddFileAsync("Program.cs", $$"""
             namespace test;
             public static class Greeter
             {
-                public static string GetMessage() => "Hello	World";
+                public static string GetMessage() => "Hello{{"\t"}}World";
             }
             public static class Program { public static int Main() => 0; }
             """);
