@@ -19,4 +19,160 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
 
         buildOutput.HasError("SA1649").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("SA1143", "Conditional expressions must be formatted consistently",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1143.md")]
+    public async Task RequireConsistentConditionalExpressionFormatting()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // '?' and ':' trail their lines instead of leading indented lines — SA1143 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main(string[] args)
+                {
+                    return args.Length > 0 ?
+                        1 :
+                        0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1143").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1315", "Parameter names should match inherited names",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md")]
+    public async Task RequireParameterNamesToMatchInheritedNames()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The override renames 'sound' to 'noise' — SA1315 fires (CA1725 also fires; not asserted here).
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public abstract class Animal
+            {
+                public abstract void Speak(string sound);
+            }
+
+            public class Dog : Animal
+            {
+                public override void Speak(string noise) { }
+            }
+
+            public static class Program
+            {
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1315").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1317", "Identifier should be named only with Latin letters",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1317.md")]
+    public async Task RequireLatinLettersInIdentifiers()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The local is named with a Greek alpha (emitted via escape to keep this file ASCII) — SA1317 fires.
+        await project.AddFileAsync("Program.cs", $$"""
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main()
+                {
+                    var value{{"α"}} = 0;
+                    return value{{"α"}};
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasNote("SA1317").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1653", "Only one partial declaration should contain summary documentation",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1653.md")]
+    public async Task RequireSummaryOnOnlyOnePartialDeclaration()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Both partial declarations of Program carry a <summary> — SA1653 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// The program entry point.
+            /// </summary>
+            public static partial class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+
+            /// <summary>
+            /// More documentation for the program.
+            /// </summary>
+            public static partial class Program
+            {
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1653").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1654", "Properly encode generic brackets",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1654.md")]
+    public async Task RequireEncodedGenericBracketsInDocumentation()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The cref uses escaped angle brackets (&lt;T&gt;) instead of braces ({T}) — SA1654 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// See <see cref="System.Collections.Generic.List&lt;T&gt;"/>.
+            /// </summary>
+            public static class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1654").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SX1412", "Store files as UTF-8 without byte order mark",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1412.md")]
+    public async Task RequireUtf8WithoutByteOrderMark()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // A leading U+FEFF (kept as an ASCII escape) is written as the EF BB BF BOM bytes — SX1412 fires.
+        await project.AddFileAsync("Program.cs", "\uFEFF" + """
+            namespace test;
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasNote("SX1412").ShouldBeTrue();
+    }
 }

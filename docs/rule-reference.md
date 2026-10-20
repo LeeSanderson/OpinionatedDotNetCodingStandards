@@ -127,6 +127,7 @@ Rules set to `none` or `silent` are omitted.
 | `MA0240` | Do not use banned syntax | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0240.md) |
 | `MA0241` | The banned syntax entry is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md) |
 | `MA0242` | Use a value factory to compute the value only when the key is not in the ConcurrentDictionary | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md) |
+| `MA0243` | Use an escape sequence for invisible characters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0243.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 
@@ -837,7 +838,13 @@ Rules set to `none` or `silent` are omitted.
 
 | Rule ID | Description | Severity | Help |
 |---------|-------------|----------|------|
+| `SA1143` | Conditional expressions must be formatted consistently | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1143.md) |
+| `SA1315` | Parameter names should match inherited names | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md) |
+| `SA1317` | Identifier should be named only with Latin letters | suggestion | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1317.md) |
 | `SA1649` | File name should match first type name | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1649.md) |
+| `SA1653` | Only one partial declaration should contain summary documentation | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1653.md) |
+| `SA1654` | Properly encode generic brackets | warning | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1654.md) |
+| `SX1412` | Store files as UTF-8 without byte order mark | suggestion | [docs](https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1412.md) |
 
 ## IDE / editor rules
 

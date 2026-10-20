@@ -7,6 +7,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.18]
+
+### Added
+
+- `MA0243` (use an escape sequence for invisible characters) is now enforced as a **warning**. It
+  reports raw invisible characters, such as a literal tab or zero-width space, inside string and
+  character literals. Write them as escapes (`"\t"`, `"​"`) so they show up in review. Upstream
+  ships it disabled; this package turns it on.
+- `SA1143` (conditional expressions must be formatted consistently) is now enforced as a
+  **warning**. A ternary must fit on one line, put `?` and `:` at the start of indented
+  continuation lines, or align a chain of conditions.
+- `SA1315` (parameter names should match inherited names) is now enforced as a **warning**. It
+  reports overrides and interface implementations that rename an inherited parameter.
+- `SA1653` (only one partial declaration should contain summary documentation) is now enforced as
+  a **warning**.
+- `SA1654` (properly encode generic brackets) is now enforced as a **warning**. A `cref` must
+  write generic type arguments with braces (`List{T}`), not escaped angle brackets
+  (`List&lt;T&gt;`).
+- `SA1317` (identifiers should use only Latin letters) and `SX1412` (store files as UTF-8 without
+  a byte order mark) are now enabled at **suggestion**. They show as notes and never fail the
+  build. Both are deliberately set below `warning`: `SX1412` would fail every project whose `.cs`
+  files carry a UTF-8 BOM (a common editor default on Windows), and `SA1317` would fail codebases
+  with non-English identifiers. Raise either one in your own `.editorconfig` to enforce it.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.302 to 3.0.315. It adds `MA0243` (see above). The other
+  upstream changes are code-fix fixes and fewer false positives. Among rules this package enables,
+  `MA0067` no longer reports `System.Guid` used as an attribute, `MA0093` no longer suggests
+  `EventArgs.Empty` for generic event args, `MA0182` removes every part of a partial type and now
+  analyzes delegate signatures, and `MA0194` no longer throws on invalid code.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.401 to 10.0.402. No new or removed rule IDs.
+- Bumped StyleCop.Analyzers from 1.3.1-beta to 1.3.133-beta. It adds the six StyleCop rules above.
+  Every other StyleCop rule except `SA1649` stays at `none`.
+
 ## [v0.0.17]
 
 ### Changed
