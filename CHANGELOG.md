@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.19]
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.315 to 3.0.317. No new rules; upstream stops offering code
+  fixes for `MA0146`, `MA0177` and `MA0204` when the fix would not change the code.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.402 to 10.0.403. No new rules.
+- Bumped StyleCop.Analyzers from 1.3.133-beta to 1.3.151-beta. No new rules.
+
 ## [v0.0.18]
 
 ### Added
