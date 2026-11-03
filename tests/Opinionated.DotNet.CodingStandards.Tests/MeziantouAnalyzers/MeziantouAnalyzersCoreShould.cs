@@ -653,4 +653,25 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0244").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0245", "Review the conversion of a floating-point value to decimal",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0245.md")]
+    public async Task ReviewFloatingPointToDecimalConversion()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Converting a non-constant floating-point value to decimal is MA0245; a constant operand
+        // would be MA0244 instead, so the value must come from a parameter.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Converter
+            {
+                public static decimal ToDecimal(double value) => (decimal)value;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0245").ShouldBeTrue();
+    }
 }
