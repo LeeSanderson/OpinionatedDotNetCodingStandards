@@ -128,6 +128,8 @@ Rules set to `none` or `silent` are omitted.
 | `MA0241` | The banned syntax entry is not valid | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0241.md) |
 | `MA0242` | Use a value factory to compute the value only when the key is not in the ConcurrentDictionary | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0242.md) |
 | `MA0243` | Use an escape sequence for invisible characters | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0243.md) |
+| `MA0244` | Use a decimal literal instead of converting a floating-point constant to decimal | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0244.md) |
+| `MA0245` | Review the conversion of a floating-point value to decimal | warning | [docs](https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0245.md) |
 
 ## Microsoft.CodeAnalysis.BannedApiAnalyzers
 

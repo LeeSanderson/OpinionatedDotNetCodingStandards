@@ -632,4 +632,46 @@ public class MeziantouAnalyzersCoreShould(PackageFixture fixture, ITestOutputHel
 
         buildOutput.HasError("MA0243").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("MA0244", "Use a decimal literal instead of converting a floating-point constant to decimal",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0244.md")]
+    public async Task RequireDecimalLiteralInsteadOfFloatingPointConversion()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Casting a double constant to decimal is MA0244 (write 1.5m instead); converting a
+        // non-constant floating-point value would be MA0245, so the operand must stay a literal.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Prices
+            {
+                public static decimal GetPrice() => (decimal)1.5;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0244").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("MA0245", "Review the conversion of a floating-point value to decimal",
+        HelpLink = "https://github.com/meziantou/Meziantou.Analyzer/blob/main/docs/Rules/MA0245.md")]
+    public async Task ReviewFloatingPointToDecimalConversion()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // Converting a non-constant floating-point value to decimal is MA0245; a constant operand
+        // would be MA0244 instead, so the value must come from a parameter.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Converter
+            {
+                public static decimal ToDecimal(double value) => (decimal)value;
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("MA0245").ShouldBeTrue();
+    }
 }

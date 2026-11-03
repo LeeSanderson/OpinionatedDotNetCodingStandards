@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.20]
+
+### Added
+
+- `MA0244` (use a decimal literal instead of converting a floating-point constant to decimal) is
+  now enforced as a **warning**. It reports conversions such as `(decimal)1.5`, which go through an
+  inexact `double`. Write the literal as `1.5m` instead.
+- `MA0245` (review the conversion of a floating-point value to decimal) is now enforced as a
+  **warning**. It reports conversions of non-constant `double`/`float` values to `decimal` (casts,
+  `Convert.ToDecimal`, `decimal.CreateChecked` and similar). These can carry binary
+  floating-point error into decimal arithmetic. Upstream ships it disabled; this package turns it
+  on.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.317 to 3.0.320.
+
 ## [v0.0.19]
 
 ### Changed
