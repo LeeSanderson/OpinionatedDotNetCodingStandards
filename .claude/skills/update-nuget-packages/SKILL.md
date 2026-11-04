@@ -399,7 +399,10 @@ Add a test (or untestable declaration) for rule **{RULEID}** — *{rule descript
 
 - [ ] Either a `[Fact]` with `[RuleDoc("{RULEID}", ...)]` exists in `{target test file}`, or a
       class-level `[RuleDoc("{RULEID}", ..., Untestable = "...")]` exists in `UntestableRules.cs`
-- [ ] `RuleDocCoverageShould` passes (no duplicate or missing `[RuleDoc]` entries)
+- [ ] `RuleDocCoverageShould` reports no missing, duplicate or orphaned `[RuleDoc]` entry **for
+      `{RULEID}`**. Other rules added by this same bump may still show as uncovered until their own
+      issues land. That is expected and does not fail this issue. The final rule-reference issue
+      requires the whole coverage test to pass.
 - [ ] If testable: `dotnet test --no-build -- --filter-method "*{SuggestedMethodName}*"` passes
 
 ## How to implement the test
@@ -482,6 +485,7 @@ issues are complete to include the correct test links.
 
 ## Acceptance criteria
 
+- [ ] `RuleDocCoverageShould` passes in full (every active rule covered exactly once)
 - [ ] `docs/rule-reference.md` has been regenerated and the new rule IDs appear in it
 - [ ] The file is committed
 
@@ -497,7 +501,12 @@ Verify the new rule IDs appear in `docs/rule-reference.md`, then commit.
 
 ## Blocked by
 
-All per-rule test issues for this PRD (issues NNN through NNN).
+- `issues/NNN-test-{ruleid}.md`
+- (one line per per-rule issue created above, each as its full `issues/...md` path)
+
+List every per-rule issue by path rather than as a range like "issues 001 through 002".
+`/implementation` builds its dependency graph only from `issues/NNN-….md` paths under this heading.
+A prose range gives it no dependencies, so it would not skip this issue when a per-rule issue fails.
 
 ## User stories addressed
 

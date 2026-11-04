@@ -84,7 +84,10 @@ if (-not $Force) {
 }
 
 Write-Host "Running full test suite..."
-dotnet test
+# Every test packs and builds a throwaway project, so peak memory grows with the number of tests
+# running at once. The default (one per CPU thread) can exhaust memory on a developer machine.
+# --max-threads goes after the bare '--' because the test project runs on Microsoft.Testing.Platform.
+dotnet test -- --max-threads 3
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 
 git tag $newTag
