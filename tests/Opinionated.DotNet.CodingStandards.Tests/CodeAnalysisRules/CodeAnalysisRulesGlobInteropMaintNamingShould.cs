@@ -704,6 +704,38 @@ public class CodeAnalysisRulesGlobInteropMaintNamingShould(PackageFixture fixtur
     }
 
     [Fact]
+    [RuleDoc("CA1517", "Use 'ReadOnlySpan<T>' or 'ReadOnlyMemory<T>' instead of 'Span<T>' or 'Memory<T>'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1517")]
+    public async Task PreferReadOnlySpanOverSpanParameters()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
+            "Program.cs",
+            """
+            using System;
+            namespace test;
+            public static class Program
+            {
+                // The Span<int> parameter is only ever read, never written, so CA1517 suggests
+                // ReadOnlySpan<int> instead (severity=warning -> SARIF error).
+                private static int Sum(Span<int> values)
+                {
+                    var total = 0;
+                    foreach (var value in values)
+                    {
+                        total += value;
+                    }
+                    return total;
+                }
+                public static int Main() => Sum([1, 2]) == 3 ? 0 : 1;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA1517").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA1727", "Use PascalCase for named placeholders",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1727")]
     public async Task RequirePascalCaseForLogMessagePlaceholders()
