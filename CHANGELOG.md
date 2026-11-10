@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.21]
+
+### Added
+
+- `CA1517` (use `ReadOnlySpan<T>`/`ReadOnlyMemory<T>` instead of `Span<T>`/`Memory<T>`) is now
+  enforced as a **warning**. It reports `Span<T>` or `Memory<T>` parameters that are only ever
+  read. Upstream ships it as a suggestion; this package raises it.
+- `CA1876` (do not use `AsParallel` in `foreach`) is now enforced as a **warning**. A `foreach`
+  over `AsParallel()` enumerates the results one by one, so the parallel query gives no benefit.
+  Upstream ships it as a suggestion; this package raises it.
+- `CA1877` (collapse consecutive `Path.Combine` or `Path.Join` operations) is now enforced as a
+  **warning**. It reports nested calls such as `Path.Combine(Path.Combine(a, b), c)`, which can
+  be one call. Upstream ships it as a suggestion; this package raises it.
+- `CA2026` (prefer `JsonElement.Parse` over `JsonDocument.Parse().RootElement`) is now enforced
+  as a **warning**. The `JsonDocument` is never disposed, so its pooled memory is not returned.
+  Upstream ships it as a suggestion; this package raises it.
+- `CA2027` (cancel `Task.Delay` after `Task.WhenAny` completes) is now enforced as a **warning**.
+  It reports a `Task.Delay` with no cancellation token that is used as a timeout in
+  `Task.WhenAny`. The timer keeps running after the other task wins. Upstream ships it as a
+  suggestion; this package raises it.
+- `CA2028` (avoid a redundant `Regex.IsMatch` call before `Regex.Match`) is now enforced as a
+  **warning**. Calling `IsMatch` before `Match` with the same input runs the regex twice.
+  Upstream ships it as a suggestion; this package raises it.
+- `CA2267` (quote whitespace in file-based program directive values) is enforced as a
+  **warning**. It reports unquoted `#:` directive values that contain whitespace, such as
+  `#:property Description=Hello World`.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.320 to 3.0.322. No new rules.
+- Bumped Microsoft.CodeAnalysis.NetAnalyzers from 10.0.403 to 11.0.100. This is a major version;
+  it adds the seven rules above.
+- Bumped StyleCop.Analyzers from 1.3.151-beta to 1.3.177-beta. No new rules.
+
 ## [v0.0.20]
 
 ### Added
