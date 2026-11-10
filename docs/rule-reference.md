@@ -273,6 +273,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA1513` | Use ObjectDisposedException throw helper | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1513) |
 | `CA1514` | Avoid redundant length argument | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1514) |
 | `CA1516` | Use cross-platform intrinsics | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1516) |
+| `CA1517` | Use 'ReadOnlySpan<T>' or 'ReadOnlyMemory<T>' instead of 'Span<T>' or 'Memory<T>' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1517) |
 | `CA1700` | Do not name enum values 'Reserved' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1700) |
 | `CA1708` | Identifiers should differ by more than case | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1708) |
 | `CA1712` | Do not prefix enum values with type name | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1712) |
@@ -340,6 +341,8 @@ Rules set to `none` or `silent` are omitted.
 | `CA1873` | Avoid potentially expensive logging | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1873) |
 | `CA1874` | Use 'Regex.IsMatch' | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1874) |
 | `CA1875` | Use 'Regex.Count' | suggestion | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1875) |
+| `CA1876` | Do not use 'AsParallel' in 'foreach' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1876) |
+| `CA1877` | Collapse consecutive Path.Combine or Path.Join operations | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1877) |
 | `CA2002` | Do not lock on objects with weak identity | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2002) |
 | `CA2009` | Do not call ToImmutableCollection on an ImmutableCollection value | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2009) |
 | `CA2011` | Avoid infinite recursion | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2011) |
@@ -356,6 +359,9 @@ Rules set to `none` or `silent` are omitted.
 | `CA2022` | Avoid inexact read with 'Stream.Read' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2022) |
 | `CA2023` | Invalid braces in message template | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023) |
 | `CA2024` | Do not use 'StreamReader.EndOfStream' in async methods | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2024) |
+| `CA2026` | Prefer JsonElement.Parse over JsonDocument.Parse().RootElement | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2026) |
+| `CA2027` | Cancel Task.Delay after Task.WhenAny completes | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2027) |
+| `CA2028` | Avoid redundant 'Regex.IsMatch' call before 'Regex.Match' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2028) |
 | `CA2100` | Review SQL queries for security vulnerabilities | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2100) |
 | `CA2101` | Specify marshaling for P/Invoke string arguments | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2101) |
 | `CA2119` | Seal methods that satisfy private interfaces | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2119) |
@@ -403,6 +409,7 @@ Rules set to `none` or `silent` are omitted.
 | `CA2264` | Do not pass a non-nullable value to 'ArgumentNullException.ThrowIfNull' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2264) |
 | `CA2265` | Do not compare Span<T> to 'null' or 'default' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2265) |
 | `CA2266` | File-based program entry point should start with '#!' | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266) |
+| `CA2267` | Quote whitespace in file-based program directive values | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2267) |
 | `CA2300` | Do not use insecure deserializer BinaryFormatter | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2300) |
 | `CA2301` | Do not call BinaryFormatter.Deserialize without first setting BinaryFormatter.Binder | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2301) |
 | `CA2302` | Ensure BinaryFormatter.Binder is set before calling BinaryFormatter.Deserialize | warning | [docs](https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2302) |

@@ -289,16 +289,6 @@ namespace Opinionated.DotNet.CodingStandards.Tests;
         expression can trigger S3216 regardless of code pattern, editorconfig severity, or
         OutputType=Library. Genuine structural untestable on this harness.
         """)]
-[RuleDoc("CA2266", "File-based program entry point should start with '#!'",
-    HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2266",
-    Untestable = """
-        CA2266 fires only on file-based C# programs — .cs files intended to be run directly via
-        `dotnet run foo.cs` (the .NET 10+ file-based programs feature) that lack a shebang line
-        (`#!/usr/bin/env dotnet`). The test harness builds a standard SDK-style project (.csproj) and
-        has no mechanism to declare a file-based program entry point, so the compiler never sees the
-        preconditions for CA2266 and the rule cannot appear in SARIF. Structurally untestable on a
-        project-based harness. First shipped in Microsoft.CodeAnalysis.NetAnalyzers 10.0.300.
-        """)]
 [RuleDoc("S6802", "Using lambda expressions in loops should be avoided in Blazor markup section",
     HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-6802/",
     Untestable = """

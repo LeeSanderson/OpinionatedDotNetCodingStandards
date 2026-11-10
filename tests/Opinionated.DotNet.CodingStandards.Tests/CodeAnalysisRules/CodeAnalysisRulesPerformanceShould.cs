@@ -689,4 +689,53 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA1824").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1876", "Do not use 'AsParallel' in 'foreach'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1876")]
+    public async Task ProhibitAsParallelInForeach()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Linq;
+            namespace test;
+            public static class Sample
+            {
+                public static int Sum(int[] items)
+                {
+                    var total = 0;
+                    foreach (var item in items.AsParallel())
+                    {
+                        total += item;
+                    }
+
+                    return total;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA1876").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("CA1877", "Collapse consecutive Path.Combine or Path.Join operations",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1877")]
+    public async Task CollapseConsecutivePathCombineCalls()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Sample
+            {
+                public static string Combine(string a, string b, string c) =>
+                    System.IO.Path.Combine(System.IO.Path.Combine(a, b), c);
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA1877").ShouldBeTrue();
+    }
 }
