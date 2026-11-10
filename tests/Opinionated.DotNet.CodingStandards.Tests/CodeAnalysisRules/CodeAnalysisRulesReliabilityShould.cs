@@ -356,6 +356,29 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
     }
 
     [Fact]
+    [RuleDoc("CA2026", "Prefer JsonElement.Parse over JsonDocument.Parse().RootElement",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2026")]
+    public async Task PreferJsonElementParse()
+    {
+        // CA2026 fires on JsonDocument.Parse(...).RootElement when JsonElement.Parse exists (.NET 10+).
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
+            "Program.cs",
+            """
+            using System.Text.Json;
+            namespace test;
+            public static class Program
+            {
+                public static JsonElement Method(string json) => JsonDocument.Parse(json).RootElement;
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA2026").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2023", "Invalid braces in message template",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023")]
     public async Task ProhibitInvalidBracesInLogMessageTemplate()
