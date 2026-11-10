@@ -689,4 +689,33 @@ public class CodeAnalysisRulesPerformanceShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA1824").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA1876", "Do not use 'AsParallel' in 'foreach'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca1876")]
+    public async Task ProhibitAsParallelInForeach()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            using System.Linq;
+            namespace test;
+            public static class Sample
+            {
+                public static int Sum(int[] items)
+                {
+                    var total = 0;
+                    foreach (var item in items.AsParallel())
+                    {
+                        total += item;
+                    }
+
+                    return total;
+                }
+            }
+            public static class Program { public static int Main() => 0; }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA1876").ShouldBeTrue();
+    }
 }
