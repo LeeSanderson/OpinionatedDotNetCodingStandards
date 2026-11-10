@@ -537,4 +537,38 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
 
         buildOutput.HasError("CA2216").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("CA2028", "Avoid redundant 'Regex.IsMatch' call before 'Regex.Match'",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2028")]
+    public async Task ProhibitRedundantRegexIsMatchBeforeMatch()
+    {
+        // CA2028 fires when an 'if (Regex.IsMatch(x, p))' guard is followed by 'Regex.Match(x, p)' with the
+        // same arguments inside the guarded block: the Match call alone (checking Success) does both jobs.
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
+            "Program.cs",
+            """
+            using System.Text.RegularExpressions;
+            namespace test;
+            public static class Program
+            {
+                public static string GetMatch(string input)
+                {
+                    if (Regex.IsMatch(input, "a+"))
+                    {
+                        var match = Regex.Match(input, "a+");
+                        return match.Value;
+                    }
+
+                    return string.Empty;
+                }
+
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA2028").ShouldBeTrue();
+    }
 }
