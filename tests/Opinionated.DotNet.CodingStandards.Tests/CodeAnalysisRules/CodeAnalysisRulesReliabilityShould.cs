@@ -379,6 +379,32 @@ public class CodeAnalysisRulesReliabilityShould(PackageFixture fixture, ITestOut
     }
 
     [Fact]
+    [RuleDoc("CA2027", "Cancel Task.Delay after Task.WhenAny completes",
+        HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2027")]
+    public async Task CancelTaskDelayAfterWhenAny()
+    {
+        // CA2027 fires when a non-cancelable Task.Delay is passed to Task.WhenAny, leaving the timer running.
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync(
+            "Program.cs",
+            """
+            using System.Threading.Tasks;
+            namespace test;
+            public static class Program
+            {
+                public static async Task RunAsync(Task work)
+                {
+                    await Task.WhenAny(work, Task.Delay(1000));
+                }
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("CA2027").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("CA2023", "Invalid braces in message template",
         HelpLink = "https://learn.microsoft.com/dotnet/fundamentals/code-analysis/quality-rules/ca2023")]
     public async Task ProhibitInvalidBracesInLogMessageTemplate()
