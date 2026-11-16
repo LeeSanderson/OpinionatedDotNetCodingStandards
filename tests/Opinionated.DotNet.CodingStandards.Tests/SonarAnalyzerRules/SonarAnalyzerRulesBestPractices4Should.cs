@@ -267,4 +267,27 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S9414").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S9415", "Local functions should be marked \"static\" when they don't capture variables",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9415/")]
+    public async Task RequireStaticOnNonCapturingLocalFunction()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    return Add(0, 0);
+
+                    int Add(int a, int b) => a + b;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9415").ShouldBeTrue();
+    }
 }
