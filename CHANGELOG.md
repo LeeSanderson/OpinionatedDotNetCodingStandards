@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.22]
+
+### Added
+
+- `S9414` (join local variable declarations and assignments) is enforced as a **warning**. It
+  reports a local that is declared without an initializer and then assigned on the next
+  statement, such as `int value; value = 42;`.
+- `S9415` (mark local functions `static` when they don't capture variables) is enforced as a
+  **warning**. It reports a local function that captures no enclosing state but is not
+  declared `static`.
+- `S9422` (lock object fields should use `System.Threading.Lock`) is enforced as a **warning**.
+  It reports a private `object` field that is used only as a `lock` target and can safely
+  become a `System.Threading.Lock`.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.322 to 3.0.341. No new rules.
+- Bumped SonarAnalyzer.CSharp from 10.35.0.4138 to 10.36.0.15337.
+- Bumped StyleCop.Analyzers from 1.3.177-beta to 1.3.180. This is the first stable (non
+  pre-release) StyleCop.Analyzers release that this package depends on. No new rules.
+
 ## [v0.0.21]
 
 ### Added

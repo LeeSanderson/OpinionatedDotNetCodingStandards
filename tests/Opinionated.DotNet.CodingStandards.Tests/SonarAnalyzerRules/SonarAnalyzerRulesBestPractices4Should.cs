@@ -244,4 +244,76 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S907").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S9414", "Local variable declarations and assignments should be joined",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9414/")]
+    public async Task JoinLocalVariableDeclarationAndAssignment()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int value;
+                    value = 42;
+                    return value;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9414").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S9415", "Local functions should be marked \"static\" when they don't capture variables",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9415/")]
+    public async Task RequireStaticOnNonCapturingLocalFunction()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    return Add(0, 0);
+
+                    int Add(int a, int b) => a + b;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9415").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("S9422", "Lock object fields should use \"System.Threading.Lock\" type",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9422/")]
+    public async Task RequireSystemThreadingLockForLockFields()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                private static readonly object Gate = new();
+
+                public static int Main()
+                {
+                    lock (Gate)
+                    {
+                        return 0;
+                    }
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9422").ShouldBeTrue();
+    }
 }

@@ -842,6 +842,9 @@ Rules set to `none` or `silent` are omitted.
 | `S8969` | Null-forgiving operators should not be redundant | warning | [docs](https://rules.sonarsource.com/csharp/S8969/) |
 | `S8970` | Null-forgiving operators should not be used when nullable warnings are disabled | warning | [docs](https://rules.sonarsource.com/csharp/S8970/) |
 | `S907` | goto statement should not be used | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-907/) |
+| `S9414` | Local variable declarations and assignments should be joined | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-9414/) |
+| `S9415` | Local functions should be marked "static" when they don't capture variables | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-9415/) |
+| `S9422` | Lock object fields should use "System.Threading.Lock" type | warning | [docs](https://rules.sonarsource.com/csharp/RSPEC-9422/) |
 
 ## StyleCop.Analyzers.Unstable
 
