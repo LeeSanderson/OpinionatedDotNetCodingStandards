@@ -244,4 +244,27 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S907").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S9414", "Local variable declarations and assignments should be joined",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9414/")]
+    public async Task JoinLocalVariableDeclarationAndAssignment()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                public static int Main()
+                {
+                    int value;
+                    value = 42;
+                    return value;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9414").ShouldBeTrue();
+    }
 }
