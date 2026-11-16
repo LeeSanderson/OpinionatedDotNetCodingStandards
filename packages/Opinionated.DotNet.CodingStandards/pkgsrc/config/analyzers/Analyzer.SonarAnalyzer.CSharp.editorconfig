@@ -1830,6 +1830,18 @@ dotnet_diagnostic.S907.severity = warning
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S927.severity = none
 
+# S9414: Local variable declarations and assignments should be joined
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S9414.severity = warning
+
+# S9415: Local functions should be marked "static" when they don't capture variables
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S9415.severity = warning
+
+# S9422: Lock object fields should use "System.Threading.Lock" type
+# Enabled: True, Severity: warning
+dotnet_diagnostic.S9422.severity = warning
+
 # S9999-cpd: Copy-paste token calculator
 # Enabled: True, Severity: warning
 dotnet_diagnostic.S9999-cpd.severity = none
