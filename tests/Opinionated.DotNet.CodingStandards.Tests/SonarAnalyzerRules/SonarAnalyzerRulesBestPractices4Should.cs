@@ -290,4 +290,30 @@ public class SonarAnalyzerRulesBestPractices4Should(PackageFixture fixture, ITes
 
         buildOutput.HasError("S9415").ShouldBeTrue();
     }
+
+    [Fact]
+    [RuleDoc("S9422", "Lock object fields should use \"System.Threading.Lock\" type",
+        HelpLink = "https://rules.sonarsource.com/csharp/RSPEC-9422/")]
+    public async Task RequireSystemThreadingLockForLockFields()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+            public static class Program
+            {
+                private static readonly object Gate = new();
+
+                public static int Main()
+                {
+                    lock (Gate)
+                    {
+                        return 0;
+                    }
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("S9422").ShouldBeTrue();
+    }
 }
