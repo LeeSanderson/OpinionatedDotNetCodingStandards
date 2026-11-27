@@ -46,6 +46,29 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
     }
 
     [Fact]
+    [RuleDoc("SA1144", "Zero-width characters in literals must be escaped",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1144.md")]
+    public async Task RequireEscapedZeroWidthCharactersInLiterals()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The generated string literal contains a raw (unescaped) U+200B zero-width space — SA1144 fires.
+        // The test source itself builds the character from its code point so it does not trip SA1144 on this project.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public const string Value = "a{ZWSP}b";
+
+                public static int Main() => Value.Length;
+            }
+            """.Replace("{ZWSP}", char.ConvertFromUtf32(0x200B), StringComparison.Ordinal));
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1144").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("SA1315", "Parameter names should match inherited names",
         HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md")]
     public async Task RequireParameterNamesToMatchInheritedNames()
