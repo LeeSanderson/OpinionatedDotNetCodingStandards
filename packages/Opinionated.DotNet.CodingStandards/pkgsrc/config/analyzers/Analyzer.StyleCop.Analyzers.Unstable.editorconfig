@@ -372,6 +372,16 @@ dotnet_diagnostic.SA1142.severity = none
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1143.severity = warning
 
+# SA1144: Zero-width characters in literals must be escaped
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1144.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1144.severity = warning
+
+# SA1145: Do not use assignment as condition
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1145.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1145.severity = warning
+
 # SA1200: Using directives should be placed correctly
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1200.html
 # Enabled: True, Severity: warning
@@ -621,6 +631,11 @@ dotnet_diagnostic.SA1413.severity = none
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1414.html
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1414.severity = none
+
+# SA1415: Do not use public on members of internal types
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1415.html
+# Enabled: False, Severity: warning
+dotnet_diagnostic.SA1415.severity = none
 
 # SA1500: Braces for multi-line statements should not share line
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1500.html
@@ -996,6 +1011,11 @@ dotnet_diagnostic.SA1653.severity = warning
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1654.html
 # Enabled: True, Severity: warning
 dotnet_diagnostic.SA1654.severity = warning
+
+# SA1655: Documentation element tags must be consistently placed
+# Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SA1655.html
+# Enabled: True, Severity: warning
+dotnet_diagnostic.SA1655.severity = warning
 
 # SX1101: Do not prefix local calls with 'this.'
 # Help link: https://dotnetanalyzers.github.io/StyleCopAnalyzers/SX1101.html
