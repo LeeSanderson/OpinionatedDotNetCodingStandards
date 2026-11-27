@@ -219,7 +219,7 @@ public class SonarAnalyzerRulesSecurity2Should(PackageFixture fixture, ITestOutp
             public class RegexExample
             {
                 public bool IsMatch(string input) =>
-                    Regex.IsMatch(input, "some pattern"); // S6444: no timeout specified
+                    Regex.IsMatch(input, "(a+)+b"); // S6444: no timeout specified (quantified pattern; Sonar 10.37+ skips constant patterns without quantifiers)
             }
 
             public static class Program { public static int Main() => 0; }

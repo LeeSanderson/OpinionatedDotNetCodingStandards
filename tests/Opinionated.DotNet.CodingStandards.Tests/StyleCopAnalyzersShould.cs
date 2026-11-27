@@ -46,6 +46,58 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
     }
 
     [Fact]
+    [RuleDoc("SA1144", "Zero-width characters in literals must be escaped",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1144.md")]
+    public async Task RequireEscapedZeroWidthCharactersInLiterals()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The generated string literal contains a raw (unescaped) U+200B zero-width space — SA1144 fires.
+        // The test source itself builds the character from its code point so it does not trip SA1144 on this project.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public const string Value = "a{ZWSP}b";
+
+                public static int Main() => Value.Length;
+            }
+            """.Replace("{ZWSP}", char.ConvertFromUtf32(0x200B), StringComparison.Ordinal));
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1144").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1145", "Do not use assignment as condition",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1145.md")]
+    public async Task ProhibitAssignmentAsCondition()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The 'if' condition is an assignment expression rather than a comparison — SA1145 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main(string[] args)
+                {
+                    bool hasArgs;
+                    if (hasArgs = args.Length > 0)
+                    {
+                        return 1;
+                    }
+
+                    return hasArgs ? 2 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1145").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("SA1315", "Parameter names should match inherited names",
         HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md")]
     public async Task RequireParameterNamesToMatchInheritedNames()
@@ -158,6 +210,32 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
         var buildOutput = await project.BuildAndGetOutputAsync();
 
         buildOutput.HasError("SA1654").ShouldBeTrue();
+    }
+
+    [Fact]
+    [RuleDoc("SA1655", "Documentation element tags must be consistently placed",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1655.md")]
+    public async Task RequireConsistentlyPlacedDocumentationElementTags()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The opening <summary> tag sits on its own line but the closing tag does not — SA1655 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// The program entry point.</summary>
+            public static class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1655").ShouldBeTrue();
     }
 
     [Fact]
