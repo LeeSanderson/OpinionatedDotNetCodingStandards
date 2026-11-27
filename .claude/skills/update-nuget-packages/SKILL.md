@@ -118,8 +118,15 @@ GET https://api.nuget.org/v3-flatcontainer/{package-id-lowercased}/index.json
 
 Parse the `versions` array. Strategy per package:
 
-- **Stable packages** (`Meziantou.Analyzer`, `Microsoft.CodeAnalysis.BannedApiAnalyzers`, `Microsoft.CodeAnalysis.NetAnalyzers`, `SonarAnalyzer.CSharp`): select the highest version that has no pre-release suffix (no `-` in the version string).
-- **Pre-release packages** (`StyleCop.Analyzers`): select the highest overall version (including pre-release), because the project intentionally tracks pre-release builds.
+For **all five** packages, select the highest version that has no pre-release suffix (no `-` in
+the version string). Never move a package onto a pre-release build.
+
+This includes `StyleCop.Analyzers`. It used to ship only betas, so this package once tracked its
+pre-release builds. Since 1.3.180 it has stable releases, and the package depends on those. A
+newer beta (e.g. `1.4.x-beta`) is not an update. `dotnet-outdated` agrees: when the current
+version is stable it ignores newer pre-releases, so CI's gate never asks for one. If you think a
+beta is worth taking, ask the user first. It changes the published package's dependency from
+stable to pre-release for every consumer.
 
 Compare to current. Collect a list of packages that have a newer version available.
 
