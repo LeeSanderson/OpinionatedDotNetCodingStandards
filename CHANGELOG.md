@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v0.0.23]
+
+### Added
+
+- `SA1144` (zero-width characters in literals must be escaped) is enforced as a **warning**. It
+  reports string and character literals that contain a raw, invisible zero-width character
+  instead of an escape sequence such as `​`.
+- `SA1145` (do not use assignment as condition) is enforced as a **warning**. It reports an
+  assignment used as an `if`/`while` condition, such as `if (found = Next())`.
+- `SA1655` (documentation element tags must be consistently placed) is enforced as a
+  **warning**. It reports an XML documentation element whose opening tag is on its own line but
+  whose closing tag is not, or the reverse.
+- `SA1415` (do not use `public` on members of internal types) is added at severity **none**. It
+  is disabled by default upstream, like the other opt-in StyleCop rules this package leaves off.
+
+### Changed
+
+- Bumped Meziantou.Analyzer from 3.0.341 to 3.0.342. No new rules.
+- Bumped SonarAnalyzer.CSharp from 10.36.0.15337 to 10.37.0.15768. No new rules. `S6444` (regex
+  without timeout) no longer reports constant patterns that have no quantifiers.
+- Bumped StyleCop.Analyzers from 1.3.180 to 1.4.47-beta. This returns the StyleCop dependency to
+  a pre-release build, because the package tracks StyleCop's latest release, including betas.
+
 ## [v0.0.22]
 
 ### Added
