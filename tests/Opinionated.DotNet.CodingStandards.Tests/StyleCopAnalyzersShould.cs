@@ -213,6 +213,32 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
     }
 
     [Fact]
+    [RuleDoc("SA1655", "Documentation element tags must be consistently placed",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1655.md")]
+    public async Task RequireConsistentlyPlacedDocumentationElementTags()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The opening <summary> tag sits on its own line but the closing tag does not — SA1655 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            /// <summary>
+            /// The program entry point.</summary>
+            public static class Program
+            {
+                /// <summary>
+                /// Runs the program.
+                /// </summary>
+                /// <returns>The exit code.</returns>
+                public static int Main() => 0;
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1655").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("SX1412", "Store files as UTF-8 without byte order mark",
         HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SX1412.md")]
     public async Task RequireUtf8WithoutByteOrderMark()
