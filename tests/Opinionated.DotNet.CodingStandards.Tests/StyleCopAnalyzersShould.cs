@@ -69,6 +69,35 @@ public class StyleCopAnalyzersShould(PackageFixture fixture, ITestOutputHelper t
     }
 
     [Fact]
+    [RuleDoc("SA1145", "Do not use assignment as condition",
+        HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1145.md")]
+    public async Task ProhibitAssignmentAsCondition()
+    {
+        using var project = await CreateProjectBuilderAsync();
+        // The 'if' condition is an assignment expression rather than a comparison — SA1145 fires.
+        await project.AddFileAsync("Program.cs", """
+            namespace test;
+
+            public static class Program
+            {
+                public static int Main(string[] args)
+                {
+                    bool hasArgs;
+                    if (hasArgs = args.Length > 0)
+                    {
+                        return 1;
+                    }
+
+                    return hasArgs ? 2 : 0;
+                }
+            }
+            """);
+        var buildOutput = await project.BuildAndGetOutputAsync();
+
+        buildOutput.HasError("SA1145").ShouldBeTrue();
+    }
+
+    [Fact]
     [RuleDoc("SA1315", "Parameter names should match inherited names",
         HelpLink = "https://github.com/DotNetAnalyzers/StyleCopAnalyzers/blob/master/documentation/SA1315.md")]
     public async Task RequireParameterNamesToMatchInheritedNames()
